@@ -1,0 +1,43 @@
+{% extends "annotate_base.html" %}
+
+{% block content %}
+
+<div class="row">
+	<div class="small-12 columns">
+
+<br>
+	
+<ul class="breadcrumbs"><li><a href="{% url 'annotate:index' %}">Annotations</a></li>
+
+ <li class="current"><a href="#">All annotations</a></li> 
+  </ul>
+
+<h1>Annotations</h1>
+
+<a class="button" href="{% url 'annotate:create' %}">Add new annotation</a>
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+<h2>All annotations</h2>
+
+{% if annotation_list %}
+    <ul>
+    {% for annotation in annotation_list %}
+        <li><a class="button secondary small" href="{% url 'annotate:detail' annotation.id %}">{{ annotation.uri|default:annotation.id }}</a></li>
+    
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No entities yet.</p>
+{% endif %}
+
+
+	</div>
+</div>
+
+
+{% endblock content %}

@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+
+{% load static from staticfiles %}
+
+	<link rel="stylesheet" href="{% static "css/foundation.css" %}" />
+
+</head>
+
+<body>
+
+
+<nav class="top-bar" data-topbar role="navigation">
+<ul class="title-area">
+<li class="name"><h1 title="Annotations"><a href="{% url 'annotate:index' %}">Annotations</a></h1></li>
+ <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone --> <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li> </ul> 
+ <section class="top-bar-section"> 
+  
+   
+     <ul class="right">
+
+
+ <li><a title="Manage tags, vocabulary or thesaurus" href="{% url 'thesaurus:index' %}">Manage tags</a></li>
+
+    </ul>
+ 
+  
+ <!-- Left Nav Section --><ul class="left"> 
+ <li class="divider"></li>
+ <li><a href="{% url 'annotate:create' %}">Add new annotation</a></li>
+ </ul> 
+ </section> </nav>
+
+
+{% block content %}{% endblock content %}
+
+
+	<script src="{% static "js/vendor/modernizr.js" %}"></script>
+	<script src="{% static "js/vendor/jquery.js" %}"></script>
+	<script src="{% static "js/vendor/fastclick.js" %}"></script>
+	<script src="{% static "js/foundation.min.js" %}"></script>
+	<script src="{% static "js/foundation/foundation.js" %}"></script>
+	<script src="{% static "js/foundation/foundation.tab.js" %}"></script>
+	<script src="{% static "js/foundation/foundation.topbar.js" %}"></script>
+
+<script>
+	$(document).foundation();
+</script>
+</body>
+</html>

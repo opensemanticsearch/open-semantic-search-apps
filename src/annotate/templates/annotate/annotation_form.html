@@ -1,0 +1,199 @@
+{% extends "annotate_base.html" %}
+{% block content %}
+
+<form {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} action="" method="post">{% csrf_token %}
+
+
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+<br>
+	
+<ul class="breadcrumbs"><li><a href="{% url 'annotate:index' %}">Annotations</a></li>
+
+{% if anntotation.id %}
+	<li class="current"><a href="#">{{ annotation }}</a></li> 
+{% else %}
+ <li class="current"><a href="#">Add new annotation</a></li> 
+
+{% endif %}
+
+
+  </ul>
+
+
+
+
+{% if annotation.id %}
+<h1>Edit &quot;{{ annotation }}&quot;</h1>
+{% else %}
+<h1>Add new annotation</h1>
+{% endif %}
+
+	</div>
+</div>
+
+
+
+
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+{% if form.non_field_errors %}
+	<div data-alert class="alert-box alert">
+		{{ form.non_field_errors }}
+	</div>
+{% endif %}
+
+{% if form.errors %}
+	<div data-alert class="alert-box alert">
+		{{ form.errors }}
+	</div>
+{% endif %}
+
+
+
+        {{ form.uri.errors }}
+        <label for="id_uri">URI (which document to tag and annotate):</label>
+        {{ form.uri }}
+
+
+
+
+<dl class="tabs" data-tab>
+  <dd><a href="#panel-title">Title</a></dd>
+  <dd class="active"><a href="#panel-tags">Tags</a></dd>
+  <dd><a href="#panel-notes">Notes</a></dd>
+</dl>
+
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="tabs-content">
+
+
+  <section class="content" id="panel-title">
+
+
+<div class="row">
+	<div class="small-12 columns">
+		<div class="panel">
+
+   
+        {{ form.title.errors }}
+        <label for="id_title">Title (optional, will overwrite original title or set it if document has no title):</label>
+        {{ form.title }}
+
+		
+		</div>
+	</div>
+
+
+</div>
+
+
+</section>
+
+  <section class="content active" id="panel-tags">
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+		<div class="panel">
+        {{ form.tags.errors }}
+        <label for="id_tags">Tags</label>
+        {{ form.tags }}
+        </div>
+
+
+
+		
+
+	</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+  <section class="content" id="panel-notes">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+
+
+		<h2>Notes (optional)</h2>
+
+		<p><i>You will be able to find the document by the text of this notes, even if the note is not contained in the document content</i></p>
+		
+	</div>
+</div>
+
+<div class="row">
+
+    <div class="small-12 columns">
+		<div class="panel">
+
+        {{ form.notes.errors }}
+        <label for="id_notes">Notes</label>
+        {{ form.notes }}
+
+		</div>
+
+    </div>
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+</div>
+
+<hr>
+
+
+<div class="row">
+    <div class="small-12 columns">
+
+    <input title="Save changes" class="button" type="submit" value="Save" />
+
+
+{% if annotation.id %}
+    <a title="Discard changes" class="button right" href="{% url 'annotate:detail' annotation.id %}">Cancel</a>
+{% else %}
+    <a title="Discard changes" class="button right" href="{% url 'annotate:index' %}">Cancel</a>
+{% endif %}
+
+</div>
+</div>
+
+</form>
+{% endblock content %}

@@ -1,0 +1,137 @@
+{% extends "annotate_base.html" %}
+
+{% block content %}
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+<br>
+	
+<ul class="breadcrumbs"><li><a href="{% url 'annotate:index' %}">Annotations</a></li>
+
+ <li class="current"><a href="#">{{ annotation }}</a></li>
+  </ul>
+
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+{% if messages %}
+
+<div data-alert class="alert-box success radius">
+
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+</div>
+{% endif %}
+
+
+
+
+<h1>{{ annotation.title|default:annotation.uri }}</h1>
+
+
+{% if annotation.title %}
+
+<h2>URI</h2>
+{{ annotation.uri }}</h1>
+{% endif %}
+
+
+{% if annotation.tags.all %}
+		<div class="panel">
+<h2>Tags</h2>
+
+	<ul>
+		{% for tag in annotation.tags.all %}
+
+		<li>{{ tag }}</li>
+	
+		{% endfor %}
+	</ul>
+</div>	
+{% endif %}
+	
+	
+	
+	{% if annotation.persons.all %}
+<h2>Persons</h2>
+		<div class="panel">
+
+	<ul>
+		{% for person in annotation.persons.all %}
+
+		<li>{{ person }}</li>
+	
+		{% endfor %}
+	</ul>
+	</div>
+{% endif %}
+	
+	
+	{% if annotation.organizations.all %}
+
+<h2>Organizations</h2>
+		<div class="panel">
+
+	<ul>
+		{% for organization in annotation.organizations.all %}
+
+		<li>{{ organization }}</li>
+	
+		{% endfor %}
+	</ul>
+</div>	
+{% endif %}
+	
+
+{% if annotation.locations.all %}
+<h2>Locations</h2>
+		<div class="panel">
+
+	<ul>
+		{% for location in annotation.locations.all %}
+
+		<li>{{ location }}</li>
+	
+		{% endfor %}
+	</ul>
+</div>	
+{% endif %}
+	
+	
+	
+{% if annotation.notes %}
+	<h2>Notes</h2>
+			<div class="panel">
+	
+	{{ annotation.notes }}
+	</div>	
+{% endif %}
+	
+	
+	</div>
+</div>
+
+
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+<hr>
+
+<a class="button" href="{% url 'annotate:update' annotation.id %}">Edit</a>
+
+
+	</div>
+</div>
+
+{% endblock content %}
