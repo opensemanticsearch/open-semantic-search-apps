@@ -1,0 +1,183 @@
+{% extends "thesaurus_base.html" %}
+
+{% block content %}
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+<br>
+	
+<ul class="breadcrumbs"><li><a href="{% url 'thesaurus:index' %}">Thesaurus</a></li>
+
+{% if concept.facet %}
+<li><a href="{% url 'thesaurus:index' %}">{{ concept.facet }}</a></li>
+{% endif %}
+ <li class="current"><a href="#">{{ concept }}</a></li> 
+  </ul>
+
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+{% if messages %}
+
+<div data-alert class="alert-box success radius">
+
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+</div>
+{% endif %}
+
+
+
+
+<h1>{{ concept.prefLabel|default:concept.id }}</h1>
+
+
+{% if concept.facet %}
+Facet: {{ concept.facet }}
+{% endif %}	
+
+
+
+{% if concept.query %}
+
+	<h2>Query</h2>
+	{{ concept.query }}
+	
+{% endif %}
+
+
+
+{% if concept.alternates %}
+	<h2>Alternate labels, aliases and synonyms</h2>
+
+<ul>
+		{% for alternate in concept.alternates %}
+
+		<li>{{ alternate.altLabel }}</li>
+	
+		{% endfor %}
+</ul>
+	
+{% endif %}
+
+{% if concept.hiddens %}
+	<h2>Misspellings and hidden labels</h2>
+
+<ul>
+		{% for hidden in concept.hiddens %}
+
+		<li>{{ hidden.hiddenLabel }}</li>
+	
+		{% endfor %}
+</ul>
+	
+{% endif %}
+
+
+{% if concept.broader %}
+	<h2>Broader concept(s)</h2>
+
+<ul>
+		{% for broader in concept.broader %}
+
+		<li>{{ broader.broader.prefLabel|default:broader.broader.id  }}</li>
+	
+		{% endfor %}
+</ul>
+	
+{% endif %}
+
+
+{% if concept.narrower %}
+	<h2>Narrower concept(s)</h2>
+
+<ul>
+		{% for narrower in concept.narrower %}
+
+		<li>{{ narrower.narrower.prefLabel|default:narrower.narrower.id  }}</li>
+	
+		{% endfor %}
+</ul>
+	
+{% endif %}
+{% if concept.related %}
+	<h2>Related concept(s)</h2>
+
+<ul>
+		{% for related in concept.related %}
+
+		<li>{{ related.related.prefLabel|default:related.related.id  }}</li>
+	
+		{% endfor %}
+</ul>
+	
+{% endif %}
+	
+
+{% if concept.tags %}
+	<h2>Additional Tags</h2>
+
+	<ul>
+		{% for tag in concept.tags %}
+
+		<li>{{ tag }}</li>
+	
+		{% endfor %}
+	</ul>
+	
+{% endif %}
+	
+	
+	
+{% if concept.groups.all %}
+	<h2>Groups</h2>
+	<ul>
+		{% for group in concept.groups.all %}
+
+		<li>{{ group }}</li>
+	
+		{% endfor %}
+	</ul>
+	
+{% endif %}
+	
+	
+	
+{% if concept.note %}
+	<h2>Notes</h2>
+	
+	{{ concept.note }}
+		
+{% endif %}
+	
+	
+	</div>
+</div>
+
+
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+<hr>
+
+<a class="button" href="{% url 'thesaurus:update' concept.id %}">Edit</a>
+
+<a target="_blank" class="button" href="{% url 'morphology:morph_concept' concept.id %}">Recommend alternate labels</a>
+
+
+
+	</div>
+</div>
+
+{% endblock content %}

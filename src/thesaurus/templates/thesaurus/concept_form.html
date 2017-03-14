@@ -1,0 +1,558 @@
+{% extends "thesaurus_base.html" %}
+{% block content %}
+
+<form {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} action="" method="post">{% csrf_token %}
+
+
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+<br>
+	
+<ul class="breadcrumbs"><li><a href="{% url 'thesaurus:index' %}">Thesaurus</a></li>
+
+{% if concept.id %}
+
+	{% if concept.facet %}
+	<li><a href="{% url 'thesaurus:index' %}">{{ concept.facet }}</a></li>
+	{% endif %}
+	<li class="current"><a href="#">{{ concept }}</a></li> 
+{% else %}
+ <li class="current"><a href="#">Add new concept, name, word or named entity</a></li> 
+
+{% endif %}
+
+
+  </ul>
+
+
+
+
+{% if concept.id %}
+<h1>Edit &quot;{{ concept }}&quot;</h1>
+{% else %}
+<h1>Add new named entity, name, word or concept</h1>
+{% endif %}
+
+	</div>
+</div>
+
+
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+{% if form.non_field_errors %}
+	<div data-alert class="alert-box alert">
+		{{ form.non_field_errors }}
+	</div>
+{% endif %}
+
+{% if form.errors %}
+	<div data-alert class="alert-box alert">
+		{{ form.errors }}
+	</div>
+{% endif %}
+
+
+<dl class="tabs" data-tab>
+  <dd class="active"><a href="#panel-title">Name</a></dd>
+  <dd><a href="#panel-query">Query</a></dd>
+  <dd><a title="Synonyms, login names or misspellings" href="#panel-alias">Aliases</a></dd>
+  <dd><a href="#panel-groups">Groups</a></dd>
+  <dd><a href="#panel-relations">Relations</a></dd>
+  <dd><a href="#panel-facets">Custom tags</a></dd>
+  <dd><a href="#panel-description">Notes</a></dd>
+</dl>
+
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="tabs-content">
+
+
+  <section class="content active" id="panel-title">
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+        {{ form.prefLabel.errors }}
+        <label for="id_prefLabel">Label or name:</label>
+        {{ form.prefLabel }}
+
+        {{ form.facet.errors }}
+        <label for="id_facet">Facet (Which facet / field / filter / property to tag with label? Leave empty for default facet <i><span title="Semantic property: dct:subject">Tags</span></i>. [<a target="_blank" href="{% url 'admin:thesaurus_facet_changelist' %}">Manage target facets / fields / properties</a>]</label>
+        
+        
+        {{ form.facet }}
+		 
+		
+
+	</div>
+
+
+</div>
+
+
+</section>
+
+
+
+  <section class="content" id="panel-query">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+		<h2>Search query (optional)</h2>
+		<p><i>Only necessary if different from label or name (default query) or more complex than the name or label (i.e. including wildcards)</i></p>
+		
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+        {{ form.query.errors }}
+        <label for="id_query">Query (leave empty to use content of the field <i>Name</i> as default query):</label>
+        {{ form.query }}
+
+
+        {{ form.query_type.errors }}
+        <label for="id_query_type">Query type:</label>
+        {{ form.query_type }}
+
+
+	</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+<section class="content" id="panel-groups">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+		<h2>Groups (optional)</h2>
+		
+	</div>
+</div>
+
+<div class="row">
+
+    <div class="small-12 columns text-center">
+
+
+{% if concept.id %}
+
+        	  {{ form.groups }}
+
+
+{% else %}
+<div class="panel callout">
+Please save this new entry to have the ability to add it to groups ...
+</div>
+{% endif %}
+
+
+</div>
+
+
+
+</section>
+
+  <section class="content" id="panel-description">
+
+<div class="row">
+	<div class="small-12 columns text-center">
+		<h2>Notes (optional)</h2>
+
+	</div>
+</div>
+
+<div class="row">
+
+    <div class="small-12 columns">
+
+        {{ form.note.errors }}
+        <label for="id_notes">Notes</label>
+        {{ form.note }}
+    </div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+ <section class="content" id="panel-alias">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+		<h2>Alternate labels, synonyms or aliases (optional)</h2>
+		<p><i>Alternate labels, synonyms, aliases or additional queries (for example different pronouncations, e-mail adresses or usernames)</i></p>
+	</div>
+</div>
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+{% if not concept.id %}
+<div class="panel callout">
+Please save this new entry to have the ability to add alternate labels or aliases ...
+</div>
+{% endif %}
+
+		{{ alternates_formset.management_form }}
+
+        {% for alternate_form in alternates_formset %}
+        
+        {{ alternate_form.id }}
+        
+			<div class="panel">
+
+
+
+{% if alternate_form.non_field_errors %}
+	<div data-alert class="alert-box alert">
+		{{ alternate_form.non_field_errors }}
+	</div>
+{% endif %}
+
+{% if alternate_form.errors %}
+	<div data-alert class="alert-box alert">
+		{{ alternate_form.errors }}
+	</div>
+{% endif %}
+
+
+        {{ alternate_form.altLabel.errors }}
+        <label>Alternate label, synonym or alias:</label>
+        {{ alternate_form.altLabel }}
+        	
+        {{ alternate_form.query.errors }}
+        <label>Query (leave empty to use the <i>alternate label</i> as default query):</label>
+        {{ alternate_form.query }}
+
+
+        {{ alternate_form.query_type.errors }}
+        <label>Query type:</label>
+        {{ alternate_form.query_type }}
+
+			
+			{% if alternate_form.DELETE %}
+			<label>Delete:</label>
+			{{ alternate_form.DELETE }}
+        	{% endif %}
+        	
+       	
+			</div>
+			
+			
+        {% endfor %}
+
+
+	</div>
+
+
+</div>
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+		<h2>Misspellings (optional)</h2>
+		<p><i>Misspellings or OCR errors (hidden labels)</i></p>
+	</div>
+</div>
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+{% if not concept.id %}
+<div class="panel callout">
+Please save this new entry to have the ability to add misspelled labels ...
+</div>
+{% endif %}
+
+		{{ misspellings_formset.management_form }}
+
+        {% for misspelling_form in misspellings_formset %}
+        
+        {{ misspelling_form.id }}
+        
+			<div class="panel">
+
+
+
+{% if misspelling_form.non_field_errors %}
+	<div data-alert class="alert-box alert">
+		{{ misspelling_form.non_field_errors }}
+	</div>
+{% endif %}
+
+{% if misspelling_form.errors %}
+	<div data-alert class="alert-box alert">
+		{{ misspelling_form.errors }}
+	</div>
+{% endif %}
+
+
+        {{ misspelling_form.hiddenLabel.errors }}
+        <label>Alternate label, synonym or alias:</label>
+        {{ misspelling_form.hiddenLabel }}
+        	
+        {{ misspelling_form.query.errors }}
+        <label>Query (leave empty to use the <i>alternate label</i> as default query):</label>
+        {{ misspelling_form.query }}
+
+
+        {{ misspelling_form.query_type.errors }}
+        <label>Query type:</label>
+        {{ misspelling_form.query_type }}
+
+
+			{% if misspelling_form.DELETE %}
+			<label>Delete:</label>
+			{{ misspelling_form.DELETE }}
+        	{% endif %}
+        	
+       	
+			</div>
+        {% endfor %}
+
+
+	</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+<section class="content" id="panel-relations">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+		<h2>Relations (optional)</h2>
+		
+	</div>
+</div>
+
+<div class="row">
+
+    <div class="small-12 columns text-center">
+
+
+{% if concept.id %}
+
+<h3>Broader</h3>
+
+{% if not concept.id %}
+<div class="panel callout">
+Please save this new entity to have the ability to link to other concepts ...
+</div>
+{% endif %}
+
+	    {{ broader_formset.management_form }}
+	    
+        {% for broader_form in broader_formset %}
+        {{ broader_form.id }}
+        
+			<div class="panel">
+
+
+{% if broader_form.non_field_errors %}
+	<div data-alert class="alert-box alert">
+		{{ broader_form.non_field_errors }}
+	</div>
+{% endif %}
+
+{% if broader_form.errors %}
+	<div data-alert class="alert-box alert">
+		{{ broader_form.errors }}
+	</div>
+{% endif %}
+
+        	{{ broader_form }}
+			</div>
+        {% endfor %}
+
+
+
+<h3>Narrower</h3>
+
+{% if not concept.id %}
+<div class="panel callout">
+Please save this new entity to have the ability to link to other concepts ...
+</div>
+{% endif %}
+
+	    {{ narrower_formset.management_form }}
+	    
+        {% for narrower_form in narrower_formset %}
+        {{ narrower_form.id }}
+        
+			<div class="panel">
+
+
+{% if narrower_form.non_field_errors %}
+	<div data-alert class="alert-box alert">
+		{{ narrower_form.non_field_errors }}
+	</div>
+{% endif %}
+
+{% if narrower_form.errors %}
+	<div data-alert class="alert-box alert">
+		{{ narrower_form.errors }}
+	</div>
+{% endif %}
+
+        	{{ narrower_form }}
+			</div>
+        {% endfor %}
+
+<h3>Related</h3>
+{% if not concept.id %}
+<div class="panel callout">
+Please save this new entity to have the ability to link to other concepts ...
+</div>
+{% endif %}
+
+	    {{ related_formset.management_form }}
+	    
+        {% for related_form in related_formset %}
+        {{ related_form.id }}
+        
+			<div class="panel">
+
+
+{% if related_form.non_field_errors %}
+	<div data-alert class="alert-box alert">
+		{{ related_form.non_field_errors }}
+	</div>
+{% endif %}
+
+{% if related_form.errors %}
+	<div data-alert class="alert-box alert">
+		{{ related_form.errors }}
+	</div>
+{% endif %}
+
+        	{{ related_form }}
+			</div>
+        {% endfor %}
+
+{% else %}
+<div class="panel callout">
+Please save this new entry to have the ability to link to other terms ...
+</div>
+{% endif %}
+
+
+</div>
+
+
+
+</section>
+
+
+
+  <section class="content" id="panel-facets">
+
+<div class="row">
+
+	<div class="small-12 columns text-center">
+
+<h2>Additional tags / facets / properties (optional)</h2>
+<p><i>Documents with the named entity are tagged with its name into the facet you configured with the name (in the main tab "Name").<br>Here you have the optional possibility to tag them with additional values/tags and/or another facets</i></p>
+
+{% if not concept.id %}
+<div class="panel callout">
+Please save this new entity to have the ability to add tags and facets ...
+</div>
+{% endif %}
+
+	    {{ tags_formset.management_form }}
+	    
+        {% for tag_form in tags_formset %}
+        {{ tag_form.id }}
+        
+			<div class="panel">
+
+
+{% if tag_form.non_field_errors %}
+	<div data-alert class="alert-box alert">
+		{{ tag_form.non_field_errors }}
+	</div>
+{% endif %}
+
+{% if tag_form.errors %}
+	<div data-alert class="alert-box alert">
+		{{ tag_form.errors }}
+	</div>
+{% endif %}
+
+        	{{ tag_form }}
+			</div>
+        {% endfor %}
+
+	</div>
+
+</div>
+
+</section>
+
+
+</div>
+
+<hr>
+
+
+<div class="row">
+    <div class="small-12 columns">
+
+    <input title="Save changes" class="button" type="submit" value="Save" />
+
+
+{% if concept.id %}
+    <a title="Discard changes" class="button right" href="{% url 'thesaurus:detail' concept.id %}">Cancel</a>
+{% else %}
+    <a title="Discard changes" class="button right" href="{% url 'thesaurus:index' %}">Cancel</a>
+{% endif %}
+
+</div>
+</div>
+
+</form>
+{% endblock content %}

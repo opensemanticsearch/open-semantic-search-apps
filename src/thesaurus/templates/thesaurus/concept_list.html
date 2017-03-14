@@ -1,0 +1,51 @@
+{% extends "thesaurus_base.html" %}
+
+{% block content %}
+
+<div class="row">
+	<div class="small-12 columns">
+
+<br>
+	
+<ul class="breadcrumbs"><li><a href="{% url 'thesaurus:index' %}">Thesaurus</a></li>
+
+ <li class="current"><a href="#">All concepts</a></li> 
+  </ul>
+
+<h1>Thesaurus (Concepts, Names, Words or Named Entities)</h1>
+<p>Concepts, names or named entities like persons, organizations, locations or words.</p>
+<a class="button" href="{% url 'thesaurus:create' %}">Add new entry</a>
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+<h2>All names, concepts or named entities</h2>
+
+{% if concept_list %}
+    <ul>
+    {% for concept in concept_list %}
+        <li><a class="button secondary small" href="{% url 'thesaurus:detail' concept.id %}">{{ concept.prefLabel|default:concept.id }}</a></li>
+    
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No entries yet.</p>
+{% endif %}
+
+
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+<hr>
+
+<p>Hint: This interface is for adding and editing single concepts / names / entries.
+If you want to import a whole list, thesaurus, vocabulary or ontology use the <a href="{% url 'ontologies:index' %}">interface for ontologies and lists</a></p>.
+	</div>
+</div>)
+
+{% endblock content %}
