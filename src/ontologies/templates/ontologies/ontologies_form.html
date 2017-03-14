@@ -1,0 +1,182 @@
+{% extends "ontologies_base.html" %}
+
+{% block content %}
+
+<form {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} action="" method="post">{% csrf_token %}
+
+    {{ form.non_field_errors }}
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+{% if ontology.id %}
+<h1>Edit list, thesaurus, vocabulary or ontology</h1>
+{% else %}
+<h1>Add list, thesaurus, vocabulary or ontology</h1>
+{% endif %}
+
+
+
+	</div>
+</div>
+
+
+
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+<dl class="tabs" data-tab>
+  <dd><a href="#panel-title">Description (optional)</a></dd>
+  <dd class="active"><a href="#panel-datasource">Datasource (URI or upload)</a></dd>
+  <dd><a href="#panel-facet">Target facet or target field or property (optional)</a></dd>
+</dl>
+
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="tabs-content">
+
+  <section class="content" id="panel-title">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>Name or notes</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+<p>Not necessary, only for managing purpose</p>
+
+        {{ form.subject.errors }}
+        <label for="id_subject">Title:</label>
+        {{ form.title }}
+
+<div class="row">
+
+    <div class="small-12 medium-8 columns">
+    <h3>Notes</h3>
+        {{ form.description.errors }}
+        <label for="id_description">Description or Notes</label>
+        {{ form.description }}
+    </div>
+
+
+</div>
+
+</section>
+
+  <section class="content active" id="panel-datasource">
+
+<div class="row">
+
+	<div class="small-12 columns text-center">
+
+<h2>Datasource (<span title="Supported formats: An ontology (RDF, RDFS, SKOS or OWL) in RDF or Turtle format or a list as plain text file (UTF-8 encoded)">ontology or list </span> of named entities)</h2>
+
+<p>Set an Reference (URI) or upload a file</p>
+
+
+
+	</div>
+
+</div>
+
+<div class="row">
+
+    <div class="small-12 medium-5 columns">
+	<h3>Reference</h3>
+	<p>Reference to existing file or external web resource:</p>
+        {{ form.uri.errors }}
+        <label for="id_uri">URI:</label>
+        {{ form.uri }}
+	<p>For example for a local file like <i>file:///home/user/Documents/myOntology.rdf</i> or for a web resource like <i>http://www.example.domain/myOntology.rdf</i></p>
+
+    </div>
+
+    <div class="small-12 medium-2 columns text-center">
+	OR
+	</div>
+    <div class="small-12 medium-5 columns">
+<h3>Upload</h3>
+<p>Upload a list or ontology</p>
+        {{ form.file.errors }}
+        <label for="id_file">File:</label>
+        {{ form.file }}
+    </div>
+
+</div>
+
+
+
+
+</section>
+
+
+  <section class="content" id="panel-facet">
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>Facet / Field / Property</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+	<p>Leave unset (default) to use an own additional facet / field / column / property named to the title or filename of this list or ontology.</p>
+
+        {{ form.facet.errors }}
+        <label for="id_facet">Facet (Where to write found entries or which facet / field / column / property / filter to use to tag with found entries?)</label>
+        {{ form.facet }}
+        
+        [<a target="_blank" href="{% url 'admin:thesaurus_facet_changelist' %}">Manage target facets / fields / properties</a>]
+
+
+	</div>
+</div>
+</section>
+
+
+
+
+<hr>
+
+
+<div class="row">
+    <div class="small-12 columns">
+
+<h2>Save changes</h2>
+
+    <input class="button" type="submit" value="Save" />
+
+
+
+{% if ontology.id %}
+    <a class="button" href="{% url 'ontologies:detail' ontology.id %}">Cancel</a>
+{% else %}
+    <a class="button" href="{% url 'ontologies:index' %}">Cancel</a>
+{% endif %}
+
+</div>
+</div>
+
+</form>
+{% endblock content %}

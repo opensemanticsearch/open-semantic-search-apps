@@ -1,0 +1,58 @@
+{% extends "ontologies_base.html" %}
+
+{% block content %}
+
+<div class="row">
+	<div class="small-12 columns">
+
+<a class="button small" href="{% url 'ontologies:index' %}">Home (back to list of all lists or ontologies)</a>
+
+
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+Title or ID:
+<h1>{{ ontologies.title|default:ontologies.id }}</h1>
+
+	{% if ontologies.uri %}
+
+	URI: {{ ontologies.uri }}
+
+	{% endif %}
+
+	{% if ontologies.file.name %}
+
+	File: {{ ontologies.file.name }}
+
+	{% endif %}
+
+
+
+	{% if ontologies.description %}
+
+	{{ ontologies.description }}
+
+	{% endif %}
+
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+<h3>Actions</h3>
+
+<a class="button" href="{% url 'ontologies:update' ontologies.id %}">Edit settings</a>
+
+<a class="button" href="{% url 'ontologies:apply_ontology' ontologies.id %}">Apply ontology</a></li>
+
+
+
+	</div>
+</div>
+
+{% endblock content %}

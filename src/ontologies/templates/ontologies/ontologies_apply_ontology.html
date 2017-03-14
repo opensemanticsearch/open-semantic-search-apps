@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+	<div class="small-12 columns">
+<p>Ontology applied.</p>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+<a class="button" href="{% url 'ontologies:detail' id %}">Back to dataset details</a>
+	</div>
+</div>
+
+{% endblock content %}
