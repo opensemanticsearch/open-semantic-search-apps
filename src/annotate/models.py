@@ -4,7 +4,6 @@ from django.core.urlresolvers import reverse
 from thesaurus.models import Concept
 
 
-
 class Annotation(models.Model):
 
 	uri = models.CharField(max_length=1000)
@@ -14,7 +13,6 @@ class Annotation(models.Model):
 	notes = models.TextField(blank = True)
 
 	tags = models.ManyToManyField(Concept, blank=True)
-
 
 	def __unicode__(self):
 		

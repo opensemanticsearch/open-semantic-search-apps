@@ -60,54 +60,6 @@
 {% endif %}
 	
 	
-	
-	{% if annotation.persons.all %}
-<h2>Persons</h2>
-		<div class="panel">
-
-	<ul>
-		{% for person in annotation.persons.all %}
-
-		<li>{{ person }}</li>
-	
-		{% endfor %}
-	</ul>
-	</div>
-{% endif %}
-	
-	
-	{% if annotation.organizations.all %}
-
-<h2>Organizations</h2>
-		<div class="panel">
-
-	<ul>
-		{% for organization in annotation.organizations.all %}
-
-		<li>{{ organization }}</li>
-	
-		{% endfor %}
-	</ul>
-</div>	
-{% endif %}
-	
-
-{% if annotation.locations.all %}
-<h2>Locations</h2>
-		<div class="panel">
-
-	<ul>
-		{% for location in annotation.locations.all %}
-
-		<li>{{ location }}</li>
-	
-		{% endfor %}
-	</ul>
-</div>	
-{% endif %}
-	
-	
-	
 {% if annotation.notes %}
 	<h2>Notes</h2>
 			<div class="panel">

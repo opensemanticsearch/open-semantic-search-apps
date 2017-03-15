@@ -20,11 +20,9 @@ from rdflib import Graph, Literal, BNode, Namespace, RDF, URIRef
 
 # apply annotations to search index
 def export_to_index(uri):
-			
-	# todo: delete delta
-	
+
 	# apply annotation to index, do it by ETL so its generic than Solr API)
-	api.views.enrich(plugins='enhance_rdf', uri=uri)
+	api.views.enrich(plugins='enhance_rdf_annotations_by_http_request', uri=uri)
 
 
 class AnnotationForm(ModelForm):
@@ -150,18 +148,7 @@ def rdf(request):
 			g.add( ( URIRef(annotation.uri), URIRef("http://localhost/metawiki/index.php/Special:URIResolver/Property-3ANotes"), Literal(annotation.notes) ) )
 
 		for tag in annotation.tags.all():
-			g.add( ( URIRef(annotation.uri), URIRef("http://localhost/metawiki/index.php/Special:URIResolver/Property-3ATag"), Literal(tag.label) ) )
-
-		for tag in annotation.persons.all():
-			g.add( ( URIRef(annotation.uri), URIRef("http://localhost/metawiki/index.php/Special:URIResolver/Property-3APerson"), Literal(tag.label) ) )
-
-		for tag in annotation.organizations.all():
-			g.add( ( URIRef(annotation.uri), URIRef("http://localhost/metawiki/index.php/Special:URIResolver/Property-3AOrganization"), Literal(tag.label) ) )
-
-		for tag in annotation.locations.all():
-			g.add( ( URIRef(annotation.uri), URIRef("http://localhost/metawiki/index.php/Special:URIResolver/Property-3ALocation"), Literal(tag.label) ) )
-		
-	
+			g.add( ( URIRef(annotation.uri), URIRef("http://localhost/metawiki/index.php/Special:URIResolver/Property-3ATag"), Literal(tag.prefLabel) ) )
 
 	status = HttpResponse(g.serialize( format='xml' ) )
 	status["Content-Type"] = "application/rdf+xml" 
