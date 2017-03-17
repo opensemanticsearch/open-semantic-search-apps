@@ -1,0 +1,6 @@
+#
+# cron-jobs for Open Semantic Search Apps
+#
+
+# RSS Feeds import
+*/1 * * * *     opensemanticetl curl --silent http://localhost/search-apps/rss_manager/import
