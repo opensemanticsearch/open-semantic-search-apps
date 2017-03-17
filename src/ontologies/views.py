@@ -58,7 +58,7 @@ def create_ontology(request):
 		if form.is_valid():
 			ontology = form.save()
 
-			write_named_entities_config()
+			write_named_entities_config(request=request)
 
 			return HttpResponseRedirect( reverse('ontologies:detail', args=[ontology.pk]) ) # Redirect after POST
 
@@ -84,7 +84,7 @@ def update_ontology(request, pk):
 		if form.is_valid():
 			form.save()
 
-			write_named_entities_config()
+			write_named_entities_config(request=request)
 
 			return HttpResponseRedirect( reverse('ontologies:detail', args=[pk])) # Redirect after POST
 		
@@ -347,6 +347,12 @@ def write_facet_config():
 $cfg['facets']['{}'] = array ('label'=>'{}');
 """.format(	facet.facet.encode('utf-8'), facet.label.encode('utf-8')	)	)
 
+	# if not there, add default facet tag_ss
+	if not "tag_ss" in facets_done:
+		configfile.write(	"""
+$cfg['facets']['tag_ss'] = array ('label'=>'Tags');
+"""	)
+
 	# add facets of ontolgoies
 	for ontology in Ontologies.objects.all():
 
@@ -445,7 +451,7 @@ def get_contenttype_and_encoding(filename):
 
 # Todo: Do the same for thesaurus manager entries (better in its own module) via append and using this write named_entites config?
 
-def	write_named_entities_config():
+def	write_named_entities_config(request):
 
 	solr_config_path = "/var/solr/data/core1/conf/named_entities"
 	
