@@ -12,6 +12,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.shortcuts import redirect
 import django.core.urlresolvers
+import os.path
 
 from models import Concept, Alternate, Hidden, Group, GroupTag, ConceptTag, Facet, Broader, Narrower, Related
 
@@ -105,8 +106,6 @@ def update_concept(request, pk):
 		broader_formset = BroaderFormSet(instance=concept, prefix="broader")
 		narrower_formset = NarrowerFormSet(instance=concept, prefix="narrower")
 		related_formset = RelatedFormSet(instance=concept, prefix="related")
-
-
 
 	return render_to_response('thesaurus/concept_form.html', 
 			{'form': concept_form, 'concept': concept, 'alternates_formset':alternates_formset, 'misspellings_formset':misspellings_formset, 'tags_formset':tags_formset, 'broader_formset':broader_formset, 'narrower_formset':narrower_formset, 'related_formset':related_formset }, context_instance=RequestContext(request) )
@@ -406,4 +405,70 @@ def tag_concept(concept):
 
 
 	return count_queries, count_tagged, log
-	
+
+
+#
+# Get labels and aliases of the concept
+#
+		
+def get_labels(concept):
+		
+		labels = []
+
+		if concept.prefLabel:
+			labels.append(concept.prefLabel)
+
+		for alternate in Alternate.objects.filter(concept = concept.id):
+			labels.append(alternate.altLabel)
+
+		for hidden in Hidden.objects.filter(concept = concept.id):
+			labels.append(alternate.hiddenLabel)
+		
+		return labels
+
+
+#
+# Write thesaurus entries to facet entities list / dictionary
+#
+
+def append_thesaurus_labels_to_dictionaries():
+	facets = []
+
+	for concept in Concept.objects.all():
+		append_concept_labels_to_dictionary(concept=concept)
+
+	if concept.facet:
+		facet= concept.facet.facet
+	else:
+		facet = "tag_ss"
+
+	if not facet in facets:
+		facets.append(facet)
+
+	return facets
+
+
+#
+# Append concept labels and aliases to dictionary of facet
+#
+
+def append_concept_labels_to_dictionary(concept):
+
+	solr_config_path = "/var/solr/data/core1/conf/named_entities"
+
+	if concept.facet:
+		facet = concept.facet.facet
+	else:
+		facet = "tag_ss"
+
+	dict_filename = solr_config_path + os.path.sep + 'tmp_' + facet + '.txt'
+
+	labels = get_labels(concept)
+
+	# append to dictionary file	
+	dict_file = open(dict_filename, 'a')
+
+	for label in labels:
+		dict_file.write(label.encode('UTF-8') + "\n")
+
+	dict_file.close()

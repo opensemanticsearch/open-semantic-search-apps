@@ -10,7 +10,9 @@ from django.contrib import messages
 
 from models import Ontologies
 
+import thesaurus.views
 from thesaurus.models import Facet
+from thesaurus.models import Concept
 
 from etl.enhance_extract_text_tika_server import enhance_extract_text_tika_server
 import etl.export_solr
@@ -449,8 +451,6 @@ def get_contenttype_and_encoding(filename):
 # Write entities to lists and add lists to Solr schema config
 #
 
-# Todo: Do the same for thesaurus manager entries (better in its own module) via append and using this write named_entites config?
-
 def	write_named_entities_config(request):
 
 	solr_config_path = "/var/solr/data/core1/conf/named_entities"
@@ -498,6 +498,16 @@ def	write_named_entities_config(request):
 			print ("Error: Exception while importing ontology {}".format(ontology))
 			messages.add_message( request, messages.ERROR, "Error: Exception while importing ontology {}".format(ontology) )
 
+	
+	#
+	# Write thesaurus entries to facet entities list / dictionary
+	#
+	
+	thesaurus_facets = thesaurus.views.append_thesaurus_labels_to_dictionaries()
+	for thesaurus_facet in thesaurus_facets:
+		if not thesaurus_facet in facets:
+			facets.append(thesaurus_facet)
+	
 	# Move new and complete facet file to destination
 	for facet in facets:
 		
