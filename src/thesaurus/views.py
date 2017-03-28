@@ -432,18 +432,20 @@ def get_labels(concept):
 #
 
 def append_thesaurus_labels_to_dictionaries():
+
 	facets = []
 
 	for concept in Concept.objects.all():
+		
 		append_concept_labels_to_dictionary(concept=concept)
 
-	if concept.facet:
-		facet= concept.facet.facet
-	else:
-		facet = "tag_ss"
-
-	if not facet in facets:
-		facets.append(facet)
+		if concept.facet:
+			facet= concept.facet.facet
+		else:
+			facet = "tag_ss"
+	
+		if not facet in facets:
+			facets.append(facet)
 
 	return facets
 
