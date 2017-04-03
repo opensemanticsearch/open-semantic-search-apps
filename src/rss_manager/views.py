@@ -1,6 +1,15 @@
 from django.shortcuts import render
+from django.shortcuts import render
+from django.shortcuts import render_to_response
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse
+from django.template import RequestContext
+from django.views import generic
+from django.forms import ModelForm
+from django.http import HttpResponseRedirect
+from django.contrib import messages
 from django.utils import timezone
-from django.http import HttpResponse 
+
 
 import datetime
 from datetime import timedelta
@@ -9,8 +18,98 @@ from etl.tasks import index_rss
 
 from models import RSS_Feed
 
+
+class RSSFeedForm(ModelForm):
+
+	class Meta:
+		model = RSS_Feed
+		fields = '__all__'
+
+class IndexView(generic.ListView):
+	model = RSS_Feed
+
+class DetailView(generic.DetailView):
+	model = RSS_Feed
+
+class CreateView(generic.CreateView):
+	model = RSS_Feed
+
+class UpdateView(generic.UpdateView):
+	model = RSS_Feed
+
+
 #
-# add feeds to queue if last import before delta time
+# New/additional feed
+#
+
+def create_feed(request):
+
+	if request.method == 'POST':
+
+		form = RSSFeedForm(request.POST, request.FILES)
+
+
+		if form.is_valid():
+			print "form valid"
+			feed = form.save()
+
+			return HttpResponseRedirect( reverse('rss_manager:detail', args=[feed.pk]) ) # Redirect after POST
+
+	else:
+		form = RSSFeedForm()
+
+	return render_to_response('rss_manager/rss_feed_form.html', 
+			{'form': form,	}, context_instance=RequestContext(request) )
+	
+
+#
+# Updated an feed
+#
+
+def update_feed(request, pk):
+
+	feed = RSS_Feed.objects.get(pk=pk)
+	
+	if request.POST:
+		
+		form = RSSFeedForm(request.POST, request.FILES, instance=feed)
+		
+		if form.is_valid():
+			form.save()
+
+			return HttpResponseRedirect( reverse('rss_manager:detail', args=[pk])) # Redirect after POST
+		
+			pass
+	else:
+		form = RSSFeedForm(instance=feed)
+
+	return render_to_response('rss_manager/rss_feed_form.html', 
+			{'form': form, 'feed': feed }, context_instance=RequestContext(request) )
+
+
+#
+# Add feed to queue
+# So a worker will download/read the feed and import/download all new articles
+#
+
+def import_feed(request, pk):
+
+	feed = RSS_Feed.objects.get(pk=pk)
+	
+	# add to queue
+	last_imported = datetime.datetime.now()
+	index_rss.delay(uri=feed.uri)
+
+	# save new timestamp
+	feed.last_imported = last_imported
+	feed.save()
+
+	
+	return render(request, 'rss_manager/rss_feed_import.html', {'id': pk,})
+
+
+#
+# Add all feeds to queue where last import was before configured delta time of the feed
 #
 
 def import_feeds(request):
@@ -28,9 +127,11 @@ def import_feeds(request):
 		if verbose:
 			log.append( "Checking delta time of feed: {}".format(feed) ) 
 
+
 		add_to_queue = True
 
-		# If delta time, do not import this feed in within this time
+
+		# If delta time, do not import this feed within this time by setting add_to_queue to false
 		if feed.delta and feed.last_imported:
 
 			# when next import allowed (because time delta passed)?

@@ -1,0 +1,18 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+<div class="row">
+	<div class="small-12 columns">
+<p>Feeds added to queue.</p>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+<a class="button" href="{% url 'rss_manager:index' %}">Back</a>
+	</div>
+</div>
+
+{% endblock content %}

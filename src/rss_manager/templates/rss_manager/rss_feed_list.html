@@ -1,0 +1,55 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+<br>
+	
+<ul class="breadcrumbs"><li><a href="{% url 'rss_manager:index' %}">RSS Newsfeeds</a></li>
+
+ <li class="current"><a href="#">All RSS Newsfeeds</a></li> 
+  </ul>
+
+<h1>Newsfeeds</h1>
+<p>RSS newsfeeds for import of news</p>
+
+<a class="button" href="{% url 'rss_manager:import_feeds' %}">Check feeds for news</a>
+
+<a class="button" href="{% url 'rss_manager:create' %}">Add new RSS Feed</a>
+
+
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="small-12 columns">
+<h2>All RSS newsfeeds</h2>
+
+
+
+{% if rss_feed_list %}
+    <ul>
+    {% for rss_feed in rss_feed_list %}
+        <li><h2><a href="{% url 'rss_manager:detail' rss_feed.id %}">{{ rss_feed.title|default:rss_feed }}</a></h2>
+            <a class="button small" href="{% url 'rss_manager:import_feed' rss_feed.id %}">Check for news</a>
+            <a class="button small" href="{% url 'rss_manager:detail' rss_feed.id %}">Details</a>
+            <a class="button small" href="{% url 'rss_manager:update' rss_feed.id %}">Edit settings</a>
+
+        </li>
+    
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No feeds yet.</p>
+{% endif %}
+
+
+	</div>
+</div>
+
+
+{% endblock content %}

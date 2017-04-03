@@ -1,0 +1,51 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+<div class="row">
+	<div class="small-12 columns">
+
+<a class="button small" href="{% url 'rss_manager:index' %}">Feeds (back to list of all newsfeeds)</a>
+
+
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+Title or ID:
+<h1>{{ rss_feed.title|default:rss_feed.id }}</h1>
+
+	{% if rss_feed.uri %}
+
+	URI: {{ rss_feed.uri }}
+
+	{% endif %}
+
+
+	{% if rss_feed.description %}
+
+	{{ rss_feed.description }}
+
+	{% endif %}
+
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+<h3>Actions</h3>
+
+<a class="button" href="{% url 'rss_manager:update' rss_feed.id %}">Edit settings</a>
+
+<a class="button" href="{% url 'rss_manager:import_feed' rss_feed.id %}">Import news</a></li>
+
+
+
+	</div>
+</div>
+
+{% endblock content %}
