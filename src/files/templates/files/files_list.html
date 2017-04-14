@@ -1,0 +1,55 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+<br>
+	
+<ul class="breadcrumbs"><li><a href="{% url 'datasources:index' %}">Datasources</a></li>
+
+ <li class="current"><a href="#">Paths</a></li> 
+  </ul>
+
+<h1>Files or directories</h1>
+<p>Files or file directories for indexing</p>
+
+<a class="button" href="{% url 'files:recrawl' %}">Check files</a>
+
+<a class="button" href="{% url 'files:create' %}">Add new file or directory</a>
+
+
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="small-12 columns">
+<h2>All websites</h2>
+
+
+
+{% if files_list %}
+    <ul>
+    {% for file in files_list %}
+        <li><h2><a href="{% url 'files:detail' file.id %}">{{ file.title|default:file }}</a></h2>
+            <a class="button small" href="{% url 'files:crawl' file.id %}">Index now</a>
+            <a class="button small" href="{% url 'files:detail' file.id %}">Details</a>
+            <a class="button small" href="{% url 'files:update' file.id %}">Edit settings</a>
+
+        </li>
+    
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No files or file directories yet.</p>
+{% endif %}
+
+
+	</div>
+</div>
+
+
+{% endblock content %}

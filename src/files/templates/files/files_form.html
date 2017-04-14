@@ -1,0 +1,147 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+<form {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} action="" method="post">{% csrf_token %}
+
+    {{ form.non_field_errors }}
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+{% if file.id %}
+<h1>Edit file crawler</h1>
+{% else %}
+<h1>Add crawler for file or file directory</h1>
+{% endif %}
+
+
+
+	</div>
+</div>
+
+
+
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+<dl class="tabs" data-tab>
+  <dd><a href="#panel-title">Description (optional)</a></dd>
+  <dd class="active"><a href="#panel-datasource">Path</a></dd>
+</dl>
+
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="tabs-content">
+
+  <section class="content" id="panel-title">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>Name or notes</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+<p>Not necessary, only for managing purpose</p>
+
+        {{ form.subject.errors }}
+        <label for="id_subject">Title:</label>
+        {{ form.title }}
+
+<div class="row">
+
+    <div class="small-12 medium-8 columns">
+    <h3>Notes</h3>
+        {{ form.description.errors }}
+        <label for="id_description">Description or Notes</label>
+        {{ form.description }}
+    </div>
+
+
+</div>
+
+</section>
+
+  <section class="content active" id="panel-datasource">
+
+<div class="row">
+
+	<div class="small-12 columns text-center">
+
+<h2>Path</h2>
+
+
+
+        {{ form.uri.errors }}
+        <label for="id_uri">Path or filename:</label>
+        {{ form.uri }}
+	<p>For example <i>/home/opensemanticsearch</i></p>
+
+
+<h2>Frequency (Delta time)</h2>
+
+
+
+        {{ form.delta.errors }}
+        <label for="id_delta">Delta time (minutes):</label>
+        {{ form.delta }}
+	<p><i>For example 60 minutes for recrawling the path every hour or 1440 minutes for recrawling once a day</i></p>
+
+
+    </div>
+
+
+</div>
+
+
+
+
+</section>
+
+
+
+
+
+<hr>
+
+
+<div class="row">
+    <div class="small-12 columns">
+
+<h2>Save changes</h2>
+
+    <input class="button" type="submit" value="Save" />
+
+
+
+{% if file.id %}
+    <a class="button" href="{% url 'files:detail' file.id %}">Cancel</a>
+{% else %}
+    <a class="button" href="{% url 'files:index' %}">Cancel</a>
+{% endif %}
+
+</div>
+</div>
+
+</form>
+{% endblock content %}
