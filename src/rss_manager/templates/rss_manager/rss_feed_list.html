@@ -8,15 +8,16 @@
 
 <br>
 	
-<ul class="breadcrumbs"><li><a href="{% url 'rss_manager:index' %}">RSS Newsfeeds</a></li>
-
+<ul class="breadcrumbs">
+<li><a href="{% url 'datasources:index' %}">Datasources</a></li>
+<li><a href="{% url 'rss_manager:index' %}">RSS Newsfeeds</a></li>
  <li class="current"><a href="#">All RSS Newsfeeds</a></li> 
   </ul>
 
 <h1>Newsfeeds</h1>
 <p>RSS newsfeeds for import of news</p>
 
-<a class="button" href="{% url 'rss_manager:import_feeds' %}">Check feeds for news</a>
+<a class="button" href="{% url 'rss_manager:import_feeds' %}">Check feeds</a>
 
 <a class="button" href="{% url 'rss_manager:create' %}">Add new RSS Feed</a>
 

@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -50,7 +49,6 @@ def create_feed(request):
 
 
 		if form.is_valid():
-			print "form valid"
 			feed = form.save()
 
 			return HttpResponseRedirect( reverse('rss_manager:detail', args=[feed.pk]) ) # Redirect after POST
@@ -145,8 +143,8 @@ def import_feeds(request):
 					add_to_queue = False
 
 			if verbose:
-				log.append( "Last import: {}".format(feed.last_imported) )
-				log.append( "Next import: {}".format(next_import) ) 
+				log.append( "Last addition to queue: {}".format(feed.last_imported) )
+				log.append( "Next addition to queue: {}".format(next_import) ) 
 
 
 		if add_to_queue:
