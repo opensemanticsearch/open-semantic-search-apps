@@ -1,0 +1,18 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+<div class="row">
+	<div class="small-12 columns">
+<p>Website added to queue.</p>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+<a class="button" href="{% url 'crawler:detail' id %}">Back to dataset details</a>
+	</div>
+</div>
+
+{% endblock content %}

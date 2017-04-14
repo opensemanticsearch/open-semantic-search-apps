@@ -1,0 +1,55 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+<br>
+	
+<ul class="breadcrumbs"><li><a href="{% url 'datasources:index' %}">Datasources</a></li>
+
+ <li class="current"><a href="#">Websites</a></li> 
+  </ul>
+
+<h1>Websites</h1>
+<p>Websites for indexing</p>
+
+<a class="button" href="{% url 'crawler:recrawl' %}">Check websites</a>
+
+<a class="button" href="{% url 'crawler:create' %}">Add new Website</a>
+
+
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="small-12 columns">
+<h2>All websites</h2>
+
+
+
+{% if crawler_list %}
+    <ul>
+    {% for crawler in crawler_list %}
+        <li><h2><a href="{% url 'crawler:detail' crawler.id %}">{{ crawler.title|default:crawler }}</a></h2>
+            <a class="button small" href="{% url 'crawler:crawl' crawler.id %}">Index now</a>
+            <a class="button small" href="{% url 'crawler:detail' crawler.id %}">Details</a>
+            <a class="button small" href="{% url 'crawler:update' crawler.id %}">Edit settings</a>
+
+        </li>
+    
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No crawlers yet.</p>
+{% endif %}
+
+
+	</div>
+</div>
+
+
+{% endblock content %}
