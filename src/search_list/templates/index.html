@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+{% load static from staticfiles %}
+
+{% block content %}
+
+
+{% if rowcount %}
+	<link rel="stylesheet" href="{% static "tablesaw/tablesaw.css" %}">
+    <script>
+    /* grunticon Stylesheet Loader | https://github.com/filamentgroup/grunticon | (c) 2012 Scott Jehl, Filament Group, Inc. | MIT license. */
+    window.grunticon=function(e){if(e&&3===e.length){var t=window,n=!(!t.document.createElementNS||!t.document.createElementNS("http://www.w3.org/2000/svg","svg").createSVGRect||!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Image","1.1")||window.opera&&-1===navigator.userAgent.indexOf("Chrome")),o=function(o){var r=t.document.createElement("link"),a=t.document.getElementsByTagName("script")[0];r.rel="stylesheet",r.href=e[o&&n?0:o?1:2],a.parentNode.insertBefore(r,a)},r=new t.Image;r.onerror=function(){o(!1)},r.onload=function(){o(1===r.width&&1===r.height)},r.src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="}};
+	    grunticon(["{% static "tablesaw/icons/icons.data.svg.css" %}", "{% static "tablesaw/icons/icons.data.png.css" %}", "{% static "tablesaw/icons/icons.fallback.css" %}"]);
+	</script>
+    <noscript><link href="{% static "tablesaw/icons/icons.fallback.css" %}" rel="stylesheet"></noscript>
+	<script src="{% static "tablesaw/tablesaw.js" %}"></script>
+
+<a class="button" href="">New search (reset query)</a>
+
+{% if error_messages %}
+<h1>Errors</h1>
+<ul>
+{% for error in error_messages %}
+<li>{{ error }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+
+<h1>Search-List results</h1>
+<p>Searched for {{ rowcount }} entries with the following search strategies:</p>
+
+
+<div data-magellan-expedition="fixed">
+	<dl class="sub-nav">
+	<dd data-magellan-arrival="phrase"><a href="#phrase">Phrase</a></dd>
+	<dd data-magellan-arrival="near"><a href="#near">Phrase but words in between</a></dd>
+	<dd data-magellan-arrival="and"><a href="#and">All words (AND)</a></dd>
+	<dd data-magellan-arrival="similar_and"><a href="#similar_and">All words similar</a></dd>
+	<dd data-magellan-arrival="or"><a href="#or">Some words (OR)</a></dd>
+	<dd data-magellan-arrival="similar_or"><a href="#similar_or">Some similar words</a></dd>
+	</dl>
+</div>
+
+<a name="phrase"></a>
+<h2 data-magellan-destination="phrase">Phrase found</h2>
+<p><i>Exact match of the whole phrase</i></p>
+{% if results %}
+<p><i>All words found exact in this order and without other words in between</i></p>
+
+<p>Results for {{ found }} entries of {{ rowcount }} searched entries</p>
+
+<table class="tablesaw-swipe" data-mode="swipe" data-sortable data-minimap data-sortable-switch>
+<thead>
+<th data-sortable-col>Query</th><th data-sortable-col>Results</th>
+</thead>
+<tbody>
+{% for result, values in results.items %}
+<tr>
+<td>{{ result }}</td>
+<td><a target="_blank" href="{{ uri_search }}{{ values.link }}">{{ values.count }}</a></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% else %}
+<p>No results</p>
+{% endif %}
+
+
+
+<a name="near"></a>
+<h2 data-magellan-destination="near">Phrase found with some words in between</h2>
+<p><i>All words found in document in exactly this order but some (max 10) words in between</i></p>
+
+{% if results_near %}
+
+<p>Results for {{ found_near }} entries of {{ rowcount }} searched entries</p>
+
+<table class="tablesaw-swipe" data-mode="swipe" data-sortable data-minimap data-sortable-switch>
+<thead>
+<th data-sortable-col>Query</th><th data-sortable-col>Results</th><th data-sortable-col>Best score</th>
+</thead>
+<tbody>
+{% for result, values in results_near.items %}
+<tr>
+<td>{{ result }}</td>
+<td><a target="_blank" href="{{ uri_search }}{{ values.link }}">{{ values.count }}</a></td>
+<td>{{ values.maxscore }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% else %}
+<p>No results</p>
+{% endif %}
+
+
+
+<a name="and"></a>
+<h2 data-magellan-destination="and">All words found</h2>
+<p><i>Maybe matching (all words found in document but not the phrase in exactly this order)</i></p>
+
+{% if results_and %}
+
+<p>Results for {{ found_and }} entries of {{ rowcount }} searched entries</p>
+
+<table class="tablesaw-swipe" data-mode="swipe" data-sortable data-minimap data-sortable-switch>
+<thead>
+<th data-sortable-col>Query</th><th data-sortable-col>Results</th><th data-sortable-col>Best score</th>
+</thead>
+<tbody>
+{% for result, values in results_and.items %}
+<tr>
+<td>{{ result }}</td>
+<td><a target="_blank" href="{{ uri_search }}{{ values.link }}">{{ values.count }}</a></td>
+<td>{{ values.maxscore }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% else %}
+<p>No results</p>
+{% endif %}
+
+
+
+
+<a name="similar_and"></a>
+<h2 data-magellan-destination="similar_and">Similar words found for all words</h2>
+{% if results_similar_and %}
+<p><i>Similar words all found in document. Sort for descending score to see the most similar first.</i></p>
+<p>Results for {{ found_similar_and }} entries of {{ rowcount }} searched entries</p>
+
+<table class="tablesaw-swipe" data-mode="swipe" data-sortable data-sortable-switch>
+<thead>
+<th data-sortable-col>Query</th><th data-sortable-col>Results</th><th data-sortable-col>Best score</th>
+</thead>
+<tbody>
+{% for result, values in results_similar_and.items %}
+<tr>
+<td>{{ result }}</td>
+<td><a target="_blank" href="{{ uri_search }}{{ values.link }}">{{ values.count }}</a></td>
+<td>{{ values.maxscore }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% else %}
+<p>No results</p>
+{% endif %}
+
+
+<a name="or"></a>
+<h2 data-magellan-destination="or">Only some words found</h2>
+{% if results_or %}
+<p><i>Some words found in document. Sort for descending score to see the most similar first.</i></p>
+<p>Results for {{ found_or }} entries of {{ rowcount }} searched entries</p>
+<table class="tablesaw-swipe" data-mode="swipe" data-sortable data-sortable-switch>
+<thead>
+<th data-sortable-col>Query</th><th data-sortable-col>Results</th><th data-sortable-col>Best score</th>
+</thead>
+<tbody>
+{% for result, values in results_or.items %}
+<tr>
+<td>{{ result }}</td>
+<td><a target="_blank" href="{{ uri_search }}{{ values.link }}">{{ values.count }}</a></td>
+<td>{{ values.maxscore }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% else %}
+<p>No results</p>
+{% endif %}
+
+
+
+<a name="similar_or"></a>
+<h2 data-magellan-destination="similar_or">Some similar words found</h2>
+{% if results_similar_or %}
+
+<p><i>Some words found in document, some of them only similar. Sort for descending score to see the most similar first.</i></p>
+<p>Results for {{ found_similar_or }} entries of {{ rowcount }} searched entries</p>
+
+<table class="tablesaw-swipe" data-mode="swipe" data-sortable data-sortable-switch>
+<thead>
+<th data-sortable-col>Query</th><th data-sortable-col>Results</th><th data-sortable-col>Best score</th>
+</thead>
+<tbody>
+{% for result, values in results_similar_or.items %}
+<tr>
+<td>{{ result }}</td>
+<td><a target="_blank" href="{{ uri_search }}{{ values.link }}">{{ values.count }}</a></td>
+<td>{{ values.maxscore }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<p>No results</p>
+{% endif %}
+
+<hr/>
+
+{% endif %}
+
+
+
+<h1>Search with a list</h1>
+<p>Check for each entry if there are search results</p>
+
+<form action="" method="post">{% csrf_token %}
+
+
+
+    <div class="fieldWrapper">
+        <label for="id_list">List:</label>
+        {{ form.list }}
+        {{ form.list.errors }}
+
+    </div>
+
+
+<input class="button" type="submit" value="Search for each list entry" />
+
+
+<div class="row">
+
+
+    <div class="small-12 medium-8 columns">
+
+
+        
+        <h3>Fuzzy search</h3>
+		<p>Each list entry / line will be searched with following search strategies:</p>
+			
+		<div>
+        {{ form.do_find_phrase }}
+        <label for="id_do_find_phrase" title="Used search operators: &quot;open source&quot;">Full phrase exact in this order</label>
+        
+        </div>
+        
+		<div>
+        {{ form.do_find_near }}
+        <label for="id_do_find_near" title="Used search operators: &quot;open source&quot;~10">All words in this order but some words in between</label>
+        </div>
+        
+        
+		<div>
+        {{ form.do_find_and }}
+        <label for="id_do_find_and" title="Used search operators: open AND source">All words in document, but not the searched phrase</label>
+        </div>
+        
+        
+		<div>
+        {{ form.do_find_or }}
+        <label for="id_do_find_or" title="Used search operators: open OR source">Some or most words matching, but not all</label>
+        </div>
+
+        
+		<div>
+        {{ form.do_find_similar_and }}
+        <label for="id_do_find_similar_and" title="Used search operators: open~ AND source~">Similar words for all words</label>
+        </div>
+        
+		<div>
+        {{ form.do_find_similar_or }}
+        <label for="id_do_find_similar_or" title="Used search operators: open~ OR source~">Some or most similar words</label>
+        </div>
+        
+		<p>Searching with fuzzy search will take more time, but will find similar results, too - which often are exactly what you search for but it can not be found by exact matching i.e. because of typos or if a part of a company name like the suffix <i>Ltd.</i> is missing in some documents but is part of your search query. Or you want to find documents even if some chars were recognized wrong while automatic textrecognition (OCR) of scans.</p>
+
+		<p>There will be a result list for each type of the activated searches</p>
+
+		<p>Each additional search type will exclude all results from (better matching but not finding all) activated types/queries before.</p>
+		<p>Mouse over to see the used search operators for the list entry example <i>open source</i>.</p>
+		
+	</div>
+
+
+
+    <div class="small-12 medium-4 columns">
+    
+	
+	<h3>Filter query</h3>
+		<div>
+        {{ form.filterquery.errors }}
+        <label for="id_filterquery">Additional filter query:</label>
+        {{ form.filterquery }}
+<p>Results have to match this additional query part, too. So its not enough to match only the search entry of the list.</p>
+<p>I.e. for filtering with additional criterias like a path, person or project name. Or to search only in some documents or data.</p>
+    	</div>
+    	
+    	
+    </div>
+
+
+
+
+    <div class="small-12 medium-4 columns">
+    
+	
+	<h3>Ignore words</h3>
+		<div>
+        {{ form.stopwords.errors }}
+        <label for="id_stopwords">Ignore this words in every list entry:</label>
+        {{ form.stopwords }}
+<p>I.e. name parts like "Ltd." because not so important for matching but not contained in every searched document, which in this case would not match.</p>
+    	</div>
+
+    	
+    	
+    </div>
+
+
+</div>
+
+</form>
+
+</div>
+{% endblock content %}
