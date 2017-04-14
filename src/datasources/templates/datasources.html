@@ -1,0 +1,49 @@
+{% extends "datasources_base.html" %}
+{% load static from staticfiles %}
+
+{% block content %}
+
+
+
+{% if error_messages %}
+<h1>Errors</h1>
+<ul>
+{% for error in error_messages %}
+<li>{{ error }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if count %}
+<h1>Imported pages</h1>
+<p>Imported {{ count }} pages</p>
+
+<a class="button" href="">New import (reset query)</a>
+
+
+{% endif %}
+
+<h1>Index datasource(s) regulary</h1>
+
+<p>If you want to (re)index file directories or web pages on a regular base, add it persistent using the manager apps on the topbar for crawling of files systems or web pages.</p>
+
+<h1>Index file(s) or web page(s) once</h1>
+<p>Index an file or webpage only once.</p>
+
+
+<form action="" method="post">{% csrf_token %}
+
+
+
+    <div class="fieldWrapper">
+        <label for="id_list">URL or list of URLs:</label>
+        {{ form.list }}
+        {{ form.list.errors }}
+
+    </div>
+<input class="button" type="submit" value="Import" />
+
+
+</form>
+
+{% endblock content %}
