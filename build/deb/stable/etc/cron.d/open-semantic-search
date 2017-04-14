@@ -4,3 +4,9 @@
 
 # RSS Feeds import
 */1 * * * *     opensemanticetl curl --silent http://localhost/search-apps/rss_manager/import
+
+# Webcrawler
+*/1 * * * *     opensemanticetl curl --silent http://localhost/search-apps/crawler/recrawl
+
+# File crawler
+*/1 * * * *     opensemanticetl curl --silent http://localhost/search-apps/files/recrawl
