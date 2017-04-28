@@ -1,0 +1,39 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+<div class="row">
+	<div class="small-12 columns">
+<h1>Add new</h1>
+<a class="button" href="{% url 'csv_manager:create' %}">Add new CSV table</a>
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="small-12 columns">
+<h1>Existing CSV tables</h1>
+
+{% if csv_manager_list %}
+    <ul>
+    {% for csv_manager in csv_manager_list %}
+        <li><h2><a href="{% url 'csv_manager:detail' csv_manager.id %}">{{ csv_manager.title|default:csv_manager.id }}</a></h2>
+            <a class="button small" href="{% url 'csv_manager:detail' csv_manager.id %}">Details</a>
+            <a class="button small" href="{% url 'csv_manager:update' csv_manager.id %}">Edit settings</a>
+            <a class="button small" href="{% url 'csv_manager:preview_csv' csv_manager.id %}">Preview data formated with this CSV settings</a>
+			<a class="button small" href="{% url 'csv_manager:index_csv' csv_manager.id %}">Import to Solr now</a></li>
+
+        </li>
+    
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No CSV are available.</p>
+{% endif %}
+
+
+	</div>
+</div>
+
+
+{% endblock content %}

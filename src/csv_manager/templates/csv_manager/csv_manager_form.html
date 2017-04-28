@@ -1,0 +1,309 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+<form {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} action="" method="post">{% csrf_token %}
+
+    {{ form.non_field_errors }}
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+<h1>Edit meta and format data of the CSV table</h1>
+
+
+	</div>
+</div>
+
+
+
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+<dl class="tabs" data-tab>
+  <dd><a href="#panel-title">Description</a></dd>
+  <dd class="active" title="URI or Upload"><a href="#panel-datasource">Datasource</a></dd>
+  <dd><a href="#panel-format">Format (charset &amp; dialect)</a></dd>
+  <dd><a href="#panel-mapping">Column names (field mapping)</a></dd>
+  <dd title="Exclude parts like content lines (content parts) or columns (datafields)"><a href="#panel-exclude">Exclude</a></dd>
+</dl>
+
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="tabs-content">
+
+  <section class="content" id="panel-title">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>Name or notes</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+<p>Not necessary, only for managing purpose</p>
+
+        {{ form.subject.errors }}
+        <label for="id_subject">Title:</label>
+        {{ form.title }}
+
+<div class="row">
+
+    <div class="small-12 columns">
+    <h3>Notes</h3>
+        {{ form.description.errors }}
+        <label for="id_description">Description or Notes</label>
+        {{ form.description }}
+    </div>
+
+</div>
+
+</section>
+
+  <section class="content active" id="panel-datasource">
+
+<div class="row">
+
+	<div class="small-12 columns text-center">
+
+<h2>Datasource (CSV file)</h2>
+<p>Set an URI (Reference) or upload a csv file</p>
+	</div>
+
+</div>
+
+<div class="row">
+
+    <div class="small-12 medium-5 columns">
+	<h3>Reference</h3>
+	<p>Reference to existing file or external web resource:</p>
+        {{ form.uri.errors }}
+        <label for="id_uri">URI:</label>
+        {{ form.uri }}
+	For example <i>file:///dirname/filename.csv</i> for local files or <i>http://www.data.domain/data.csv</i> for a web resource
+
+    </div>
+
+    <div class="small-12 medium-2 columns text-center">
+	OR
+	</div>
+    <div class="small-12 medium-5 columns">
+<h3>Upload</h3>
+<p>Upload a csv file</p>
+        {{ form.file.errors }}
+        <label for="id_file">File:</label>
+        {{ form.file }}
+    </div>
+
+
+</div>
+
+</section>
+  <section class="content" id="panel-format">
+
+<div class="row">
+
+    <div class="small-12 columns text-center">
+
+<h2>Format</h2>
+
+<p>Leave empty for default settings (Excel dialect)<br />
+Or enable autodetection (which often will not detect the right options)<br />
+And / or set and overwrite (some) options manually</p>
+
+</div>
+
+    <div class="small-12 medium-6 columns">
+<h3>Charset</h3>
+
+        {{ form.sniff_encoding.errors }}
+        {{ form.sniff_encoding }}
+        <label for="id_sniff_encoding">Encoding autodetection (analyze data and guess format)</label>
+
+		<p>Or set other charset manually:</p>
+
+        {{ form.codec.errors }}
+        <label for="id_codec">Charset:</label>
+        {{ form.codec }}
+    <p>Leave empty and disable autodetection for modern, universal and international default (UTF-8) or if needet (because autodetection or this default UTF-8 results to corrupted data espacially on special chars) try with older charsets:</p>
+    <p>For example iso8859-15 for former western european or german standard or cp1252 for western european standard encoded with windows)</p>
+    </div>
+
+
+    <div class="small-12 medium-6 columns">
+<h3>CSV dialect</h3>
+
+        {{ form.sniff_dialect.errors }}
+        {{ form.sniff_dialect }}
+        <label for="id_sniff_dialect">Automatic detection of CSV dialect (analyze data and guess format)</label>
+<p>Most CSV are standard format and the sniffer often does not autodetect quoted content with multiple lines, so try without autodetection first.</p>
+
+<p>All following settings will overwrite standard settings or automatically detected or guessed values:</p>
+
+<h4>Delimiter</h4>
+        {{ form.delimiter.errors }}
+        <label for="id_delimiter">Delimiter char:</label>
+        {{ form.delimiter }}
+<p>Leave empty for default , (comma) or set to ; (semikolon) or another char used as delimiter</p>
+
+
+        {{ form.delimiter_is_tab.errors }}
+        {{ form.delimiter_is_tab }}
+        <label for="id_delimiter_is_tab">Use tabulator as delimiter</label>
+<p>If this CSV (comma seperated values) is a TSV (tab seperated values)</p>
+
+<h4>Quotechar</h4>
+        {{ form.quotechar.errors }}
+        <label for="id_quotechar">Quote char:</label>
+        {{ form.quotechar }}
+<p>Leave empty for default " or set to another char used as quotechar (i.e. if a field contains a text with more than one line the next line shound not be considered as new row if in quote chars)</p>
+
+        {{ form.escapechar.errors }}
+        <label for="id_escapechar">Escape char:</label>
+        {{ form.escapechar }}
+<p>Leave empty for none or set to another char like \ used as escapeechar)</p>
+
+        {{ form.doublequote.errors }}
+        {{ form.doublequote }}
+        <label for="id_doublequote">Use doublequote instead of escape char</label>
+<p>Quote chars inside quotes are masked by doubling the quote char</p>
+
+
+
+    </div>
+
+
+</div>
+
+</section>
+
+
+<section class="content" id="panel-mapping">
+
+<div class="row">
+
+
+    <div class="small-12 columns text-center">
+
+<h2>Column titles and field mapping</h2>
+<p>If you dont want the columns named "Column 1", "Column 2" ... map custom titles:</p>
+</div>
+    <div class="small-12 medium-6 columns">
+    <h3>Extract titles from row in CSV</h3>
+        {{ form.title_row.errors }}
+        <label for="id_description">Title row:</label>
+        {{ form.title_row }}
+        <p>Leave 0 if no title row. Or set to the line number where to find titles (1 if titles are in the first line, 2 if titles stored in the second line...)</p>
+    </div>
+
+
+
+    <div class="small-12 medium-6 columns">
+
+<h3>Header offset</h3>
+
+        {{ form.start_row.errors }}
+        <label for="id_description">First data row:</label>
+        {{ form.start_row }}
+        <p>First line of data. Leave empty or set to 1 if no titles (only data and beginning at first line), or set to 2 for data beginning at the second line (if first line titles) or to a higher value, if there is a longer header</p>
+    </div>
+
+</div>
+
+
+</section>
+
+
+
+
+<section class="content" id="panel-exclude">
+
+<div class="row">
+
+
+    <div class="small-12 columns text-center">
+
+<h2>Include or exclude parts</h2>
+
+<p>Settings to import only parts of the CSV spreadsheet.</p>
+
+<p>Leave empty to import all columns of all lines (default).</p>
+</div>
+
+    <div class="small-12 medium-6 columns">
+    <h3>Rows (Lines or data sets)</h3>
+
+
+        {{ form.rows_include.errors }}
+        {{ form.rows_include }}
+        <label for="id_rows_include">Include only defined rows or lines instead of exclude them</label>
+
+        {{ form.rows.errors }}
+        <label for="id_rows">Lines / rows:</label>
+        {{ form.rows }}
+        <p>List (delimited by comma or new lines) of row / line numbers (content parts)</p>
+    </div>
+
+
+
+    <div class="small-12 medium-6 columns">
+    <h3>Columns / Fields (single data fields of each dataset, line or row)</h3>
+
+        {{ form.cols_include.errors }}
+        {{ form.cols_include }}
+        <label for="id_cols_include">Include only defined columns instead of exclude them</label>
+
+
+        {{ form.cols.errors }}
+        <label for="id_cols">Columns:</label>
+        {{ form.cols }}
+        <p>List (delimited by comma or new lines) of column numbers (concerning all lines)</p>
+    </div>
+
+</section>
+
+
+
+
+</div>
+
+<hr>
+
+
+<div class="row">
+    <div class="small-12 columns">
+
+<h2>Save changes</h2>
+
+    <input class="button" type="submit" value="Save" />
+
+
+
+{% if csvmanager.id %}
+    <a class="button" href="{% url 'csv_manager:detail' csvmanager.id %}">Cancel</a>
+{% else %}
+    <a class="button" href="{% url 'csv_manager:index' %}">Cancel</a>
+{% endif %}
+
+</div>
+</div>
+
+</form>
+{% endblock content %}
