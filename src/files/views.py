@@ -95,7 +95,7 @@ def crawl(request, pk):
 	
 	# add to queue
 	last_imported = datetime.datetime.now()
-	index_file.delay(uri=file.uri)
+	index_file.delay(filename=file.uri)
 
 	# save new timestamp
 	file.last_imported = last_imported
@@ -153,7 +153,7 @@ def recrawl(request):
 
 			# add to queue
 			last_imported = datetime.datetime.now()
-			index_file.delay(uri=file.uri)
+			index_file.delay(filename=file.uri)
 
 			# save new timestamp
 			file.last_imported = last_imported
