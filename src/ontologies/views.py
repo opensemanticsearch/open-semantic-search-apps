@@ -457,9 +457,9 @@ def	write_named_entities_config(request):
 	
 	facets = []
 
-	synoynms_configfilename = solr_config_path + os.path.sep + 'synonyms.txt'
+	synonyms_configfilename = solr_config_path + os.path.sep + 'synonyms.txt'
 	
-	tmp_synoynms_configfilename = solr_config_path + os.path.sep + 'tmp_synonyms.txt'
+	tmp_synonyms_configfilename = solr_config_path + os.path.sep + 'tmp_synonyms.txt'
 
 	# create named entities configs for all ontologies
 	for ontology in Ontologies.objects.all():
@@ -527,7 +527,7 @@ def	write_named_entities_config(request):
 			messages.add_message( request, messages.ERROR, "Error: Exception while importing ontology {}".format(ontology) )
 
 	# Write thesaurus entries to facet entities list / dictionary
-	thesaurus_facets = thesaurus.views.append_thesaurus_labels_to_dictionaries(tmp_synoynms_configfilename)
+	thesaurus_facets = thesaurus.views.append_thesaurus_labels_to_dictionaries(tmp_synonyms_configfilename)
 
 	# add facets used in thesaurus but not yet in an ontology to facet config
 	for thesaurus_facet in thesaurus_facets:
@@ -542,7 +542,7 @@ def	write_named_entities_config(request):
 		os.rename(tmplistfilename, listfilename)
 
 	# Move temp synonyms config file to destination
-	os.rename(tmp_synoynms_configfilename, synoynms_configfilename)
+	os.rename(tmp_synonyms_configfilename, synonyms_configfilename)
 	
 	# Create config for schema.xml include for all facets
 	configfilename = solr_config_path + os.path.sep + 'schema_named_entities.xml'
@@ -555,4 +555,3 @@ def	write_named_entities_config(request):
 	# so added config files / ontolgies / facets / new dictionary entries will be considered by analyzing/indexing new documents
 	# Todo: Use the Solr URI from config
 	urllib.urlretrieve('http://localhost:8983/solr/admin/cores?action=RELOAD&core=core1')
-	
