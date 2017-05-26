@@ -13,6 +13,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 import django.core.urlresolvers
 import os.path
+import solr_ontology_tagger
 
 from models import Concept, Alternate, Hidden, Group, GroupTag, ConceptTag, Facet, Broader, Narrower, Related
 
@@ -431,13 +432,13 @@ def get_labels(concept):
 # Write thesaurus entries to facet entities list / dictionary
 #
 
-def append_thesaurus_labels_to_dictionaries():
+def append_thesaurus_labels_to_dictionaries(synoynms_configfilename):
 
 	facets = []
 
 	for concept in Concept.objects.all():
 		
-		append_concept_labels_to_dictionary(concept=concept)
+		append_concept_labels_to_dictionary(concept=concept, synoynms_configfilename=synoynms_configfilename)
 
 		if concept.facet:
 			facet= concept.facet.facet
@@ -454,7 +455,9 @@ def append_thesaurus_labels_to_dictionaries():
 # Append concept labels and aliases to dictionary of facet
 #
 
-def append_concept_labels_to_dictionary(concept):
+# Todo: Write aliases to synonyms config file
+
+def append_concept_labels_to_dictionary(concept, synonyms_configfile):
 
 	solr_config_path = "/var/solr/data/core1/conf/named_entities"
 
@@ -474,3 +477,6 @@ def append_concept_labels_to_dictionary(concept):
 		dict_file.write(label.encode('UTF-8') + "\n")
 
 	dict_file.close()
+
+	# append to synoynms config file	
+	solr_ontology_tagger.append_labels_to_synonyms_configfile(labels, synoynms_configfilename)
