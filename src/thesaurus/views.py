@@ -457,7 +457,7 @@ def append_thesaurus_labels_to_dictionaries(synoynms_configfilename):
 
 # Todo: Write aliases to synonyms config file
 
-def append_concept_labels_to_dictionary(concept, synonyms_configfile):
+def append_concept_labels_to_dictionary(concept, synoynms_configfilename):
 
 	solr_config_path = "/var/solr/data/core1/conf/named_entities"
 
