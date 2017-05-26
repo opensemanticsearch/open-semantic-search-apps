@@ -174,13 +174,13 @@ def tag_by_ontology(ontology):
 	
 	if contenttype == 'application/rdf+xml':
 
-		ontology_tagger = OntologyTagger()		
+		ontology_tagger = OntologyTagger()
 
 		#load graph from RDF file
 		ontology_tagger.parse(filename)
 
 		# tag the documents on Solr server with all matching entities of the ontology	
-		ontology_tagger.tag_documents(target_facet=facet)
+		ontology_tagger.apply(target_facet=facet)
 
 	elif contenttype.startswith('text/plain'):
 		tag_by_list(filename=filename, field=facet, encoding=encoding)
@@ -243,7 +243,7 @@ def append_from_txtfile(sourcefilename, targetfilename, encoding='UTF-8'):
 
 
 #
-# Read labels from RDF and append to list/dictionary to another
+# Read labels from RDF and append to list/dictionary
 #
 
 def append_from_rdffile(sourcefilename, targetfilename):
@@ -291,7 +291,7 @@ def if_not_exist_create_empty_list(targetfilename):
 # Write Solr config to extract entries of generated lists/dictionaries to configured facets
 #
 
-def write_solr_config(configfilename, facets):
+def write_solr_schema_config(configfilename, facets):
 	
 	configfile = open(configfilename, 'w')
 
@@ -457,6 +457,14 @@ def	write_named_entities_config(request):
 	
 	facets = []
 
+	synoynms_configfilename = solr_config_path + os.path.sep + 'synonyms.txt'
+	
+	# create temp synonyms config file
+	tmp_synoynms_configfilename = solr_config_path + os.path.sep + 'tmp_synonyms.txt'
+	configfile = open(tmp_synoynms_configfilename, 'w')
+	configfile.close()
+
+	# create named entities configs for all ontologies
 	for ontology in Ontologies.objects.all():
 		
 		try:
@@ -464,21 +472,44 @@ def	write_named_entities_config(request):
 		
 			# Download, if URI
 			is_tempfile, filename = get_ontology_file(ontology)
-							
+			
 			facet = get_facetname(ontology)
 		
 			# analyse content type & encoding
 			contenttype, encoding = get_contenttype_and_encoding(filename)
 			
+			#
 			# export entries to listfiles
+			#
 			
 			tmplistfilename = solr_config_path + os.path.sep + 'tmp_' + facet + '.txt'
 			
 			if contenttype=='application/rdf+xml':
+
+				# todo: move to solr-ontology-tagger so we have to load the ontology only once
 				append_from_rdffile(sourcefilename=filename, targetfilename=tmplistfilename)
+
+
+				#
+				# write synonyms config file
+				#
+
+				ontology_tagger = OntologyTagger()
+
+				#load graph from RDF file
+				ontology_tagger.parse(filename)
+
+				# don't tag documents in index, now we want only write the synonyms config
+				ontology_tagger.solr = False
+				
+				# append synonyms to Solr config file
+				ontology_tagger.synonyms_configfile = tmp_synoynms_filename
+				
+				# write synonyms config file
+				ontology_tagger.apply()
+
 				
 			elif contenttype.startswith('text/plain'):
-	
 				append_from_txtfile(sourcefilename=filename, targetfilename=tmplistfilename, encoding=encoding)
 				
 			else:
@@ -498,27 +529,28 @@ def	write_named_entities_config(request):
 			print ("Error: Exception while importing ontology {}".format(ontology))
 			messages.add_message( request, messages.ERROR, "Error: Exception while importing ontology {}".format(ontology) )
 
-	
-	#
 	# Write thesaurus entries to facet entities list / dictionary
-	#
-	
 	thesaurus_facets = thesaurus.views.append_thesaurus_labels_to_dictionaries()
+
+	# add facets used in thesaurus but not yet in an ontology to facet config
 	for thesaurus_facet in thesaurus_facets:
 		if not thesaurus_facet in facets:
 			facets.append(thesaurus_facet)
-	
+
 	# Move new and complete facet file to destination
 	for facet in facets:
 		
 		tmplistfilename = solr_config_path + os.path.sep + 'tmp_' + facet + '.txt'
 		listfilename = solr_config_path + os.path.sep + facet + '.txt'
 		os.rename(tmplistfilename, listfilename)
-		
+
+	# Move temp synonyms config file to destination
+	os.rename(tmp_synoynms_configfilename, synoynms_configfilename)
+	
 	# Create config for schema.xml include for all facets
 	configfilename = solr_config_path + os.path.sep + 'schema_named_entities.xml'
-	write_solr_config(configfilename, facets)
-
+	write_solr_schema_config(configfilename, facets)
+	
 	# Create config for UI
 	write_facet_config()
 	
