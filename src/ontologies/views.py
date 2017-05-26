@@ -459,10 +459,7 @@ def	write_named_entities_config(request):
 
 	synoynms_configfilename = solr_config_path + os.path.sep + 'synonyms.txt'
 	
-	# create temp synonyms config file
 	tmp_synoynms_configfilename = solr_config_path + os.path.sep + 'tmp_synonyms.txt'
-	configfile = open(tmp_synoynms_configfilename, 'w')
-	configfile.close()
 
 	# create named entities configs for all ontologies
 	for ontology in Ontologies.objects.all():
@@ -503,7 +500,7 @@ def	write_named_entities_config(request):
 				ontology_tagger.solr = False
 				
 				# append synonyms to Solr config file
-				ontology_tagger.synonyms_configfile = tmp_synoynms_filename
+				ontology_tagger.synonyms_configfile = tmp_synonyms_configfilename
 				
 				# write synonyms config file
 				ontology_tagger.apply()
@@ -530,7 +527,7 @@ def	write_named_entities_config(request):
 			messages.add_message( request, messages.ERROR, "Error: Exception while importing ontology {}".format(ontology) )
 
 	# Write thesaurus entries to facet entities list / dictionary
-	thesaurus_facets = thesaurus.views.append_thesaurus_labels_to_dictionaries()
+	thesaurus_facets = thesaurus.views.append_thesaurus_labels_to_dictionaries(tmp_synoynms_configfilename)
 
 	# add facets used in thesaurus but not yet in an ontology to facet config
 	for thesaurus_facet in thesaurus_facets:
