@@ -397,7 +397,7 @@ def tag_concept(concept):
 		searchquery, searchquery_parameters = build_searchquery(label=hidden.hiddenLabel, query=hidden.query, querytype=hidden.query_type)
 
 		count_queries += 1
-		count = connector.update_by_query(query=searchquery, queryparameters=searchquery_parameters, data=tagdata, verbose=verbose)
+		count = connector.update_by_query(query=searchquery, queryparameters=searchquery_parameters, data=tagdata)
 
 		if count:
 			count_tagged += count
