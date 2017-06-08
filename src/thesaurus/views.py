@@ -423,7 +423,7 @@ def get_labels(concept):
 			labels.append(alternate.altLabel)
 
 		for hidden in Hidden.objects.filter(concept = concept.id):
-			labels.append(alternate.hiddenLabel)
+			labels.append(hidden.hiddenLabel)
 		
 		return labels
 
