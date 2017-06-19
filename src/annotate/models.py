@@ -14,7 +14,7 @@ class Annotation(models.Model):
 
 	tags = models.ManyToManyField(Concept, blank=True)
 
-	def __unicode__(self):
+	def __str__(self):
 		
 		name = self.uri
 		
@@ -26,10 +26,5 @@ class Annotation(models.Model):
 	
 		return name
 
-	def __str__(self):
-		return unicode(self).encode('utf-8')
-
 	def get_absolute_url(self):
 		return reverse('annotate:detail', kwargs={'pk': self.pk})
-
-

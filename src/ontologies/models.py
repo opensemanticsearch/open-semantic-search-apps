@@ -30,7 +30,7 @@ class Ontologies(models.Model):
 	# - tables (which columns of excel list or ?
 	# - stemming
 
-	def __unicode__(self):
+	def __str__(self):
 
 		if self.title:
 			label=self.title

@@ -8,7 +8,7 @@ from django.forms import ModelForm
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 
-from models import Ontologies
+from ontologies.models import Ontologies
 
 import thesaurus.views
 from thesaurus.models import Facet
@@ -187,7 +187,7 @@ def tag_by_ontology(ontology):
 	
 	else:
 		# create empty list so configs of field in schema.xml pointing to this file or in facet config of UI will not break
-		print "Unknown format {}".format(contenttype)
+		print ( "Unknown format {}".format(contenttype) )
 					#
 	# Delete if downloaded ontology by URL to tempfile
 	#
@@ -205,10 +205,9 @@ def tag_by_list(filename, field, encoding='utf-8'):
 
 	# open and read plaintext file line for line
 
-	file = open(filename)
+	file = open(filename, encoding=encoding)
 
 	for line in file:
-		line = line.decode(encoding)
 		
 		value = line.strip()
 	
@@ -229,14 +228,14 @@ def tag_by_list(filename, field, encoding='utf-8'):
 # Append entries/lines from an list/dictionary to another
 #
 
-def append_from_txtfile(sourcefilename, targetfilename, encoding='UTF-8'):
+def append_from_txtfile(sourcefilename, targetfilename, encoding='utf-8'):
 	
-	source = open(sourcefilename, 'r')
-	target = open(targetfilename, 'a')
+	source = open(sourcefilename, 'r', encoding=encoding)
+	target = open(targetfilename, 'a', encoding="utf-8")
 
 	for line in source:
 		if line:
-			target.write(line.decode(encoding).encode('UTF-8'))
+			target.write(line)
 
 	source.close()
 	target.close()
@@ -248,7 +247,7 @@ def append_from_txtfile(sourcefilename, targetfilename, encoding='UTF-8'):
 
 def append_from_rdffile(sourcefilename, targetfilename):
 
-	target = open(targetfilename, 'a')
+	target = open(targetfilename, 'a', encoding="utf-8")
 
 	g = Graph()
 	
@@ -260,22 +259,22 @@ def append_from_rdffile(sourcefilename, targetfilename):
 
 	# get all RDFS labels
 	for o in g.objects(None, RDFS.label):
-		target.write(o.encode('UTF-8') + '\n')
+		target.write(o + '\n')
 
 	# SKOS labels
 	skos = rdflib.Namespace('http://www.w3.org/2004/02/skos/core#')
 		
 	# append SKOS prefLabel
 	for o in g.objects(None, skos['prefLabel']):
-		target.write(o.encode('UTF-8') + '\n')
+		target.write(o + '\n')
 
 	# append SKOS altLabels
 	for o in g.objects(None, skos['altLabel']):
-		target.write(o.encode('UTF-8') + '\n')
+		target.write(o + '\n')
 
 	# append SKOS hiddenLabels
 	for o in g.objects(None, skos['hiddenLabel']):
-		target.write(o.encode('UTF-8') + '\n')
+		target.write(o + '\n')
 
 	target.close()
 
@@ -293,7 +292,7 @@ def if_not_exist_create_empty_list(targetfilename):
 
 def write_solr_schema_config(configfilename, facets):
 	
-	configfile = open(configfilename, 'w')
+	configfile = open(configfilename, 'w', encoding="utf-8")
 
 	for facet in facets:
 
@@ -312,11 +311,11 @@ def write_solr_schema_config(configfilename, facets):
     <filter class="solr.LowerCaseFilterFactory"/>
   </analyzer>
 </fieldType>""".format(
-					facet.encode('utf-8'),
-					facet.encode('utf-8'),
-					facet.encode('utf-8'),
-					facet.encode('utf-8'),
-					facet.encode('utf-8')
+					facet,
+					facet,
+					facet,
+					facet,
+					facet
 					)
 	)
 	
@@ -334,10 +333,8 @@ def write_facet_config():
 	
 	configfilename = '/etc/solr-php-ui/config.facets.php'
 	
-	configfile = open(configfilename, 'w')
- 	configfile.write("""<?php
-// do not config here, this config file will be overwritten by Thesaurus and Ontologies Manager
-""")
+	configfile = open(configfilename, 'w', encoding="utf-8")
+	configfile.write("<?php\n// do not config here, this config file will be overwritten by Thesaurus and Ontologies Manager\n")
 
 	facets_done=[]
 
@@ -345,15 +342,11 @@ def write_facet_config():
 	for facet in Facet.objects.all():
 		facets_done.append(facet.facet)
 		
-		configfile.write(	"""
-$cfg['facets']['{}'] = array ('label'=>'{}');
-""".format(	facet.facet.encode('utf-8'), facet.label.encode('utf-8')	)	)
+		configfile.write(	"\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format(	facet.facet, facet.label	)	)
 
 	# if not there, add default facet tag_ss
 	if not "tag_ss" in facets_done:
-		configfile.write(	"""
-$cfg['facets']['tag_ss'] = array ('label'=>'Tags');
-"""	)
+		configfile.write(	"\n$cfg['facets']['tag_ss'] = array ('label'=>'Tags');\n"	)
 
 	# add facets of ontolgoies
 	for ontology in Ontologies.objects.all():
@@ -364,10 +357,8 @@ $cfg['facets']['tag_ss'] = array ('label'=>'Tags');
 		
 			facets_done.append(facet)
 			
-		 	configfile.write("""
-$cfg['facets']['{}'] = array ('label'=>'{}');
-""".format(	facet.encode('utf-8'), 	ontology.__unicode__().encode('utf-8')	)	)
-	
+			configfile.write("\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format(	facet, 	ontology	)	)
+
 	configfile.write('?>')
 	
 	configfile.close()
@@ -440,9 +431,9 @@ def get_contenttype_and_encoding(filename):
 		# get charset if plain text file to extract with right charset
 		if 'encoding_s' in data:
 			encoding=data['encoding_s']
-			print "Detected encoding: {}".format(encoding)
+			print ( "Detected encoding: {}".format(encoding) )
 		else:
-			encoding = 'UTF-8'
+			encoding = 'utf-8'
 
 		return contenttype, encoding
 
@@ -465,7 +456,7 @@ def	write_named_entities_config(request):
 	for ontology in Ontologies.objects.all():
 		
 		try:
-			print "Importing Ontology or List {} (ID: {})".format( ontology, ontology.id )
+			print ("Importing Ontology or List {} (ID: {})".format( ontology, ontology.id ) )
 		
 			# Download, if URI
 			is_tempfile, filename = get_ontology_file(ontology)
@@ -511,7 +502,7 @@ def	write_named_entities_config(request):
 				
 			else:
 				# create empty list so configs of field in schema.xml pointing to this file or in facet config of UI will not break
-				print "Unknown format {}".format(contenttype)
+				print ( "Unknown format {}".format(contenttype) )
 				if_not_exist_create_empty_list(targetfilename=tmplistfilename)
 	
 			# remember each new facet for which there a list has been created so we can later write all this facets to schema.xml config part
@@ -554,4 +545,4 @@ def	write_named_entities_config(request):
 	# Reload/restart Solr core / schema / config to apply changed configs
 	# so added config files / ontolgies / facets / new dictionary entries will be considered by analyzing/indexing new documents
 	# Todo: Use the Solr URI from config
-	urllib.urlretrieve('http://localhost:8983/solr/admin/cores?action=RELOAD&core=core1')
+	urllib.request.urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=core1')

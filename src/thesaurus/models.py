@@ -11,30 +11,30 @@ query_type_chooices = (
 
 # Facet / field / property
 class Facet(models.Model):
-
+	
 	uri = models.CharField(max_length=1000, blank=True)
-
+	
 	label = models.CharField(max_length=255)
 	facet = models.CharField(max_length=255)
-
-	def __unicode__(self):
+	
+	def __str__(self):
 		
 		name = self.label
 		if not name:
 			name = self.facet
-
+		
 		return name
 
 
 class Group(models.Model):
 	
 	parent = models.ForeignKey('Group', blank=True, null=True)
-
+	
 	prefLabel = models.CharField(max_length=1000, blank=True)
 	
 	facet = models.ForeignKey(Facet, blank=True, null=True)
-
-	def __unicode__(self):
+	
+	def __str__(self):
 		return self.title
 	
 	def tags(self):
@@ -46,8 +46,8 @@ class GroupTag(models.Model):
 	group = models.ForeignKey(Group)
 	facet = models.ForeignKey(Facet, null=True)
 	prefLabel = models.CharField(max_length=1000, blank=True)
-
-	def __unicode__(self):
+	
+	def __str__(self):
 		return self.facet.prefLabel + ': ' + self.prefLabel
 
 
@@ -58,59 +58,56 @@ class Concept(models.Model):
 	
 	prefLabel = models.CharField(max_length=1000, blank=True)
 	lang = models.CharField(max_length=3, blank=True)
-
+	
 	note = models.TextField(blank = True)
 	definition = models.TextField(blank = True)
 	example = models.TextField(blank = True)
-
+	
 	query = models.CharField(max_length=1000, blank=True)
-
+	
 	query_type = models.CharField(max_length=6,
                                       choices=query_type_chooices,
                                       default='PHRASE')
-
+	
 	facet = models.ForeignKey(Facet, blank=True, null=True)
 	
 	groups = models.ManyToManyField(Group, blank=True, null=True)
-
+	
 	delta = models.IntegerField(default=0, null=True, blank=True)
 	last_run = models.DateTimeField(null=True, blank=True)
 	
-	def __unicode__(self):
+	def __str__(self):
 		
 		name = self.prefLabel
 		
 		if not name:
 			name = self.query
-
+		
 		if not name:
 			name = self.id
-	
+		
 		return name
-
-	def __str__(self):
-		return unicode(self).encode('utf-8')
-
+	
 	def alternates(self):
 		return Alternate.objects.filter(concept=self)
-
+	
 	def hiddens(self):
 		return Hidden.objects.filter(concept=self)
-
+	
 	def broader(self):
 		return Broader.objects.filter(concept=self)
-
+	
 	def narrower(self):
 		return Narrower.objects.filter(concept=self)
-
+	
 	def related(self):
 		return Related.objects.filter(concept=self)
-
+	
 	def tags(self):
 		return ConceptTag.objects.filter(concept=self)
- 	
- 	def get_absolute_url(self):
-		return reverse('thesaurus:detail', kwargs={'pk': self.pk})
+	
+	def get_absolute_url(self):
+		return reverse( 'thesaurus:detail', kwargs={'pk': self.pk} )
 
 
 #
@@ -168,7 +165,7 @@ class Exclude(models.Model):
                                       choices=query_type_chooices,
                                       default='PHRASE')
 
-	def __unicode__(self):
+	def __str__(self):
 		
 		name = self.title
 		
@@ -180,9 +177,6 @@ class Exclude(models.Model):
 	
 		return name
 
-	def __str__(self):
-		return unicode(self).encode('utf-8')
-
 
 class ConceptTag(models.Model):
 	concept = models.ForeignKey(Concept)
@@ -191,7 +185,7 @@ class ConceptTag(models.Model):
 	
 	facet = models.ForeignKey(Facet, blank=True, null=True)
 	
-	def __unicode__(self):
+	def __str__(self):
 		return self.label
 		
 

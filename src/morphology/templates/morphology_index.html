@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static from staticfiles %}
+
+{% block content %}
+
+
+
+<a class="button" href="">New search (reset query)</a>
+
+{% if error_messages %}
+<h1>Errors</h1>
+<ul>
+{% for error in error_messages %}
+<li>{{ error }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+
+<h1>Stemming results in indexed corupus for searched words</h1>
+
+{% for result, values in results.items %}
+
+<h1>
+{{ result }}
+</h1>
+
+{% for stemmer, stemmed_values in values.items %}
+
+<h2>
+{{stemmer}}
+</h2>
+
+
+{% for stemmed in stemmed_values %}
+
+<li>{{ stemmed }}
+
+
+
+{% endfor %}
+
+{% endfor %}
+
+{% endfor %}
+
+
+
+
+<hr/>
+
+
+
+
+<h1>Search for following terms</h1>
+
+<form action="" method="post">{% csrf_token %}
+
+
+
+    <div class="fieldWrapper">
+        <label for="id_list">List:</label>
+        {{ form.list }}
+        {{ form.list.errors }}
+
+    </div>
+
+
+<input class="button" type="submit" value="Search for each list entry" />
+
+
+<div class="row">
+
+
+    <div class="small-12 medium-8 columns">
+
+
+        
+        <h3>Compounded words</h3>
+			
+		<div>
+        {{ form.prefix }}
+        <label for="prefix">Prefix</label>
+        
+        </div>
+		<div>
+        {{ form.suffix }}
+        <label for="suffix">Suffix</label>
+        
+        </div>
+        		
+	</div>
+
+
+
+    <div class="small-12 medium-4 columns">
+    
+	
+	<h3>Filter query</h3>
+		<div>
+        {{ form.filterquery.errors }}
+        <label for="id_filterquery">Additional filter query:</label>
+        {{ form.filterquery }}
+<p>Results have to match this additional query part, too. So its not enough to match only the search entry of the list.</p>
+<p>I.e. for filtering with additional criterias like a path, person or project name. Or to search only in some documents or data.</p>
+    	</div>
+    	
+    	
+    </div>
+
+
+
+
+
+</div>
+
+</form>
+
+</div>
+{% endblock content %}

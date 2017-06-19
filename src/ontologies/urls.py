@@ -2,10 +2,6 @@ from django.conf.urls import patterns, url
 
 from ontologies import views
 
-	#url(r'^(?P<pk>\d+)/preview$', 'ontologies.views.preview_csv', name='preview_csv'),
-#	url(r'^create$', views.CreateView.as_view(), name='create'),
-#	url(r'^(?P<pk>\d+)/update$', views.UpdateView.as_view(), name='update'),
-
 urlpatterns = patterns('',
     url(r'^$', views.IndexView.as_view(), name='index'),
 	url(r'^(?P<pk>\d+)/$', views.DetailView.as_view(), name='detail'),

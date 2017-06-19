@@ -15,7 +15,7 @@ from datetime import timedelta
 
 from etl.tasks import index_file
 
-from models import Files
+from files.models import Files
 
 
 class FilesForm(ModelForm):

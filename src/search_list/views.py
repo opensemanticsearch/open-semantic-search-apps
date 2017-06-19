@@ -252,7 +252,7 @@ def search_list(list, verbose=False, filterquery=None, stopwords=None, do_find_p
 				if count:
 					found[line] = { 'count': count, 'link':link }
 					if verbose:
-						print "Found " + str(count) +" for full phrase " + line
+						print ("Found " + str(count) +" for full phrase " + line)
 
 
 
@@ -275,7 +275,7 @@ def search_list(list, verbose=False, filterquery=None, stopwords=None, do_find_p
 				if count:
 					found_near[line] = { 'count': count, 'link':link, 'maxscore': maxscore, 'previews': previews }
 					if verbose:
-						print "Found " + str(count) +" for full phrase with some words in between " + line
+						print ("Found " + str(count) +" for full phrase with some words in between " + line)
 
 
 
@@ -297,7 +297,7 @@ def search_list(list, verbose=False, filterquery=None, stopwords=None, do_find_p
 					found_and[line] = {'count': count, 'link':link, 'maxscore': maxscore, 'previews': previews }
 
 					if verbose:
-						print "Maybe found (all words of phrase in document or row) " + str(count) + " for " + line
+						print ("Maybe found (all words of phrase in document or row) " + str(count) + " for " + line)
 		
 		
 		
@@ -323,7 +323,7 @@ def search_list(list, verbose=False, filterquery=None, stopwords=None, do_find_p
 				if count:
 					found_or[line] = {'count': count, 'link':link, 'maxscore': maxscore, 'previews': previews }
 					if verbose:
-						print "Maybe found (some words of phrase in document or row) " + str(count) + " for " + line
+						print ("Maybe found (some words of phrase in document or row) " + str(count) + " for " + line)
 		
 
 		
@@ -349,7 +349,7 @@ def search_list(list, verbose=False, filterquery=None, stopwords=None, do_find_p
 				if count:
 					found_similar_and[line] = {'count': count, 'link':link, 'maxscore': maxscore, 'previews': previews }
 					if verbose:
-						print "Maybe found (all words of phrase in document or row) " + str(count) + " for " + line
+						print ("Maybe found (all words of phrase in document or row) " + str(count) + " for " + line)
 		
 
 		
@@ -378,7 +378,7 @@ def search_list(list, verbose=False, filterquery=None, stopwords=None, do_find_p
 				if count:
 					found_similar_or[line] = {'count': count, 'link':link, 'maxscore': maxscore, 'previews': previews }
 					if verbose:
-						print "Maybe found (all words of phrase in document or row) " + str(count) + " for " + line
+						print ("Maybe found (all words of phrase in document or row) " + str(count) + " for " + line)
 
 		
 			except BaseException as e:

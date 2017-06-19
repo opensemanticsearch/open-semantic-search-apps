@@ -15,7 +15,7 @@ from datetime import timedelta
 
 from etl.tasks import index_web
 
-from models import Crawler
+from crawler.models import Crawler
 
 
 class CrawlerForm(ModelForm):

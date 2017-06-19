@@ -5,17 +5,15 @@ from django.http import HttpResponse
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.forms import ModelForm
-from models import Annotation
 from django.http import HttpResponse 
 from django.views import generic
 import django.forms as forms
 import api.views
 import urllib
-
-from thesaurus.models import Concept
-
-
 from rdflib import Graph, Literal, BNode, Namespace, RDF, URIRef
+
+from annotate.models import Annotation
+from thesaurus.models import Concept
 
 
 # apply annotations to search index

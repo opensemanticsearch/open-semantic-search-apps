@@ -15,7 +15,7 @@ from datetime import timedelta
 
 from etl.tasks import index_rss
 
-from models import RSS_Feed
+from rss_manager.models import RSS_Feed
 
 
 class RSSFeedForm(ModelForm):

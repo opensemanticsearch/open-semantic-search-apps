@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+
+{% load static from staticfiles %}
+
+	<link rel="stylesheet" href="{% static "css/foundation.css" %}" />
+	<script src="{% static "js/vendor/modernizr.js" %}"></script>
+
+	<script src="{% static "stdlib.js" %}"></script>
+
+</head>
+
+<body>
+<div class="row">
+{% block content %}{% endblock content %}
+</div>
+
+	<script src="{% static "js/vendor/jquery.js" %}"></script>
+	<script src="{% static "js/foundation.min.js" %}"></script>
+	<script src="{% static "js/foundation/foundation.topbar.js" %}"></script>
+	<script src="{% static "js/foundation/foundation.magellan.js" %}"></script>	
+
+	<script>
+	    $(document).foundation();
+	</script>
+</body>
+</html>

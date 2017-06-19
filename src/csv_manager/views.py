@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 
-from models import CSV_Manager
+from csv_manager.models import CSV_Manager
 from django.http import HttpResponse 
 
 from django.views import generic
@@ -99,7 +99,7 @@ def index_csv(request, pk):
 
 
 
-	# extract a list of linenumbers as integer from new line and comma seperated list (textfield)
+	# extract a list of row numbers as integer from new line and comma seperated list (textfield)
 	rows = []
 
 	for row in csvmanager.rows:
@@ -108,14 +108,14 @@ def index_csv(request, pk):
 			try:
 				rows.append( int(number) )
 			except:
-				print "Error converting string value to included line number: {}".format(number)
+				print ("Error converting string value to included line number: {}".format(number))
 	
 	parameters['rows'] = rows
 
 	parameters['rows_include'] = csvmanager.rows_include
 
 
-	# extract a list of linenumbers as integer from new line and comma seperated list (textfield)
+	# extract a list of column numbers as integer from new line and comma seperated list (textfield)
 	cols = []
 
 	for col in csvmanager.cols:
@@ -124,7 +124,7 @@ def index_csv(request, pk):
 			try:
 				cols.append( int(number) )
 			except:
-				print "Error converting string value to included line number: {}".format(number)
+				print ("Error converting string value to included line number: {}".format(number))
 	
 	parameters['cols'] = cols
 

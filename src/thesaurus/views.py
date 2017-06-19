@@ -15,7 +15,7 @@ import django.core.urlresolvers
 import os.path
 import solr_ontology_tagger
 
-from models import Concept, Alternate, Hidden, Group, GroupTag, ConceptTag, Facet, Broader, Narrower, Related
+from thesaurus.models import Concept, Alternate, Hidden, Group, GroupTag, ConceptTag, Facet, Broader, Narrower, Related
 
 from etl.export_solr import export_solr
 
@@ -269,7 +269,6 @@ def tag_concepts(request):
 
 		except:
 			message = "Error while searching or tagging the concept \"{}\"".format(concept.prefLabel)
-			print message
 			log_sum.append(message)
 		
 	# print stats
@@ -357,10 +356,10 @@ def tag_concept(concept):
 	searchquery, searchqueryparameters = build_searchquery(label=concept.prefLabel, query=concept.query, querytype=concept.query_type)
 
 	if verbose:
-		print "Search query:"
-		print searchquery
-		print "Search query parameters:"
-		print searchqueryparameters
+		print ("Search query:")
+		print (searchquery)
+		print ("Search query parameters:")
+		print (searchqueryparameters)
 
 	count_queries += 1
 
@@ -471,10 +470,10 @@ def append_concept_labels_to_dictionary(concept, synoynms_configfilename):
 	labels = get_labels(concept)
 
 	# append to dictionary file	
-	dict_file = open(dict_filename, 'a')
+	dict_file = open(dict_filename, 'a', encoding="UTF-8")
 
 	for label in labels:
-		dict_file.write(label.encode('UTF-8') + "\n")
+		dict_file.write(label + "\n")
 
 	dict_file.close()
 
