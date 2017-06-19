@@ -186,7 +186,6 @@ def search(query, filterquery=None, operator='AND', stemmers=[]):
 
 
 	for stemmer in stemmers:
-
 	
 		# todo: read Solr URI from config
 		uri = 'http://localhost:8983/solr/core1/select?df=' + stemmer +'&q.op=' + operator + '&wt=json&deftype=edismax&fl=id&limit=1000000&hl=true&hl.snippets=1000&hl.fragsize=1&hl.fl=' + stemmer
@@ -195,8 +194,12 @@ def search(query, filterquery=None, operator='AND', stemmers=[]):
 		if filterquery:
 			uri += '&fq=' + urllib.parse.quote( filterquery )
 			
+		request = urllib.request.urlopen( uri )
+		encoding = request.info().get_content_charset('utf-8')
+		data = request.read()
+		request.close()
 	
-		result = json.load( urllib.request.urlopen( uri ) )
+		result = json.loads(data.decode(encoding))
 		
 		count = result['response']['numFound']
 			
