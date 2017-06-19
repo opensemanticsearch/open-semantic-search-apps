@@ -59,7 +59,7 @@ class CSV_Manager(models.Model):
 	cols = models.TextField(blank = True)
 	cols_include = models.BooleanField(default=False)
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.uri
 	
 	def get_absolute_url(self):

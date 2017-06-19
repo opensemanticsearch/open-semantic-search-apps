@@ -16,7 +16,7 @@ class RSS_Feed(models.Model):
 	
 
 
-	def __unicode__(self):
+	def __str__(self):
 		
 		name = self.title
 		
