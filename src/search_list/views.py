@@ -101,22 +101,6 @@ def index(request):
 		return render(request, 'index.html', {'form': form,}) #!/usr/bin/python
 
 
-
-
-# try to encode to utf8
-# if failed, return raw
-def encode_utf8(text, warning=True):
-		
-	try:	
-		text = text.encode('utf-8')
-		
-	except BaseException as e:
-		if warning:
-			sys.stderr.write( "Failed encoding to utf-8, trying without\n")
-		
-	return text
-
-
 def clean_and_mask(query, operator = None, similar=False, stopwords=None):
 
 	#todo: change NOT to not because if in name it should not be interpreted as search operator
@@ -185,15 +169,19 @@ def search(query, filterquery=None, operator='AND'):
 
 	# todo: read Solr URI from config
 	uri = 'http://localhost:8983/solr/core1/select?q.op=' + operator + '&wt=json&deftype=edismax&fl=id,score&hl=true&hl.fl=*'
-	uri += '&q=' + urllib.quote( encode_utf8(query, warning=False) )
+	uri += '&q=' + urllib.parse.quote( query )
 
 	if filterquery:
-		uri += '&fq=' + urllib.quote( encode_utf8(filterquery, warning=False) )
+		uri += '&fq=' + urllib.parse.quote( filterquery )
 		
-
 	link = query
 	
-	result = json.load( urllib.urlopen( uri ) )
+	request = urllib.request.urlopen( uri )
+	encoding = request.info().get_content_charset('utf-8')
+	data = request.read().decode(encoding)
+	request.close()
+	
+	result = json.loads(data)
 
 	count = result['response']['numFound']
 	
@@ -391,6 +379,3 @@ def search_list(list, verbose=False, filterquery=None, stopwords=None, do_find_p
 
 
 	return found, found_near, found_and, found_or, found_similar_and, found_similar_or, rowcount, error_messages
-
-
-
