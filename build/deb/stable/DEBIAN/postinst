@@ -2,10 +2,10 @@
 # postinst script for webapps
 
 # export static files to directory for webserver
-python /var/lib/opensemanticsearch/manage.py collectstatic --noinput
+python3 /var/lib/opensemanticsearch/manage.py collectstatic --noinput
 
 # crate or update DB
-python /var/lib/opensemanticsearch/manage.py migrate
+python3 /var/lib/opensemanticsearch/manage.py migrate
 
 # allow Django running in apache2 context to write to DB
 chown www-data:www-data /var/lib/opensemanticsearch/db.sqlite3

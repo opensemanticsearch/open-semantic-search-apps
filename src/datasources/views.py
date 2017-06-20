@@ -1,7 +1,7 @@
 from django.http import HttpResponse 
 from django.shortcuts import render
 
-from etl.etl_web import Connector_Web
+from opensemanticetl.etl_web import Connector_Web
 
 from django import forms
 

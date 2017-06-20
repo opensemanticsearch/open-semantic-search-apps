@@ -1,9 +1,9 @@
 Package: open-semantic-search-apps
-Version: 17.03.17
+Version: 17.06.20
 Section: misc
 Priority: optional
 Architecture: all
-Depends: python-django(>= 0), python-pysolr(>= 0), python-requests(>= 0), libapache2-mod-wsgi(>=0), python-django-celery(>=0)
+Depends: python3-django(>=0), python3-pysolr(>=0), python3-requests(>=0), libapache2-mod-wsgi-py3(>=0), python3-django-celery(>=0)
 Installed-Size: 100
 Maintainer: Markus Mandalka <debian@mandalka.name>
 Homepage: http://www.opensemanticsearch.org/

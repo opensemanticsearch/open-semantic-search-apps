@@ -14,8 +14,8 @@ import thesaurus.views
 from thesaurus.models import Facet
 from thesaurus.models import Concept
 
-from etl.enhance_extract_text_tika_server import enhance_extract_text_tika_server
-import etl.export_solr
+from opensemanticetl.enhance_extract_text_tika_server import enhance_extract_text_tika_server
+import opensemanticetl.export_solr
 
 from solr_ontology_tagger import OntologyTagger
 
@@ -214,9 +214,9 @@ def tag_by_list(filename, field, encoding='utf-8'):
 		if value:
 
 			# mask line/entry for search query			
-			searchquery = "\"" + etl.export_solr.solr_mask(value) + "\""
+			searchquery = "\"" + opensemanticetl.export_solr.solr_mask(value) + "\""
 		
-			solr = etl.export_solr.export_solr()
+			solr = opensemanticetl.export_solr.export_solr()
 			
 			# tag the field/facet of all ducuments matching this query by value of entry
 			count = solr.update_by_query( searchquery, field=field, value=value)

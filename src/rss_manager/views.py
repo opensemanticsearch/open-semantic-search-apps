@@ -13,7 +13,7 @@ from django.utils import timezone
 import datetime
 from datetime import timedelta
 
-from etl.tasks import index_rss
+from opensemanticetl.tasks import index_rss
 
 from rss_manager.models import RSS_Feed
 

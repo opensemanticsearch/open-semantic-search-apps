@@ -6,10 +6,10 @@ from django.http import HttpResponse
 
 import json
 
-from etl.tasks import enrich
-from etl.tasks import index_file
-from etl.tasks import index_web
-from etl.tasks import index_rss
+from opensemanticetl.tasks import enrich
+from opensemanticetl.tasks import index_file
+from opensemanticetl.tasks import index_web
+from opensemanticetl.tasks import index_rss
 
 
 #

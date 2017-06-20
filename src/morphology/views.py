@@ -14,10 +14,6 @@ import urllib
 import json
 import os
 
-import etl.export_solr
-from etl.export_solr import export_solr
-
-
 #stemmers = ['_text_','stemmed', 'stemmed_hunspell_en']
 #stemmers = ['_text_','stemmed', 'stemmed_hunspell_de']
 stemmers = ['content','_text_','stemmed','synonyms']
@@ -196,10 +192,10 @@ def search(query, filterquery=None, operator='AND', stemmers=[]):
 			
 		request = urllib.request.urlopen( uri )
 		encoding = request.info().get_content_charset('utf-8')
-		data = request.read()
+		data = request.read().decode(encoding)
 		request.close()
 	
-		result = json.loads(data.decode(encoding))
+		result = json.loads(data)
 		
 		count = result['response']['numFound']
 			

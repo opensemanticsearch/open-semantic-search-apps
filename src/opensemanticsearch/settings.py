@@ -14,7 +14,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Add to python path so includes of ETL modules will work in Django environment
 import sys
-sys.path.append("/usr/lib/python3.5/etl")
+sys.path.append("/usr/lib/python3/dist-packages/opensemanticetl")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/

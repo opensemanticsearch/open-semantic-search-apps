@@ -14,8 +14,8 @@ import urllib
 import json
 import os
 
-import etl.export_solr
-from etl.export_solr import export_solr
+import opensemanticetl.export_solr
+from opensemanticetl.export_solr import export_solr
 
 class ListForm(forms.Form):
 	list = forms.CharField(widget=forms.Textarea)
@@ -137,7 +137,7 @@ def clean_and_mask(query, operator = None, similar=False, stopwords=None):
 
 		if not word.lower() in stopwords:
 
-			word = etl.export_solr.solr_mask(word)
+			word = opensemanticetl.export_solr.solr_mask(word)
 
 			if similar:
 				word = word + '~'

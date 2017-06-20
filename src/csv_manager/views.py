@@ -6,7 +6,7 @@ from django.http import HttpResponse
 
 from django.views import generic
 
-from etl.enhance_csv import enhance_csv
+from opensemanticetl.enhance_csv import enhance_csv
 
 import os.path
 

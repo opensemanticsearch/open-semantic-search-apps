@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse 
 from django.shortcuts import render
 
-from etl.export_solr import export_solr
+from opensemanticetl.export_solr import export_solr
 
 from django import forms
 

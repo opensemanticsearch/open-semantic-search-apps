@@ -13,7 +13,7 @@ from django.utils import timezone
 import datetime
 from datetime import timedelta
 
-from etl.tasks import index_web
+from opensemanticetl.tasks import index_web
 
 from crawler.models import Crawler
 

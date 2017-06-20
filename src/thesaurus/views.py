@@ -17,7 +17,7 @@ import solr_ontology_tagger
 
 from thesaurus.models import Concept, Alternate, Hidden, Group, GroupTag, ConceptTag, Facet, Broader, Narrower, Related
 
-from etl.export_solr import export_solr
+from opensemanticetl.export_solr import export_solr
 
 
 class ConceptForm(ModelForm):
