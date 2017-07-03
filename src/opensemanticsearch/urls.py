@@ -1,11 +1,12 @@
 from django.conf.urls import include, url
 
 from django.contrib import admin
-admin.autodiscover()
+
+from django.contrib import auth
+
 
 urlpatterns = [
 	url(r'^admin/', include(admin.site.urls)),
-	url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
 	url(r'^api/', include('api.urls', namespace="api")),
 	url(r'^crawler/', include('crawler.urls', namespace="crawler")),
 	url(r'^files/', include('files.urls', namespace="files")),
