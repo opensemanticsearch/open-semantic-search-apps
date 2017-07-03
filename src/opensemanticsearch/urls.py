@@ -1,10 +1,9 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
-
+urlpatterns = [
 	url(r'^admin/', include(admin.site.urls)),
 	url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
 	url(r'^api/', include('api.urls', namespace="api")),
@@ -19,4 +18,4 @@ urlpatterns = patterns('',
 	url(r'^csv/', include('csv_manager.urls', namespace="csv_manager")),
 	url(r'^ontologies/', include('ontologies.urls', namespace="ontologies")),
 	url(r'^morphology/', include('morphology.urls', namespace="morphology")),
-)
+]
