@@ -124,7 +124,7 @@ def edit_annotation(request):
 
 	else:
 		# no annotation for that uri, so redirect to create view
-		return HttpResponseRedirect( "{}?uri={}".format( reverse('annotate:create'), urllib.quote_plus( uri ) ) ) # Redirect after POST
+		return HttpResponseRedirect( "{}?uri={}".format( reverse('annotate:create'), urllib.parse.quote_plus( uri ) ) ) # Redirect after POST
 		
 
 
