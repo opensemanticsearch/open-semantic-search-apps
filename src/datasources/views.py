@@ -42,7 +42,7 @@ def index(request):
 						error_messages.append("Exception while ETL process of {} : {}".format( uri, str(e) ) )
 				
 
-			return render(request, 'crawl.html', 
+			return render(request, 'datasources.html', 
 				{	
 					"form": form,
 					"count": count,
