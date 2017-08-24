@@ -348,6 +348,10 @@ def write_facet_config():
 	if not "tag_ss" in facets_done:
 		configfile.write(	"\n$cfg['facets']['tag_ss'] = array ('label'=>'Tags');\n"	)
 
+	# if not there, add default facet content_type_group
+	if not "content_type_group" in facets_done:
+		configfile.write(	"\n$cfg['facets']['content_type_group'] = array ('label'=>'Content type group');\n"	)
+
 	# add facets of ontolgoies
 	for ontology in Ontologies.objects.all():
 
