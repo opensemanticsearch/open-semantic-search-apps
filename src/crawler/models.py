@@ -6,6 +6,8 @@ class Crawler(models.Model):
 
 	uri = models.CharField(max_length=1000, blank=False)
 
+	sitemap = models.CharField(max_length=1000, null=True, blank=True)
+
 	delta = models.IntegerField(default=1440)
 	
 	title = models.CharField(max_length=1000, blank=True)

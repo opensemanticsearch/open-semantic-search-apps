@@ -32,7 +32,8 @@
 
 <dl class="tabs" data-tab>
   <dd><a href="#panel-title">Description (optional)</a></dd>
-  <dd class="active"><a href="#panel-datasource">URI</a></dd>
+  <dd class="active"><a href="#panel-datasource">URL and frequency</a></dd>
+  <dd><a href="#panel-sitemap">Sitemap (optional)</a></dd>
 </dl>
 
 	</div>
@@ -64,8 +65,8 @@
 
 <p>Not necessary, only for managing purpose</p>
 
-        {{ form.subject.errors }}
-        <label for="id_subject">Title:</label>
+        {{ form.title.errors }}
+        <label for="id_title">Title:</label>
         {{ form.title }}
 
 <div class="row">
@@ -95,7 +96,7 @@
         {{ form.uri.errors }}
         <label for="id_uri">URI:</label>
         {{ form.uri }}
-	<p>For example <i>http://www.opensemanticsearch.org/feed</i></p>
+	<p>For example <i>http://www.opensemanticsearch.org/</i></p>
 
 
 <h2>Frequency (Delta time)</h2>
@@ -105,7 +106,7 @@
         {{ form.delta.errors }}
         <label for="id_delta">Delta time (minutes):</label>
         {{ form.delta }}
-	<p><i>For example 60 for checking (download) feed every hour</i></p>
+	<p><i>For example 60 for indexing every hour or 1440 for indexing daily</i></p>
 
 
     </div>
@@ -119,6 +120,28 @@
 </section>
 
 
+
+  <section class="content" id="panel-sitemap">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>Sitemap</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+<p>Index all web pages configured in sitemap.xml instead of the given URL/Homepage</p>
+
+        {{ form.sitemap.errors }}
+        <label for="id_sitemap">URL of sitemap.xml:</label>
+        {{ form.sitemap }}
+
+	</div>
+
+</section>
 
 
 
@@ -134,7 +157,7 @@
 
 
 
-{% if feed.id %}
+{% if crawler.id %}
     <a class="button" href="{% url 'crawler:detail' crawler.id %}">Cancel</a>
 {% else %}
     <a class="button" href="{% url 'crawler:index' %}">Cancel</a>

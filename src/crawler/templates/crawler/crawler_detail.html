@@ -18,9 +18,15 @@ Title or ID:
 <h1>{{ crawler.title|default:crawler.id }}</h1>
 
 	{% if crawler.uri %}
-
+	<p>
 	URI: {{ crawler.uri }}
+	</p>
+	{% endif %}
 
+	{% if crawler.sitemap %}
+	<p>
+	Sitemap: {{ crawler.sitemap }}
+	</p>
 	{% endif %}
 
 
