@@ -456,6 +456,9 @@ def	write_named_entities_config(request):
 	
 	tmp_synonyms_configfilename = solr_config_path + os.path.sep + 'tmp_synonyms.txt'
 
+	# create empty synonym config file for the case there are no synonyms in ontologies or thesaurus
+	if_not_exist_create_empty_list(tmp_synonyms_configfilename)
+
 	# create named entities configs for all ontologies
 	for ontology in Ontologies.objects.all():
 		

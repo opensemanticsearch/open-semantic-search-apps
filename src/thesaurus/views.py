@@ -451,10 +451,8 @@ def append_thesaurus_labels_to_dictionaries(synoynms_configfilename):
 
 
 #
-# Append concept labels and aliases to dictionary of facet
+# Append concept labels and aliases to dictionary of facet and write aliases to synonyms config file
 #
-
-# Todo: Write aliases to synonyms config file
 
 def append_concept_labels_to_dictionary(concept, synoynms_configfilename):
 
@@ -477,5 +475,6 @@ def append_concept_labels_to_dictionary(concept, synoynms_configfilename):
 
 	dict_file.close()
 
-	# append to synoynms config file	
-	solr_ontology_tagger.append_labels_to_synonyms_configfile(labels, synoynms_configfilename)
+	# if synonyms, append to synoynms config file
+	if len(labels) > 1:
+		solr_ontology_tagger.append_labels_to_synonyms_configfile(labels, synoynms_configfilename)
