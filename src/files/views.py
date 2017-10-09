@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.template import RequestContext
@@ -55,8 +54,8 @@ def create_file(request):
 	else:
 		form = FilesForm()
 
-	return render_to_response('files/files_form.html', 
-			{'form': form,	}, context_instance=RequestContext(request) )
+	return render(request, 'files/files_form.html', 
+			{'form': form,	} )
 	
 
 #
@@ -80,8 +79,8 @@ def update_file(request, pk):
 	else:
 		form = FilesForm(instance=file)
 
-	return render_to_response('files/files_form.html', 
-			{'form': form, 'file': file }, context_instance=RequestContext(request) )
+	return render(request, 'files/files_form.html', 
+			{'form': form, 'file': file } )
 
 
 #

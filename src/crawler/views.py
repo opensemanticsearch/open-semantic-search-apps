@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.template import RequestContext
@@ -57,8 +56,8 @@ def create_crawler(request):
 	else:
 		form = CrawlerForm()
 
-	return render_to_response('crawler/crawler_form.html', 
-			{'form': form,	}, context_instance=RequestContext(request) )
+	return render(request, 'crawler/crawler_form.html', 
+			{'form': form,	} )
 	
 
 #
@@ -82,8 +81,8 @@ def update_crawler(request, pk):
 	else:
 		form = CrawlerForm(instance=crawler)
 
-	return render_to_response('crawler/crawler_form.html', 
-			{'form': form, 'crawler': crawler }, context_instance=RequestContext(request) )
+	return render(request, 'crawler/crawler_form.html', 
+			{'form': form, 'crawler': crawler } )
 
 
 #

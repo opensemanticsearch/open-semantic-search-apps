@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.template import RequestContext
@@ -67,8 +66,8 @@ def create_ontology(request):
 	else:
 		form = OntologiesForm()
 
-	return render_to_response('ontologies/ontologies_form.html', 
-			{'form': form,	}, context_instance=RequestContext(request) )
+	return render(request, 'ontologies/ontologies_form.html', 
+			{'form': form,	} )
 	
 
 #
@@ -94,8 +93,8 @@ def update_ontology(request, pk):
 	else:
 		form = OntologiesForm(instance=ontology)
 
-	return render_to_response('ontologies/ontologies_form.html', 
-			{'form': form, 'ontology': ontology }, context_instance=RequestContext(request) )
+	return render(request, 'ontologies/ontologies_form.html', 
+			{'form': form, 'ontology': ontology } )
 
 
 #

@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.template import RequestContext
@@ -56,8 +55,8 @@ def create_feed(request):
 	else:
 		form = RSSFeedForm()
 
-	return render_to_response('rss_manager/rss_feed_form.html', 
-			{'form': form,	}, context_instance=RequestContext(request) )
+	return render(request, 'rss_manager/rss_feed_form.html', 
+			{'form': form,	} )
 	
 
 #
@@ -81,8 +80,8 @@ def update_feed(request, pk):
 	else:
 		form = RSSFeedForm(instance=feed)
 
-	return render_to_response('rss_manager/rss_feed_form.html', 
-			{'form': form, 'feed': feed }, context_instance=RequestContext(request) )
+	return render(request, 'rss_manager/rss_feed_form.html', 
+			{'form': form, 'feed': feed } )
 
 
 #

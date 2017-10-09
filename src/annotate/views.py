@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse 
 from django.template import RequestContext
@@ -69,8 +68,8 @@ def update_annotation(request, pk):
 			form = AnnotationForm(instance=annotation)
 			
 
-	return render_to_response('annotate/annotation_form.html', 
-			{'form': form, },  context_instance=RequestContext(request) )
+	return render(request, 'annotate/annotation_form.html', 
+			{'form': form, } )
 
 
 
@@ -100,8 +99,8 @@ def create_annotation(request):
 			form = AnnotationForm()
 			
 
-	return render_to_response('annotate/annotation_form.html', 
-			{'form': form, },  context_instance=RequestContext(request) )
+	return render(request, 'annotate/annotation_form.html', 
+			{'form': form, } )
 
 
 

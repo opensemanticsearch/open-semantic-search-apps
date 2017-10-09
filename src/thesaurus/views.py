@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse 
 from django.template import RequestContext
@@ -108,8 +107,8 @@ def update_concept(request, pk):
 		narrower_formset = NarrowerFormSet(instance=concept, prefix="narrower")
 		related_formset = RelatedFormSet(instance=concept, prefix="related")
 
-	return render_to_response('thesaurus/concept_form.html', 
-			{'form': concept_form, 'concept': concept, 'alternates_formset':alternates_formset, 'misspellings_formset':misspellings_formset, 'tags_formset':tags_formset, 'broader_formset':broader_formset, 'narrower_formset':narrower_formset, 'related_formset':related_formset }, context_instance=RequestContext(request) )
+	return render(request, 'thesaurus/concept_form.html',
+			{'form': concept_form, 'concept': concept, 'alternates_formset':alternates_formset, 'misspellings_formset':misspellings_formset, 'tags_formset':tags_formset, 'broader_formset':broader_formset, 'narrower_formset':narrower_formset, 'related_formset':related_formset } )
 
 
 def create_concept(request):
@@ -127,8 +126,8 @@ def create_concept(request):
 	else:
 		form = ConceptForm()
 
-	return render_to_response('thesaurus/concept_form.html', 
-			{'form': form,	},  context_instance=RequestContext(request) )
+	return render(request, 'thesaurus/concept_form.html', 
+			{'form': form,	} )
 
 
 #
