@@ -19,4 +19,7 @@ a2enmod wsgi
 # reload apache configs to enable our additional apache settings
 service apache2 restart
 
+# load our cron table
+service cron reload
+
 exit 0
