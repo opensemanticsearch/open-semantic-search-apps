@@ -13,8 +13,8 @@ import datetime
 from datetime import timedelta
 
 from opensemanticetl.tasks import index_web
+from opensemanticetl.tasks import index_sitemap
 
-from opensemanticetl.etl_sitemap import Connector_Sitemap
 
 from crawler.models import Crawler
 
@@ -97,15 +97,12 @@ def crawl(request, pk):
 	# add to queue
 	last_imported = datetime.datetime.now()
 	
-	
 	if crawler.sitemap:
 		# get sitemap and add urls to queue
-		connector = Connector_Sitemap()
-		connector.index(sitemap=crawler.sitemap)
+		index_sitemap.delay(uri=crawler.sitemap)
 	else:	
 		# add web page to queue
 		index_web.delay(uri=crawler.uri)
-
 
 	# save new timestamp
 	crawler.last_imported = last_imported
