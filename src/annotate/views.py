@@ -1,10 +1,9 @@
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse 
-from django.template import RequestContext
 from django.http import HttpResponseRedirect
+from django.template import RequestContext
 from django.forms import ModelForm
-from django.http import HttpResponse 
 from django.views import generic
 import django.forms as forms
 import api.views
@@ -90,9 +89,9 @@ def create_annotation(request):
 
 	else:
 
-		if 'uri' in	request.REQUEST:
+		if 'uri' in request.GET:
 			initials = {
-					"uri": request.REQUEST['uri']
+					"uri": request.GET['uri']
 			}
 			form = AnnotationForm(initial=initials)
 		else:
@@ -106,7 +105,7 @@ def create_annotation(request):
 
 def edit_annotation(request):
 
-	uri = request.REQUEST['uri']
+	uri = request.GET['uri']
 	
 	annotations = Annotation.objects.filter(uri=uri)
 
@@ -130,7 +129,7 @@ def edit_annotation(request):
 # serialize tags for uri to RDF graph
 def rdf(request):
 
-	uri = request.REQUEST['uri']
+	uri = request.GET['uri']
 	
 	g = Graph()
 	
