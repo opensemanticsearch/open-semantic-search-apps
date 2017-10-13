@@ -20,6 +20,6 @@ a2enmod wsgi
 service apache2 restart
 
 # load our cron table
-service cron reload
+service cron restart
 
 exit 0
