@@ -6,7 +6,9 @@ from django.template import RequestContext
 from django.forms import ModelForm
 from django.views import generic
 import django.forms as forms
-import api.views
+
+from opensemanticetl.etl_enrich import ETL_Enrich
+
 import urllib
 from rdflib import Graph, Literal, BNode, Namespace, RDF, URIRef
 
@@ -17,8 +19,14 @@ from thesaurus.models import Concept
 # apply annotations to search index
 def export_to_index(uri):
 
-	# apply annotation to index, do it by ETL so its generic than Solr API)
-	api.views.enrich(plugins='enhance_rdf_annotations_by_http_request', uri=uri)
+	etl = ETL_Enrich()
+	etl.config['plugins'] = ['enhance_rdf_annotations_by_http_request']
+
+	parameters = etl.config.copy()
+	parameters['id'] = uri
+	
+	etl.process (parameters=parameters, data={})
+	etl.commit()
 
 
 class AnnotationForm(ModelForm):
