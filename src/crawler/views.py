@@ -8,13 +8,11 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils import timezone
 
-
 import datetime
 from datetime import timedelta
 
 from opensemanticetl.tasks import index_web
 from opensemanticetl.tasks import index_sitemap
-
 
 from crawler.models import Crawler
 
@@ -92,11 +90,11 @@ def update_crawler(request, pk):
 
 def crawl(request, pk):
 
+	last_imported = datetime.datetime.now()
+
 	crawler = Crawler.objects.get(pk=pk)
 	
 	# add to queue
-	last_imported = datetime.datetime.now()
-	
 	if crawler.sitemap:
 		# get sitemap and add urls to queue
 		index_sitemap.delay(uri=crawler.sitemap)
@@ -154,16 +152,15 @@ def recrawl(request):
 
 
 		if add_to_queue:
-			
-			if verbose:
-				log.append( "Adding website to queue: {}".format(crawler) ) 
 
 			last_imported = datetime.datetime.now()
 			
+			if verbose:
+				log.append( "Adding website to queue: {}".format(crawler) ) 
+			
 			# get sitemap and add urls to queue
 			if crawler.sitemap:
-				connector = Connector_Sitemap()
-				connector.index(sitemap=crawler.sitemap)
+				index_sitemap.delay(uri=crawler.sitemap)
 			else:	
 				# add to queue
 				index_web.delay(uri=crawler.uri)
