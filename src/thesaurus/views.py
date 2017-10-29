@@ -383,7 +383,7 @@ def tag_concept(concept):
 		if count:
 			count_tagged += count
 			
-			log.append ("Tagged {} yet untagged entries containing alias \"{}\" with tags of the concept \"{}\"".format( count, alias.label, concept.title ) )
+			log.append ("Tagged {} yet untagged entries containing alias \"{}\" with tags of the concept \"{}\"".format( count, alternate.label, concept.prefLabel ) )
 
 
 	# Search aliases and tag them, too
@@ -400,7 +400,7 @@ def tag_concept(concept):
 		if count:
 			count_tagged += count
 			
-			log.append ("Tagged {} yet untagged entries containing hidden label \"{}\" with tags of the concept \"{}\"".format( count, alias.label, concept.title ) )
+			log.append ("Tagged {} yet untagged entries containing hidden label \"{}\" with tags of the concept \"{}\"".format( count, alias.label, concept.prefLabel ) )
 
 
 	return count_queries, count_tagged, log
