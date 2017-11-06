@@ -32,7 +32,8 @@
 
 <dl class="tabs" data-tab>
   <dd><a href="#panel-title">Description (optional)</a></dd>
-  <dd class="active"><a href="#panel-datasource">Datasource (URI or upload)</a></dd>
+  <dd class="active"><a href="#panel-datasource">Datasource (URL or upload)</a></dd>
+  <dd><a href="#panel-query">SPARQL query (optional)</a></dd>
   <dd><a href="#panel-facet">Target facet or target field or property (optional)</a></dd>
 </dl>
 
@@ -65,7 +66,7 @@
 
 <p>Not necessary, only for managing purpose</p>
 
-        {{ form.subject.errors }}
+        {{ form.title.errors }}
         <label for="id_subject">Title:</label>
         {{ form.title }}
 
@@ -91,8 +92,7 @@
 
 <h2>Datasource (<span title="Supported formats: An ontology (RDF, RDFS, SKOS or OWL) in RDF or Turtle format or a list as plain text file (UTF-8 encoded)">ontology or list </span> of named entities)</h2>
 
-<p>Set an Reference (URI) or upload a file</p>
-
+<p>Set an reference (URL) or upload a file</p>
 
 
 	</div>
@@ -126,6 +126,43 @@
 
 
 
+
+</section>
+
+  <section class="content" id="panel-query">
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+<p>SPARQL construct query if datasource is SPARQL endpoint</p>
+
+
+
+
+
+<div class="row">
+
+
+    <div class="small-12 columns">
+	<h3>SPARQL endpoint</h3>
+        {{ form.sparql_endpoint.errors }}
+        <label for="id_sparql_endpoint">SPARQL endpoint (server URL):</label>
+        {{ form.sparql_endpoint }}
+	<p>For example <i>https://query.wikidata.org/sparql</i></p>
+
+    </div>
+
+    <div class="small-12 columns">
+    <h3>SPARQL Query</h3>
+        {{ form.sparql_query.errors }}
+        <label for="id_sparql_query">SPARQL construct query</label>
+        {{ form.sparql_query }}
+    </div>
+
+
+</div>
 
 </section>
 

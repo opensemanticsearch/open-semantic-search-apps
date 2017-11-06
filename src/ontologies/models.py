@@ -17,6 +17,10 @@ class Ontologies(models.Model):
 
 	facet = models.ForeignKey(Facet, blank=True, null=True)
 
+	sparql_endpoint = models.CharField(max_length=16000, blank = True)
+
+	sparql_query = models.TextField(blank = True)
+
 	do_stemming = models.BooleanField(blank=True, default=True)
 
 	exclude_uri = models.CharField(max_length=16000, blank = True)

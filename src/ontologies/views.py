@@ -19,6 +19,7 @@ import opensemanticetl.export_solr
 from solr_ontology_tagger import OntologyTagger
 
 import os.path
+import tempfile
 
 import urllib
 
@@ -129,6 +130,32 @@ def apply_ontology(request, pk):
 
 
 #
+# Download graph from SPARQL endpoint
+#
+
+def download_rdf_from_sparql_endpoint(endpoint, query):
+
+	from SPARQLWrapper import SPARQLWrapper, XML
+
+	# read graph by construct query results from SPARQL endpoint
+	sparql = SPARQLWrapper(endpoint)
+	sparql.setQuery(query)
+	sparql.setReturnFormat(XML)
+	results = sparql.query().convert()
+
+	# crate temporary filename
+	file = tempfile.NamedTemporaryFile()
+	filename = file.name
+	file.close()
+
+	# export graph to RDF file
+	results.serialize(destination=filename, format="xml")
+
+
+	return filename
+
+
+#
 # Get local file(name) of the ontology
 #
 
@@ -140,15 +167,18 @@ def get_ontology_file(ontology):
 	is_tempfile = False
 
 	if os.path.isfile(ontology.file.name):
+
 		filename = ontology.file.name
-		
+
+	elif ontology.sparql_endpoint:
+
+		is_tempfile = True
+		filename = download_rdf_from_sparql_endpoint(ontology.sparql_endpoint, ontology.sparql_query)
+
 	elif ontology.uri.startswith('file://'):
 
 		# filename is file URI without protocol prefix file://
-		localfilename = ontology.uri[len('file://'):]
-
-		if os.path.isfile(localfilename):
-			filename = localfilename
+		filename = ontology.uri[len('file://'):]
 
 	else:
 		# Download url to an tempfile

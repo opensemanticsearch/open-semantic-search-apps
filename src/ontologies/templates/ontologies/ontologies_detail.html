@@ -17,7 +17,15 @@
 Title or ID:
 <h1>{{ ontologies.title|default:ontologies.id }}</h1>
 
+	{% if ontologies.description %}
+	<h2>Description</h2>
+
+	{{ ontologies.description }}
+
+	{% endif %}
+
 	{% if ontologies.uri %}
+	<h2>URL</h2>
 
 	URI: {{ ontologies.uri }}
 
@@ -25,17 +33,27 @@ Title or ID:
 
 	{% if ontologies.file.name %}
 
+	<h2>Uploaded file</h2>
+
 	File: {{ ontologies.file.name }}
 
 	{% endif %}
 
+	{% if ontologies.sparql_endpoint %}
 
-
-	{% if ontologies.description %}
-
-	{{ ontologies.description }}
+	<h2>SPARQL</h2>
+	<h3>Endpoint</h3>
+	<p>{{ ontologies.sparql_endpoint }}<p>
 
 	{% endif %}
+
+	{% if ontologies.sparql_query %}
+	<h3>Query</h3>
+	<p>{{ ontologies.sparql_query }}</p>
+
+	{% endif %}
+
+
 
 	</div>
 </div>
