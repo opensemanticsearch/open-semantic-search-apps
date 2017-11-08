@@ -132,6 +132,9 @@ def recrawl(request):
 
 		add_to_queue = True
 
+		# If delta 0, no automatic import
+		if not crawler.delta:
+			add_to_queue = False
 
 		# If delta time, do not import this website within this time by setting add_to_queue to false
 		if crawler.delta and crawler.last_imported:
