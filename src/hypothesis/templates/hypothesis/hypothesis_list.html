@@ -1,0 +1,55 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+
+<div class="row">
+	<div class="small-12 columns">
+
+<br>
+	
+<ul class="breadcrumbs"><li><a href="{% url 'datasources:index' %}">Datasources</a></li>
+
+ <li class="current"><a href="#">Hypothesis</a></li> 
+  </ul>
+
+<h1>Hypothesis annotations</h1>
+<p>Import of Hypothesis annotations by Hypothesis search API</p>
+
+<a class="button" href="{% url 'hypothesis:recrawl' %}">Do imports with passed delta time</a>
+
+<a class="button" href="{% url 'hypothesis:create' %}">Add new import</a>
+
+
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="small-12 columns">
+<h2>All Hypothesis imports</h2>
+
+
+
+{% if hypothesis_list %}
+    <ul>
+    {% for hypothesis in hypothesis_list %}
+        <li><h2><a href="{% url 'hypothesis:detail' hypothesis.id %}">{{ hypothesis.title|default:hypothesis }}</a></h2>
+            <a class="button small" href="{% url 'hypothesis:crawl' hypothesis.id %}">Import now</a>
+            <a class="button small" href="{% url 'hypothesis:detail' hypothesis.id %}">Details</a>
+            <a class="button small" href="{% url 'hypothesis:update' hypothesis.id %}">Edit settings</a>
+
+        </li>
+    
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Hypothesis imports yet.</p>
+{% endif %}
+
+
+	</div>
+</div>
+
+
+{% endblock content %}

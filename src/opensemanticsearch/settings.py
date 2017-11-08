@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'ontologies',
     'querytagger',
     'morphology',
+    'hypothesis',
 )
 
 MIDDLEWARE_CLASSES = (

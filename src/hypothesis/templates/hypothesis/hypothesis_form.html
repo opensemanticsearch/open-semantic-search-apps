@@ -1,0 +1,175 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+<form {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} action="" method="post">{% csrf_token %}
+
+    {{ form.non_field_errors }}
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+{% if hypothesis.id %}
+<h1>Edit Hypothesis annotations import</h1>
+{% else %}
+<h1>Add Hypothesis annotations import</h1>
+{% endif %}
+
+
+
+	</div>
+</div>
+
+
+
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+<dl class="tabs" data-tab>
+  <dd><a href="#panel-title">Description (optional)</a></dd>
+  <dd class="active"><a href="#panel-datasource">Datasource and frequency</a></dd>
+</dl>
+
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="tabs-content">
+
+  <section class="content" id="panel-title">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>Name or notes</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+<p>Not necessary, only for managing purpose</p>
+
+        {{ form.title.errors }}
+        <label for="id_title">Title:</label>
+        {{ form.title }}
+
+<div class="row">
+
+    <div class="small-12 medium-8 columns">
+    <h3>Notes</h3>
+        {{ form.description.errors }}
+        <label for="id_description">Description or Notes</label>
+        {{ form.description }}
+    </div>
+
+
+</div>
+
+</section>
+
+  <section class="content active" id="panel-datasource">
+
+<div class="row">
+
+	<div class="small-12 columns text-center">
+
+Hint: Please fill only one of the field, so you get annotations from an user or for an document or for a tag.
+If you fill an username and a tag, you will only get annotations for only this one tag from only this one user
+
+
+<h2>User</h2>
+<p>Annotations only from this Hypothesis user account</p>
+
+        {{ form.user.errors }}
+        <label for="id_user">User:</label>
+        {{ form.user }}
+	<p>For example <i>MyHypothesisUsername</i></p>
+
+
+<h2>Group</h2>
+<p>Annotations only from this Hypothesis group</p>
+
+        {{ form.group.errors }}
+        <label for="id_group">Group:</label>
+        {{ form.group }}
+	<p>For example <i>MyHypothesisGroup</i></p>
+
+
+<h2>Tag</h2>
+<p>Annotations for only with this tag</p>
+
+        {{ form.tag.errors }}
+        <label for="id_tag">Tag:</label>
+        {{ form.tag }}
+	<p>For example <i>MyCategory</i></p>
+
+
+<h2>Document (URL)</h2>
+<p>Annotations for only this one document</p>
+
+        {{ form.uri.errors }}
+        <label for="id_uri">URI:</label>
+        {{ form.uri }}
+	<p>For example <i>https://www.opensemanticsearch.org/</i></p>
+
+
+
+
+<h2>Frequency (Delta time)</h2>
+
+        {{ form.delta.errors }}
+        <label for="id_delta">Delta time (minutes):</label>
+        {{ form.delta }}
+	<p><i>For example 60 for importing every hour</i></p>
+
+
+    </div>
+
+
+</div>
+
+
+
+
+</section>
+
+
+
+<hr>
+
+
+<div class="row">
+    <div class="small-12 columns">
+
+<h2>Save changes</h2>
+
+    <input class="button" type="submit" value="Save" />
+
+
+
+{% if hypothesis.id %}
+    <a class="button" href="{% url 'hypothesis:detail' hypothesis.id %}">Cancel</a>
+{% else %}
+    <a class="button" href="{% url 'hypothesis:index' %}">Cancel</a>
+{% endif %}
+
+</div>
+</div>
+
+</form>
+{% endblock content %}
