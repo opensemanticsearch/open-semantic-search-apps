@@ -91,12 +91,16 @@
 
 <h2>URL (Address)</h2>
 
-
-
         {{ form.uri.errors }}
         <label for="id_uri">URI:</label>
         {{ form.uri }}
 	<p>For example <i>http://www.opensemanticsearch.org/</i></p>
+
+
+        {{ form.crawler_type.errors }}
+        <label for="id_crawler_type">How much to crawl?</label>
+        {{ form.crawler_type }}
+	<p>Be carefull, crawling whole domains can lead to much load and blockings or even not possible if too many pages/data.</p>
 
 
 <h2>Frequency (Delta time)</h2>

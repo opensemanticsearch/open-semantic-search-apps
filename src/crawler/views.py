@@ -12,6 +12,7 @@ import datetime
 from datetime import timedelta
 
 from opensemanticetl.tasks import index_web
+from opensemanticetl.tasks import index_web_crawl
 from opensemanticetl.tasks import index_sitemap
 
 from crawler.models import Crawler
@@ -83,12 +84,7 @@ def update_crawler(request, pk):
 			{'form': form, 'crawler': crawler } )
 
 
-#
-# Add website to queue
-# So a worker will download/read the website and import/download all new articles
-#
-
-def crawl(request, pk):
+def etl(pk):
 
 	last_imported = datetime.datetime.now()
 
@@ -98,15 +94,29 @@ def crawl(request, pk):
 	if crawler.sitemap:
 		# get sitemap and add urls to queue
 		index_sitemap.delay(uri=crawler.sitemap)
-	else:	
-		# add web page to queue
-		index_web.delay(uri=crawler.uri)
+	else:
+		if crawler.crawler_type=="DOMAIN" or crawler.crawler_type=="PATH":
+			# add website to queue
+			index_web_crawl.delay(uri=crawler.uri, crawler_type=crawler.crawler_type)
+		else:
+			# add web page to queue
+			index_web.delay(uri=crawler.uri)
 
 	# save new timestamp
 	crawler.last_imported = last_imported
 	crawler.save()
 
-	
+
+
+#
+# Add website to queue
+# So a worker will download/read the website and import/download all new articles
+#
+
+def crawl(request, pk):
+
+	etl(pk)
+
 	return render(request, 'crawler/crawler_crawl.html', {'id': pk,})
 
 
@@ -156,21 +166,10 @@ def recrawl(request):
 
 		if add_to_queue:
 
-			last_imported = datetime.datetime.now()
-			
 			if verbose:
 				log.append( "Adding website to queue: {}".format(crawler) ) 
 			
-			# get sitemap and add urls to queue
-			if crawler.sitemap:
-				index_sitemap.delay(uri=crawler.sitemap)
-			else:	
-				# add to queue
-				index_web.delay(uri=crawler.uri)
-
-			# save new timestamp
-			crawler.last_imported = last_imported
-			crawler.save()
+			etl(crawler.pk)
 
 			count_queued += 1
 	
