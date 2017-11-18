@@ -48,7 +48,7 @@ class GroupTag(models.Model):
 	prefLabel = models.CharField(max_length=1000, blank=True)
 	
 	def __str__(self):
-		return self.facet.prefLabel + ': ' + self.prefLabel
+		return self.facet.label + ': ' + self.prefLabel
 
 
 # Concept or Entity
