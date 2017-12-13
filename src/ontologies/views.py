@@ -368,18 +368,16 @@ def write_facet_config():
 	facets_done=[]
 
 	# add facets of named entities
-	for facet in Facet.objects.all():
+	for facet in Facet.objects.filter(enabled=True).order_by('facet_order'):
 		facets_done.append(facet.facet)
 		
-		configfile.write(	"\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format(	facet.facet, facet.label	)	)
+		configfile.write("\n$cfg['facets']['{}'] = array ('label'=>'{}', 'facet_limit'=>'{}', 'snippets_limit'=>'{}',".format(	facet.facet, facet.label, facet.facet_limit, facet.snippets_limit))
 
-	# if not there, add default facet tag_ss
-	if not "tag_ss" in facets_done:
-		configfile.write(	"\n$cfg['facets']['tag_ss'] = array ('label'=>'Tags');\n"	)
-
-	# if not there, add default facet content_type_group
-	if not "content_type_group" in facets_done:
-		configfile.write(	"\n$cfg['facets']['content_type_group'] = array ('label'=>'Content type group');\n"	)
+		if facet.snippets_enabled:
+			configfile.write("'snippets_enabled'=>true")
+		else:
+			configfile.write("'snippets_enabled'=>false")
+		configfile.write(");\n")
 
 	# add facets of ontolgoies
 	for ontology in Ontologies.objects.all():

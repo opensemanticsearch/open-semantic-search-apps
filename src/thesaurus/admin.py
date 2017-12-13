@@ -40,7 +40,10 @@ class ConceptAdmin(admin.ModelAdmin):
 
 
 class FacetAdmin(admin.ModelAdmin):
+
 	list_display = ('facet', 'label',)
+
+	ordering = ( 'facet_order',)
 
 	def save_model(self, request, obj, form, change):
 

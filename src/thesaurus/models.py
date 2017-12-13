@@ -12,10 +12,15 @@ query_type_chooices = (
 # Facet / field / property
 class Facet(models.Model):
 	
-	uri = models.CharField(max_length=1000, blank=True)
-	
 	label = models.CharField(max_length=255)
 	facet = models.CharField(max_length=255)
+	enabled = models.NullBooleanField(default=True, null=True, blank=True)
+	facet_limit = models.IntegerField(default=20, null=True, blank=True)
+	snippets_enabled = models.NullBooleanField(default=True, null=True, blank=True)
+	snippets_limit = models.IntegerField(default=10, null=True, blank=True)
+	facet_order = models.IntegerField(default=0, null=True, blank=True)
+
+	uri = models.CharField(max_length=1000, blank=True)
 	
 	def __str__(self):
 		
