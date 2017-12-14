@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     operations = [
 	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('tag_ss','Tags','dc:subject', 1, 10, 1, 10, 2);"),
 	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('language_s','Language','', 1, 10, 0, 10, 10);"),
-	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('author_s','Author','', 1, 10, 1, 10, 1);"),
+	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('author_s','Author','', 1, 10, 0, 10, 1);"),
 	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('person_ss','Persons','', 1, 10, 1, 10, 3);"),
 	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('organization_ss','Organizations','', 1, 10, 1, 10, 4);"),
 	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('location_ss','Location','', 1, 10, 1, 10, 5);"),
