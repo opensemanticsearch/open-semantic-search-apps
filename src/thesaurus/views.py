@@ -433,6 +433,7 @@ def get_labels(concept):
 def append_thesaurus_labels_to_dictionaries(synoynms_configfilename):
 
 	facets = []
+	appended_words = []
 
 	for concept in Concept.objects.all():
 		
@@ -453,7 +454,7 @@ def append_thesaurus_labels_to_dictionaries(synoynms_configfilename):
 # Append concept labels and aliases to dictionary of facet and write aliases to synonyms config file
 #
 
-def append_concept_labels_to_dictionary(concept, synoynms_configfilename):
+def append_concept_labels_to_dictionary(concept, synoynms_configfilename=None):
 
 	solr_config_path = "/var/solr/data/core1/conf/named_entities"
 
@@ -466,7 +467,7 @@ def append_concept_labels_to_dictionary(concept, synoynms_configfilename):
 
 	labels = get_labels(concept)
 
-	# append to dictionary file	
+	# append labels to dictionary file	
 	dict_file = open(dict_filename, 'a', encoding="UTF-8")
 
 	for label in labels:
@@ -474,6 +475,34 @@ def append_concept_labels_to_dictionary(concept, synoynms_configfilename):
 
 	dict_file.close()
 
-	# if synonyms, append to synoynms config file
-	if len(labels) > 1:
-		solr_ontology_tagger.append_labels_to_synonyms_configfile(labels, synoynms_configfilename)
+	if synoynms_configfilename:
+		# if synonyms, append to synoynms config file
+		if len(labels) > 1:
+			solr_ontology_tagger.append_labels_to_synonyms_configfile(labels, synoynms_configfilename)
+
+
+#
+# Append single words of concept labels to wordlist for OCR word dictionary
+#
+
+def append_concept_words_to_wordlist(wordlist_configfilename, concept=None):
+
+	appended_words = []
+
+	for concept in Concept.objects.all():
+
+		labels = get_labels(concept)
+
+		wordlist_file = open(wordlist_configfilename, 'a', encoding="UTF-8")
+
+		for label in labels:
+			words = label.split()
+			for word in words:
+				word = word.strip("(),")
+				if word:
+					if word not in appended_words:
+						appended_words.append(word)
+						appended_words.append(word.upper())
+						wordlist_file.write(word + "\n")
+		wordlist_file.close()
+

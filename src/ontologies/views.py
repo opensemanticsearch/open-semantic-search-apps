@@ -476,12 +476,14 @@ def get_contenttype_and_encoding(filename):
 def	write_named_entities_config(request):
 
 	solr_config_path = "/var/solr/data/core1/conf/named_entities"
+	wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt"
 	
 	facets = []
 
 	synonyms_configfilename = solr_config_path + os.path.sep + 'synonyms.txt'
 	
 	tmp_synonyms_configfilename = solr_config_path + os.path.sep + 'tmp_synonyms.txt'
+	tmp_wordlist_configfilename = solr_config_path + os.path.sep + 'tmp_ocr_dictionary.txt'
 
 	# create empty synonym config file for the case there are no synonyms in ontologies or thesaurus
 	if_not_exist_create_empty_list(tmp_synonyms_configfilename)
@@ -526,6 +528,9 @@ def	write_named_entities_config(request):
 				
 				# append synonyms to Solr config file
 				ontology_tagger.synonyms_configfile = tmp_synonyms_configfilename
+
+				# append single words of concept labels to wordlist for OCR word dictionary
+				ontology_tagger.wordlist_configfile = tmp_wordlist_configfilename
 				
 				# write synonyms config file
 				ontology_tagger.apply()
@@ -547,12 +552,15 @@ def	write_named_entities_config(request):
 			if is_tempfile:
 				os.remove(filename)
 
-		except:
-			print ("Error: Exception while importing ontology {}".format(ontology))
-			messages.add_message( request, messages.ERROR, "Error: Exception while importing ontology {}".format(ontology) )
+		except BaseException as e:
+			print ("Error: Exception while importing ontology {}: {}".format(ontology, e))
+			messages.add_message( request, messages.ERROR, "Error: Exception while importing ontology {}: {}".format(ontology, e) )
 
 	# Write thesaurus entries to facet entities list / dictionary
-	thesaurus_facets = thesaurus.views.append_thesaurus_labels_to_dictionaries(tmp_synonyms_configfilename)
+	thesaurus_facets = thesaurus.views.append_thesaurus_labels_to_dictionaries(synoynms_configfilename=tmp_synonyms_configfilename)
+
+	# Append single words of concept labels to wordlist for OCR word dictionary
+	thesaurus.views.append_concept_words_to_wordlist(wordlist_configfilename=tmp_wordlist_configfilename)
 
 	# add facets used in thesaurus but not yet in an ontology to facet config
 	for thesaurus_facet in thesaurus_facets:
@@ -566,8 +574,9 @@ def	write_named_entities_config(request):
 		listfilename = solr_config_path + os.path.sep + facet + '.txt'
 		os.rename(tmplistfilename, listfilename)
 
-	# Move temp synonyms config file to destination
+	# Move temp synonyms and OCR words config file to destination
 	os.rename(tmp_synonyms_configfilename, synonyms_configfilename)
+	os.rename(tmp_wordlist_configfilename, wordlist_configfilename)
 	
 	# Create config for schema.xml include for all facets
 	configfilename = solr_config_path + os.path.sep + 'schema_named_entities.xml'
