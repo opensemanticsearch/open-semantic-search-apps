@@ -504,5 +504,6 @@ def append_concept_words_to_wordlist(wordlist_configfilename, concept=None):
 						appended_words.append(word)
 						appended_words.append(word.upper())
 						wordlist_file.write(word + "\n")
+						wordlist_file.write(word.upper() + "\n")
 		wordlist_file.close()
 

@@ -257,17 +257,40 @@ def tag_by_list(filename, field, encoding='utf-8'):
 # Append entries/lines from an list/dictionary to another
 #
 
-def append_from_txtfile(sourcefilename, targetfilename, encoding='utf-8'):
+def append_from_txtfile(sourcefilename, targetfilename, encoding='utf-8', wordlist_configfilename=None):
 	
+	appended_words = []
+
 	source = open(sourcefilename, 'r', encoding=encoding)
 	target = open(targetfilename, 'a', encoding="utf-8")
+
+
+	if wordlist_configfilename:
+		wordlist_file = open(wordlist_configfilename, 'a', encoding="UTF-8")
 
 	for line in source:
 		if line:
 			target.write(line)
 
+			if wordlist_configfilename:
+				# Append single words of concept labels to wordlist for OCR word dictionary
+
+				words = line.split()
+				for word in words:
+					word = word.strip("(),")
+					if word:
+						if word not in appended_words:
+							appended_words.append(word)
+							appended_words.append(word.upper())
+							wordlist_file.write(word + "\n")
+							wordlist_file.write(word.upper() + "\n")
+
+
 	source.close()
 	target.close()
+
+	if wordlist_configfilename:
+		wordlist_file.close()
 
 
 #
@@ -537,7 +560,7 @@ def	write_named_entities_config(request):
 
 				
 			elif contenttype.startswith('text/plain'):
-				append_from_txtfile(sourcefilename=filename, targetfilename=tmplistfilename, encoding=encoding)
+				append_from_txtfile(sourcefilename=filename, targetfilename=tmplistfilename, encoding=encoding, wordlist_configfilename=tmp_wordlist_configfilename)
 				
 			else:
 				# create empty list so configs of field in schema.xml pointing to this file or in facet config of UI will not break
