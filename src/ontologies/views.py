@@ -349,9 +349,10 @@ def write_solr_schema_config(configfilename, facets):
 	for facet in facets:
 
 		configfile.write(	"""
-<field name="{}" type="{}" indexed="true" stored="false" multiValued="true"/>
-<copyField source="*" dest="{}"/>
-<fieldType name="{}" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+<field name="{}" type="string" indexed="true" stored="true" multiValued="true"/>
+<field name="{}_match" type="{}_match" indexed="true" stored="false" multiValued="true"/>
+<copyField source="*" dest="{}_match"/>
+<fieldType name="{}_match" class="solr.TextField" sortMissingLast="true" omitNorms="true">
 <analyzer>
   <tokenizer class="solr.WhitespaceTokenizerFactory"/>
     <filter class="solr.ShingleFilterFactory"
@@ -362,7 +363,9 @@ def write_solr_schema_config(configfilename, facets):
             words="named_entities/{}.txt" ignoreCase="true"/>
     <filter class="solr.LowerCaseFilterFactory"/>
   </analyzer>
-</fieldType>""".format(
+</fieldType>
+""".format(
+					facet,
 					facet,
 					facet,
 					facet,
@@ -380,7 +383,7 @@ def write_solr_schema_config(configfilename, facets):
 
 # Collect all used facets so they can be displayed for search UI config
 
-def write_facet_config():
+def write_facet_config(automatch_facets=[]):
 	# Todo: maybe graph with labels or JSON instead of PHP config
 	
 	configfilename = '/etc/solr-php-ui/config.facets.php'
@@ -401,7 +404,15 @@ def write_facet_config():
 		else:
 			configfile.write("'snippets_enabled'=>false")
 		configfile.write(");\n")
+		if facet.facet in automatch_facets:
+			configfile.write("\n$cfg['facets']['{}_match'] = array ('label'=>'{} (automatic match)', 'facet_limit'=>'{}', 'snippets_limit'=>'{}',".format(	facet.facet, facet.label, facet.facet_limit, facet.snippets_limit))
 
+			if facet.snippets_enabled:
+				configfile.write("'snippets_enabled'=>true")
+			else:
+				configfile.write("'snippets_enabled'=>false")
+			configfile.write(");\n")
+	
 	# add facets of ontolgoies
 	for ontology in Ontologies.objects.all():
 
@@ -412,6 +423,8 @@ def write_facet_config():
 			facets_done.append(facet)
 			
 			configfile.write("\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format(	facet, 	ontology	)	)
+			if facet in automatch_facets:
+				configfile.write("\n$cfg['facets']['{}_match'] = array ('label'=>'{} (automatic match)');\n".format(	facet, 	ontology	)	)
 
 	configfile.write('?>')
 	
@@ -606,7 +619,7 @@ def	write_named_entities_config(request):
 	write_solr_schema_config(configfilename, facets)
 	
 	# Create config for UI
-	write_facet_config()
+	write_facet_config(automatch_facets=facets)
 	
 	# Reload/restart Solr core / schema / config to apply changed configs
 	# so added config files / ontolgies / facets / new dictionary entries will be considered by analyzing/indexing new documents
