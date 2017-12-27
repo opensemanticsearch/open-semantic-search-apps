@@ -21,7 +21,7 @@ from solr_ontology_tagger import OntologyTagger
 import os.path
 import tempfile
 
-import urllib
+from urllib.request import urlretrieve
 
 import rdflib.util
 from rdflib import Graph
@@ -183,7 +183,7 @@ def get_ontology_file(ontology):
 	else:
 		# Download url to an tempfile
 		is_tempfile = True
-		filename, headers = urllib.urlretrieve(ontology.uri)
+		filename, headers = urlretrieve(ontology.uri)
 
 	return is_tempfile, filename
 
