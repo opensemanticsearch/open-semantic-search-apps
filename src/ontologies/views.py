@@ -22,6 +22,7 @@ import os.path
 import tempfile
 
 from urllib.request import urlretrieve
+from urllib.request import urlopen
 
 import rdflib.util
 from rdflib import Graph
@@ -217,7 +218,8 @@ def tag_by_ontology(ontology):
 	else:
 		# create empty list so configs of field in schema.xml pointing to this file or in facet config of UI will not break
 		print ( "Unknown format {}".format(contenttype) )
-					#
+
+	#
 	# Delete if downloaded ontology by URL to tempfile
 	#
 	if is_tempfile:
@@ -291,44 +293,6 @@ def append_from_txtfile(sourcefilename, targetfilename, encoding='utf-8', wordli
 
 	if wordlist_configfilename:
 		wordlist_file.close()
-
-
-#
-# Read labels from RDF and append to list/dictionary
-#
-
-def append_from_rdffile(sourcefilename, targetfilename):
-
-	target = open(targetfilename, 'a', encoding="utf-8")
-
-	g = Graph()
-	
-	#guess_format not in Ubuntus python_rdflib package yet
-	#filetype = rdflib.util.guess_format(sourcefilename)
-
-	#g.parse(sourcefilename, format = filetype)
-	g.parse(sourcefilename)
-
-	# get all RDFS labels
-	for o in g.objects(None, RDFS.label):
-		target.write(o + '\n')
-
-	# SKOS labels
-	skos = rdflib.Namespace('http://www.w3.org/2004/02/skos/core#')
-		
-	# append SKOS prefLabel
-	for o in g.objects(None, skos['prefLabel']):
-		target.write(o + '\n')
-
-	# append SKOS altLabels
-	for o in g.objects(None, skos['altLabel']):
-		target.write(o + '\n')
-
-	# append SKOS hiddenLabels
-	for o in g.objects(None, skos['hiddenLabel']):
-		target.write(o + '\n')
-
-	target.close()
 
 
 # An empty list file for a facet won't cause error opening/reading it, even if no entry exists
@@ -492,13 +456,12 @@ def get_contenttype_and_encoding(filename):
 		tika = enhance_extract_text_tika_server()
 		parameters = {}
 		parameters['filename'] = filename
-		parameters, data = tika.process(parameters=parameters)
+		parameters, data = tika.process(parameters=parameters, data = {})
 		contenttype = data['content_type']
 
 		# get charset if plain text file to extract with right charset
 		if 'encoding_s' in data:
-			encoding=data['encoding_s']
-			print ( "Detected encoding: {}".format(encoding) )
+			encoding = data['encoding_s']
 		else:
 			encoding = 'utf-8'
 
@@ -537,26 +500,26 @@ def	write_named_entities_config(request):
 		
 			# analyse content type & encoding
 			contenttype, encoding = get_contenttype_and_encoding(filename)
+			print ( "Detected content type: {}".format(contenttype) )
+			print ( "Detected encoding: {}".format(encoding) )
+
+
+			# file to export all labels			
+			tmplistfilename = solr_config_path + os.path.sep + 'tmp_' + facet + '.txt'
 			
 			#
 			# export entries to listfiles
 			#
-			
-			tmplistfilename = solr_config_path + os.path.sep + 'tmp_' + facet + '.txt'
-			
+						
 			if contenttype=='application/rdf+xml':
 
-				# todo: move to solr-ontology-tagger so we have to load the ontology only once
-				append_from_rdffile(sourcefilename=filename, targetfilename=tmplistfilename)
-
-
 				#
-				# write synonyms config file
+				# write labels, words and synonyms config files
 				#
 
 				ontology_tagger = OntologyTagger()
 
-				#load graph from RDF file
+				# load graph from RDF file
 				ontology_tagger.parse(filename)
 
 				# don't tag documents in index, now we want only write the synonyms config
@@ -567,6 +530,9 @@ def	write_named_entities_config(request):
 
 				# append single words of concept labels to wordlist for OCR word dictionary
 				ontology_tagger.wordlist_configfile = tmp_wordlist_configfilename
+
+				# append all labels to the facets labels list
+				ontology_tagger.labels_configfile = tmplistfilename
 				
 				# write synonyms config file
 				ontology_tagger.apply()
@@ -624,4 +590,5 @@ def	write_named_entities_config(request):
 	# Reload/restart Solr core / schema / config to apply changed configs
 	# so added config files / ontolgies / facets / new dictionary entries will be considered by analyzing/indexing new documents
 	# Todo: Use the Solr URI from config
-	urllib.request.urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=core1')
+	urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=core1')
+
