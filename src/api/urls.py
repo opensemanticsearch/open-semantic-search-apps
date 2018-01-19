@@ -9,5 +9,5 @@ urlpatterns = [
 	url(r'^index-rss', views.queue_index_rss, name='queue_index_rss'),
 	url(r'^index-file', views.queue_index_file, name='queue_index_file'),
 	url(r'^index-filedirectory', views.queue_index_filedirectory, name='queue_index_filedirectory'),
-	url(r'^index-dir', views.queue_index_file, name='queue_index_dir'),
+	url(r'^index-dir', views.queue_index_filedirectory, name='queue_index_dir'),
 ]
