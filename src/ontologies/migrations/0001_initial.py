@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('uri', models.CharField(max_length=16000, blank=True)),
                 ('title', models.CharField(max_length=255, blank=True)),
                 ('description', models.TextField(blank=True)),
-                ('file', models.FileField(upload_to='/var/opensemanticsearch/ontologies', blank=True)),
+                ('file', models.FileField(upload_to='ontologies', blank=True)),
                 ('do_stemming', models.BooleanField(default=True)),
                 ('exclude_uri', models.CharField(max_length=16000, blank=True)),
                 ('exclude_file', models.FileField(upload_to='uploads', blank=True)),

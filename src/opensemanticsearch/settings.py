@@ -115,3 +115,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = '/var/lib/opensemanticsearch/static/'
+
+MEDIA_ROOT = '/var/opensemanticsearch/'

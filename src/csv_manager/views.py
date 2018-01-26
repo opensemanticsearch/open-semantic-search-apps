@@ -48,7 +48,7 @@ def index_csv(request, pk):
 	#
 
 	if csvmanager.file:
-		csvfilename = os.path.abspath(csvmanager.file.name)
+		csvfilename = csvmanager.file.path
 		id = csvmanager.file.name
 		
 	else:

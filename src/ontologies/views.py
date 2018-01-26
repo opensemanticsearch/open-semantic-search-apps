@@ -167,9 +167,9 @@ def get_ontology_file(ontology):
 	# if local file, file no temp file
 	is_tempfile = False
 
-	if os.path.isfile(ontology.file.name):
+	if os.path.isfile(ontology.file.path):
 
-		filename = ontology.file.name
+		filename = ontology.file.path
 
 	elif ontology.sparql_endpoint:
 

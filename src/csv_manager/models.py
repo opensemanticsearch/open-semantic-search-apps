@@ -9,7 +9,7 @@ class CSV_Manager(models.Model):
 	title = models.CharField(max_length=255, blank = True)
 	description = models.TextField(blank = True)
 
-	file = models.FileField(upload_to='/var/opensemanticsearch/csv', blank = True)
+	file = models.FileField(upload_to='csv', blank = True)
 
 	# get list of supported encodings for selection
 	codecs=[]

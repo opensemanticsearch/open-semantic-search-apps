@@ -13,7 +13,7 @@ class Ontologies(models.Model):
 	title = models.CharField(max_length=255, blank = True)
 	description = models.TextField(blank = True)
 
-	file = models.FileField(upload_to='/var/opensemanticsearch/ontologies', blank = True)
+	file = models.FileField(upload_to='ontologies', blank = True)
 
 	facet = models.ForeignKey(Facet, blank=True, null=True)
 
