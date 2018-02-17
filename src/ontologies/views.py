@@ -350,10 +350,16 @@ def write_solr_schema_config(configfilename, facets):
 def write_facet_config(automatch_facets=[]):
 	# Todo: maybe graph with labels or JSON instead of PHP config
 	
-	configfilename = '/etc/solr-php-ui/config.facets.php'
+	configfilename_php = '/etc/solr-php-ui/config.facets.php'
+	configfilename_python = '/etc/opensemanticsearch/facets'
 	
-	configfile = open(configfilename, 'w', encoding="utf-8")
-	configfile.write("<?php\n// do not config here, this config file will be overwritten by Thesaurus and Ontologies Manager\n")
+	configfile_php = open(configfilename_php, 'w', encoding="utf-8")
+	configfile_python = open(configfilename_python, 'w', encoding="utf-8")
+
+	configfile_php.write("<?php\n// do not config here, this config file will be overwritten by Thesaurus and Ontologies Manager\n")
+
+	configfile_python.write("# do not config here, this config file will be overwritten by Thesaurus and Ontologies Manager\n")
+	configfile_python.write("config['facets']={}\n")
 
 	facets_done=[]
 
@@ -361,21 +367,29 @@ def write_facet_config(automatch_facets=[]):
 	for facet in Facet.objects.filter(enabled=True).order_by('facet_order'):
 		facets_done.append(facet.facet)
 		
-		configfile.write("\n$cfg['facets']['{}'] = array ('label'=>'{}', 'facet_limit'=>'{}', 'snippets_limit'=>'{}',".format(	facet.facet, facet.label, facet.facet_limit, facet.snippets_limit))
+		configfile_php.write("\n$cfg['facets']['{}'] = array ('label'=>'{}', 'facet_limit'=>'{}', 'snippets_limit'=>'{}'," . format( facet.facet, facet.label, facet.facet_limit, facet.snippets_limit))
+
+		configfile_python.write( "config['facets']['{}'] = ". format(facet.facet) )
+		configfile_python.write( "{" )
+		configfile_python.write( "'label': '{}', 'uri': '{}', 'facet_limit': '{}', 'snippets_limit': '{}'," . format( facet.label, facet.uri, facet.facet_limit, facet.snippets_limit) )
 
 		if facet.snippets_enabled:
-			configfile.write("'snippets_enabled'=>true")
+			configfile_php.write("'snippets_enabled'=>true")
 		else:
-			configfile.write("'snippets_enabled'=>false")
-		configfile.write(");\n")
+			configfile_php.write("'snippets_enabled'=>false")
+		configfile_php.write(");\n")
+
+		configfile_python.write("}\n")
+		
+		
 		if facet.facet in automatch_facets:
-			configfile.write("\n$cfg['facets']['{}_match'] = array ('label'=>'{} (automatic match)', 'facet_limit'=>'{}', 'snippets_limit'=>'{}',".format(	facet.facet, facet.label, facet.facet_limit, facet.snippets_limit))
+			configfile_php.write("\n$cfg['facets']['{}_match'] = array ('label'=>'{} (automatic match)', 'facet_limit'=>'{}', 'snippets_limit'=>'{}',".format(	facet.facet, facet.label, facet.facet_limit, facet.snippets_limit))
 
 			if facet.snippets_enabled:
-				configfile.write("'snippets_enabled'=>true")
+				configfile_php.write("'snippets_enabled'=>true")
 			else:
-				configfile.write("'snippets_enabled'=>false")
-			configfile.write(");\n")
+				configfile_php.write("'snippets_enabled'=>false")
+			configfile_php.write(");\n")
 	
 	# add facets of ontolgoies
 	for ontology in Ontologies.objects.all():
@@ -386,13 +400,14 @@ def write_facet_config(automatch_facets=[]):
 		
 			facets_done.append(facet)
 			
-			configfile.write("\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format(	facet, 	ontology	)	)
+			configfile_php.write("\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format(	facet, 	ontology	)	)
 			if facet in automatch_facets:
-				configfile.write("\n$cfg['facets']['{}_match'] = array ('label'=>'{} (automatic match)');\n".format(	facet, 	ontology	)	)
+				configfile_php.write("\n$cfg['facets']['{}_match'] = array ('label'=>'{} (automatic match)');\n".format(	facet, 	ontology	)	)
 
-	configfile.write('?>')
+	configfile_php.write('?>')
 	
-	configfile.close()
+	configfile_php.close()
+	configfile_python.close()
 
 
 #
