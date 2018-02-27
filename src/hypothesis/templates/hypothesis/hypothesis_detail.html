@@ -24,12 +24,20 @@ Title or ID:
 	{% endif %}
 
 
+	{% if hypothesis.token %}
+
+	API Token for authorization: {{ hypothesis.token }}
+
+	{% endif %}
+
+
 	{% if hypothesis.description %}
 
 	{{ hypothesis.description }}
 
 	{% endif %}
 
+<h2>Filter(s)</h2>
 
 	{% if hypothesis.uri %}
 	<p>

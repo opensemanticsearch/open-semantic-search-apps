@@ -13,14 +13,13 @@ from datetime import timedelta
 
 from hypothesis.models import Hypothesis
 
-import opensemanticetl.etl_hypothesis
+from opensemanticetl.etl_hypothesis import Connector_Hypothesis 
 
 class HypothesisForm(ModelForm):
 
 	class Meta:
 		model = Hypothesis
-		#fields = '__all__'
-		exclude = ['api']
+		fields = '__all__'
 
 class IndexView(generic.ListView):
 	model = Hypothesis
@@ -87,40 +86,27 @@ def update_hypothesis(request, pk):
 
 def etl_hypothesis(pk):
 
-	last_imported = datetime.datetime.now()
-
 	hypothesis = Hypothesis.objects.get(pk=pk)
 
-	last_update = hypothesis.last_update
-
-
-	limit = 200
-	api =  'https://hypothes.is/api'
-
+	connector = Connector_Hypothesis()
+	
+	# authorization
 	if hypothesis.api:
-	    api = hypothesis.api
+	    connector.api = hypothesis.api
 
-	searchurl = '{}/search?limit={}&sort=updated&order=desc'.format(api, limit)
+	if hypothesis.token:
+	    connector.token = hypothesis.token
 
-	if hypothesis.user:
-		searchurl += "&user={}".format(hypothesis.user)
-
-	if hypothesis.group:
-		searchurl += "&group={}".format(hypothesis.group)
-
-	if hypothesis.tag:
-		searchurl += "&tag={}".format(hypothesis.tag)
-
-	if hypothesis.uri:
-		searchurl += "&uri={}".format(hypothesis.uri)
+	# start time
+	last_imported = datetime.datetime.now()
 
 	# run import
-	last_update = opensemanticetl.etl_hypothesis.etl_hypothesis_annotations(searchurl, last_update=hypothesis.last_update)
+	last_update = connector.etl_annotations(last_update=hypothesis.last_update, user=hypothesis.user, group=hypothesis.group, tag=hypothesis.tag, uri=hypothesis.uri)
 
-	# new timestamp of last downloaded annotation
+	# new timestamp of last imported annotation
 	hypothesis.last_update = last_update
 
-	# new timestamp of last API search
+	# set new timestamp of last import / call of search API to start time
 	hypothesis.last_imported = last_imported
 
 	hypothesis.save()

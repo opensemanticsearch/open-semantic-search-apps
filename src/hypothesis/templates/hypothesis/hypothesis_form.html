@@ -33,6 +33,7 @@
 <dl class="tabs" data-tab>
   <dd><a href="#panel-title">Description (optional)</a></dd>
   <dd class="active"><a href="#panel-datasource">Datasource and frequency</a></dd>
+  <dd><a href="#panel-filter">User or group (Filters)</a></dd>
 </dl>
 
 	</div>
@@ -88,9 +89,61 @@
 
 	<div class="small-12 columns text-center">
 
-Hint: Please fill only one of the field, so you get annotations from an user or for an document or for a tag.
-If you fill an username and a tag, you will only get annotations for only this one tag from only this one user
+<h2>API</h2>
+<p>URL of Hypothesis API</p>
 
+        {{ form.api.errors }}
+        <label for="id_api">API URL:</label>
+        {{ form.api }}
+<p>Leave empty for default API URL <i>https://hypothes.is/api/</i></p>
+
+<h2>API token for authorization</h2>
+<p>Authorization token for Hypothesis</p>
+
+        {{ form.token.errors }}
+        <label for="id_token">Token:</label>
+        {{ form.token }}
+<p>Login to hypothesis, open settings menu "Developer" and click on "Generate your API token"</p>
+
+
+
+<h2>Frequency (Delta time)</h2>
+
+        {{ form.delta.errors }}
+        <label for="id_delta">Delta time (minutes):</label>
+        {{ form.delta }}
+	<p><i>For example 60 for importing every hour or 0 for manual import by click on "Import annotations"</i></p>
+
+
+    </div>
+
+
+</div>
+
+
+
+
+</section>
+
+
+<section class="content" id="panel-filter">
+
+<div class="row">
+
+	<div class="small-12 columns text-center">
+<p>
+Set a filter to import only annotations from an user, from an group, for all documents with a tag or for a single document.
+</p>
+
+<p>
+
+<strong>Warning:</strong>
+<p>
+If you use not an own local Hypothesis instance but the standard hypothes.is webservice, you must set a filter, since instead you will start to import all public annotations of the world.
+</p>
+But mostly you want to set only one of the filter(s), so you get annotations from an user, from an group or for an document or for a tag.
+If you for example setup an username and a tag, you will only get annotations for ONLY this one tag tagged ONLY by this one user.
+</p>
 
 <h2>User</h2>
 <p>Annotations only from this Hypothesis user account</p>
@@ -130,24 +183,13 @@ If you fill an username and a tag, you will only get annotations for only this o
 
 
 
-<h2>Frequency (Delta time)</h2>
-
-        {{ form.delta.errors }}
-        <label for="id_delta">Delta time (minutes):</label>
-        {{ form.delta }}
-	<p><i>For example 60 for importing every hour</i></p>
-
-
     </div>
 
 
 </div>
 
 
-
-
 </section>
-
 
 
 <hr>
