@@ -16,6 +16,7 @@ BASEDIR=`dirname "$0"`
 BASEDIR="${BASEDIR}/../../"
 
 mkdir ${BUILDDIR}
+mkdir -p ${BUILDDIR}/var/lib/opensemanticsearch/
 
 cp -a ${BASEDIR}/build/deb/${DEBIAN_VERSION}/* ${BUILDDIR}/
 cp -a ${BASEDIR}/src/* ${BUILDDIR}/var/lib/opensemanticsearch/
