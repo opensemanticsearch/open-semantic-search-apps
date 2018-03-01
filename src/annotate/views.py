@@ -14,7 +14,7 @@ from rdflib import Graph, Literal, BNode, Namespace, RDF, URIRef
 
 from annotate.models import Annotation
 from thesaurus.models import Concept
-
+from thesaurus.models import Facet
 
 # apply annotations to search index
 def export_to_index(uri):
@@ -152,7 +152,11 @@ def rdf(request):
 			g.add( ( URIRef(annotation.uri), URIRef("http://localhost/metawiki/index.php/Special:URIResolver/Property-3ANotes"), Literal(annotation.notes) ) )
 
 		for tag in annotation.tags.all():
-			g.add( ( URIRef(annotation.uri), URIRef("http://localhost/metawiki/index.php/Special:URIResolver/Property-3ATag"), Literal(tag.prefLabel) ) )
+			facet_property = 'http://schema.org/keywords'
+			if tag.facet:
+				if tag.facet.uri:
+					facet_property = tag.facet.uri
+			g.add( ( URIRef(annotation.uri), URIRef(facet_property), Literal(tag.prefLabel) ) )
 
 	status = HttpResponse(g.serialize( format='xml' ) )
 	status["Content-Type"] = "application/rdf+xml" 
