@@ -146,10 +146,10 @@ def rdf(request):
 	for annotation in annotations:
 
 		if annotation.title:
-			g.add( ( URIRef(annotation.uri), URIRef("http://localhost/metawiki/index.php/Special:URIResolver/Property-3ATitle"), Literal(annotation.title) ) )
+			g.add( ( URIRef(annotation.uri), URIRef("http://schema.org/title"), Literal(annotation.title) ) )
 
 		if annotation.notes:
-			g.add( ( URIRef(annotation.uri), URIRef("http://localhost/metawiki/index.php/Special:URIResolver/Property-3ANotes"), Literal(annotation.notes) ) )
+			g.add( ( URIRef(annotation.uri), URIRef("http://schema.org/Comment"), Literal(annotation.notes) ) )
 
 		for tag in annotation.tags.all():
 			facet_property = 'http://schema.org/keywords'
