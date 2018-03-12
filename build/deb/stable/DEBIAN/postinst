@@ -8,15 +8,29 @@ python3 /var/lib/opensemanticsearch/manage.py collectstatic --noinput
 python3 /var/lib/opensemanticsearch/manage.py migrate
 
 # allow Django running in apache2 context to write to DB
+chgrp www-data /var/lib/opensemanticsearch
 chown www-data:www-data /var/lib/opensemanticsearch/db.sqlite3
+
+# but others should not be able to read DB entries
+chmod o-r /var/lib/opensemanticsearch/db.sqlite3
 
 # allow Django running in apache2 context to write Entities config
 chgrp -R www-data /var/solr/data/core1/conf/named_entities
 chmod -R g+r /var/solr/data/core1/conf/named_entities
 chmod -R g+w /var/solr/data/core1/conf/named_entities
 
+chgrp www-data /etc/opensemanticsearch/entities
+chmod g+r /etc/opensemanticsearch/entities
+chmod g+w /etc/opensemanticsearch/entities
+chgrp www-data /etc/opensemanticsearch/entities/entities.tsv
+chmod g+r /etc/opensemanticsearch/entities/entities.tsv
+chmod g+w /etc/opensemanticsearch/entities/entities.tsv
+
 # allow Django running in apache2 context to write OCR dictionary
 chgrp www-data /etc/opensemanticsearch/ocr
+chmod g+r /etc/opensemanticsearch/ocr
+chmod g+w /etc/opensemanticsearch/ocr
+chgrp www-data /etc/opensemanticsearch/ocr/dictionary.txt
 chmod g+r /etc/opensemanticsearch/ocr/dictionary.txt
 chmod g+w /etc/opensemanticsearch/ocr/dictionary.txt
 
@@ -24,9 +38,6 @@ chmod g+w /etc/opensemanticsearch/ocr/dictionary.txt
 chgrp www-data /etc/opensemanticsearch/facets
 chmod g+r /etc/opensemanticsearch/facets
 chmod g+w /etc/opensemanticsearch/facets
-
-# but others should not be able to read DB entries
-chmod o-r /var/lib/opensemanticsearch/db.sqlite3
 
 # enable apache2 module for Django
 a2enmod wsgi

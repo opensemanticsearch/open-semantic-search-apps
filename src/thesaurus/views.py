@@ -383,7 +383,7 @@ def tag_concept(concept):
 		if count:
 			count_tagged += count
 			
-			log.append ("Tagged {} yet untagged entries containing alias \"{}\" with tags of the concept \"{}\"".format( count, alternate.label, concept.prefLabel ) )
+			log.append ("Tagged {} yet untagged entries containing alias \"{}\" with tags of the concept \"{}\"".format( count, alternate.altLabel, concept.prefLabel ) )
 
 
 	# Search aliases and tag them, too
@@ -430,14 +430,13 @@ def get_labels(concept):
 # Write thesaurus entries to facet entities list / dictionary
 #
 
-def append_thesaurus_labels_to_dictionaries(synoynms_configfilename):
+def append_thesaurus_labels_to_dictionaries(synoynms_configfilename, entities_configfilename):
 
 	facets = []
-	appended_words = []
 
 	for concept in Concept.objects.all():
 		
-		append_concept_labels_to_dictionary(concept=concept, synoynms_configfilename=synoynms_configfilename)
+		append_concept_labels_to_dictionary(concept=concept, synoynms_configfilename=synoynms_configfilename, entities_configfilename=entities_configfilename)
 
 		if concept.facet:
 			facet= concept.facet.facet
@@ -454,7 +453,7 @@ def append_thesaurus_labels_to_dictionaries(synoynms_configfilename):
 # Append concept labels and aliases to dictionary of facet and write aliases to synonyms config file
 #
 
-def append_concept_labels_to_dictionary(concept, synoynms_configfilename=None):
+def append_concept_labels_to_dictionary(concept, synoynms_configfilename=None, entities_configfilename=None):
 
 	solr_config_path = "/var/solr/data/core1/conf/named_entities"
 
@@ -466,8 +465,10 @@ def append_concept_labels_to_dictionary(concept, synoynms_configfilename=None):
 	dict_filename = solr_config_path + os.path.sep + 'tmp_' + facet + '.txt'
 
 	labels = get_labels(concept)
-
+	
+	#
 	# append labels to dictionary file	
+	#
 	dict_file = open(dict_filename, 'a', encoding="UTF-8")
 
 	for label in labels:
@@ -475,11 +476,26 @@ def append_concept_labels_to_dictionary(concept, synoynms_configfilename=None):
 
 	dict_file.close()
 
+	#
+	# append entities with id and labels to entities dictionary file
+	#
+	entities_file = open(entities_configfilename, 'a', encoding="UTF-8")
+	
+	uri = str(concept.id)
+
+	entities_file.write(facet + "\t" + uri)
+	for label in labels:
+		entities_file.write("\t" + label)
+
+	entities_file.write("\n")
+
+	entities_file.close()
+
+
 	if synoynms_configfilename:
 		# if synonyms, append to synoynms config file
 		if len(labels) > 1:
 			solr_ontology_tagger.append_labels_to_synonyms_configfile(labels, synoynms_configfilename)
-
 
 #
 # Append single words of concept labels to wordlist for OCR word dictionary
