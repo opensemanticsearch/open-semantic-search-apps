@@ -7,8 +7,10 @@ python3 /var/lib/opensemanticsearch/manage.py collectstatic --noinput
 # crate or update DB
 python3 /var/lib/opensemanticsearch/manage.py migrate
 
-# allow Django running in apache2 context to write to DB
+# allow Django running in apache2 context to read and write to DB
 chgrp www-data /var/lib/opensemanticsearch
+chmod g+w /var/lib/opensemanticsearch
+chmod -R g+r /var/lib/opensemanticsearch
 chown www-data:www-data /var/lib/opensemanticsearch/db.sqlite3
 
 # but others should not be able to read DB entries
