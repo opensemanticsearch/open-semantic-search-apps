@@ -4,8 +4,12 @@
 # export static files to directory for webserver
 python3 /var/lib/opensemanticsearch/manage.py collectstatic --noinput
 
-# crate or update DB
+# create or update DB
 python3 /var/lib/opensemanticsearch/manage.py migrate
+
+# create directory for file uploads
+mkdir /var/opensemanticsearch
+chown www-data:www-data /var/opensemanticsearch
 
 # allow Django running in apache2 context to read and write to DB
 chgrp www-data /var/lib/opensemanticsearch
