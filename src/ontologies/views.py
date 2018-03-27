@@ -14,6 +14,7 @@ from thesaurus.models import Facet
 from thesaurus.models import Concept
 
 from opensemanticetl.enhance_extract_text_tika_server import enhance_extract_text_tika_server
+import opensemanticetl.etl_sparql
 import opensemanticetl.export_solr
 
 from solr_ontology_tagger import OntologyTagger
@@ -131,32 +132,6 @@ def apply_ontology(request, pk):
 
 
 #
-# Download graph from SPARQL endpoint
-#
-
-def download_rdf_from_sparql_endpoint(endpoint, query):
-
-	from SPARQLWrapper import SPARQLWrapper, XML
-
-	# read graph by construct query results from SPARQL endpoint
-	sparql = SPARQLWrapper(endpoint)
-	sparql.setQuery(query)
-	sparql.setReturnFormat(XML)
-	results = sparql.query().convert()
-
-	# crate temporary filename
-	file = tempfile.NamedTemporaryFile()
-	filename = file.name
-	file.close()
-
-	# export graph to RDF file
-	results.serialize(destination=filename, format="xml")
-
-
-	return filename
-
-
-#
 # Get local file(name) of the ontology
 #
 
@@ -167,14 +142,21 @@ def get_ontology_file(ontology):
 	# if local file, file no temp file
 	is_tempfile = False
 
-	if os.path.isfile(ontology.file.path):
+	if ontology.file:
 
 		filename = ontology.file.path
 
 	elif ontology.sparql_endpoint:
+		
+		print ("Endpoint")
 
 		is_tempfile = True
-		filename = download_rdf_from_sparql_endpoint(ontology.sparql_endpoint, ontology.sparql_query)
+
+		if ontology.sparql_query.startswith("SELECT "):
+			print ("select")
+			filename = opensemanticetl.etl_sparql.sparql_select_to_list_file(ontology.sparql_endpoint, ontology.sparql_query)
+		else:
+			filename = opensemanticetl.etl_sparql.download_rdf_from_sparql_endpoint(ontology.sparql_endpoint, ontology.sparql_query)
 
 	elif ontology.uri.startswith('file://'):
 
@@ -185,6 +167,8 @@ def get_ontology_file(ontology):
 		# Download url to an tempfile
 		is_tempfile = True
 		filename, headers = urlretrieve(ontology.uri)
+
+	print (filename)
 
 	return is_tempfile, filename
 
@@ -450,7 +434,7 @@ def get_facetname(ontology):
 	elif ontology.file.name:
 		# filename without path
 		facet = os.path.basename(ontology.file.name)
-	# not every uri can be used as filename, so dont use it, take better id
+	# not every uri can be used as filename, so don't use it, take better id
 	#elif ontology.uri:
 	#	facet = ontology.uri
 	else:
@@ -509,76 +493,71 @@ def	write_named_entities_config(request):
 	# create named entities configs for all ontologies
 	for ontology in Ontologies.objects.all():
 		
-		try:
-			print ("Importing Ontology or List {} (ID: {})".format( ontology, ontology.id ) )
-		
-			# Download, if URI
-			is_tempfile, filename = get_ontology_file(ontology)
-			
-			facet = get_facetname(ontology)
-		
-			# analyse content type & encoding
-			contenttype, encoding = get_contenttype_and_encoding(filename)
-			print ( "Detected content type: {}".format(contenttype) )
-			print ( "Detected encoding: {}".format(encoding) )
-
-
-			# file to export all labels			
-			tmplistfilename = solr_config_path + os.path.sep + 'tmp_' + facet + '.txt'
-			
-			#
-			# export entries to listfiles
-			#
-						
-			if contenttype=='application/rdf+xml':
-
-				#
-				# write labels, words and synonyms config files
-				#
-
-				ontology_tagger = OntologyTagger()
-
-				# load graph from RDF file
-				ontology_tagger.parse(filename)
-
-				# don't tag documents in index, now we want only write the synonyms config
-				ontology_tagger.solr = False
-				
-				# append synonyms to Solr config file
-				ontology_tagger.synonyms_configfile = tmp_synonyms_configfilename
-
-				# append single words of concept labels to wordlist for OCR word dictionary
-				ontology_tagger.wordlist_configfile = tmp_wordlist_configfilename
-
-				# append entities for ETL plugin for normalizing of/and dictionary based entity extraction
-				ontology_tagger.entities_configfile = tmp_entities_configfilename
-
-				# append all labels to the facets labels list
-				ontology_tagger.labels_configfile = tmplistfilename
-				
-				# write synonyms config file
-				ontology_tagger.apply(target_facet=facet)
-
-				
-			elif contenttype.startswith('text/plain'):
-				append_from_txtfile(sourcefilename=filename, targetfilename=tmplistfilename, encoding=encoding, wordlist_configfilename=tmp_wordlist_configfilename)
-				
-			else:
-				# create empty list so configs of field in schema.xml pointing to this file or in facet config of UI will not break
-				print ( "Unknown format {}".format(contenttype) )
-				if_not_exist_create_empty_list(targetfilename=tmplistfilename)
+		print ("Importing Ontology or List {} (ID: {})".format( ontology, ontology.id ) )
 	
-			# remember each new facet for which there a list has been created so we can later write all this facets to schema.xml config part
-			if not facet in facets:
-				facets.append(facet)
-			
-			# Delete if downloaded ontology by URL to tempfile
-			if is_tempfile:
-				os.remove(filename)
+		# Download, if URI
+		is_tempfile, filename = get_ontology_file(ontology)
+		
+		facet = get_facetname(ontology)
+	
+		# analyse content type & encoding
+		contenttype, encoding = get_contenttype_and_encoding(filename)
+		print ( "Detected content type: {}".format(contenttype) )
+		print ( "Detected encoding: {}".format(encoding) )
 
-		except BaseException as e:
-			print ("Error: Exception while importing ontology {}: {}".format(ontology, e))
-			messages.add_message( request, messages.ERROR, "Error: Exception while importing ontology {}: {}".format(ontology, e) )
+
+		# file to export all labels			
+		tmplistfilename = solr_config_path + os.path.sep + 'tmp_' + facet + '.txt'
+		
+		#
+		# export entries to listfiles
+		#
+					
+		if contenttype=='application/rdf+xml':
+
+			#
+			# write labels, words and synonyms config files
+			#
+
+			ontology_tagger = OntologyTagger()
+
+			# load graph from RDF file
+			ontology_tagger.parse(filename)
+
+			# don't tag documents in index, now we want only write the synonyms config
+			ontology_tagger.solr = False
+			
+			# append synonyms to Solr config file
+			ontology_tagger.synonyms_configfile = tmp_synonyms_configfilename
+
+			# append single words of concept labels to wordlist for OCR word dictionary
+			ontology_tagger.wordlist_configfile = tmp_wordlist_configfilename
+
+			# append entities for ETL plugin for normalizing of/and dictionary based entity extraction
+			ontology_tagger.entities_configfile = tmp_entities_configfilename
+
+			# append all labels to the facets labels list
+			ontology_tagger.labels_configfile = tmplistfilename
+			
+			# write synonyms config file
+			ontology_tagger.apply(target_facet=facet)
+
+			
+		elif contenttype.startswith('text/plain'):
+			append_from_txtfile(sourcefilename=filename, targetfilename=tmplistfilename, encoding=encoding, wordlist_configfilename=tmp_wordlist_configfilename)
+			
+		else:
+			# create empty list so configs of field in schema.xml pointing to this file or in facet config of UI will not break
+			print ( "Unknown format {}".format(contenttype) )
+			if_not_exist_create_empty_list(targetfilename=tmplistfilename)
+
+		# remember each new facet for which there a list has been created so we can later write all this facets to schema.xml config part
+		if not facet in facets:
+			facets.append(facet)
+		
+		# Delete if downloaded ontology by URL to tempfile
+		if is_tempfile:
+			os.remove(filename)
 
 	# Write thesaurus entries to facet entities list / dictionary
 	# and to to ETL config for dictionary based named entites extraction
