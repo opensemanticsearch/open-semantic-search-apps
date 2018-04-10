@@ -1,0 +1,263 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+<form {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} action="" method="post">{% csrf_token %}
+
+    {{ form.non_field_errors }}
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+<h1>Edit setup</h1>
+
+
+	</div>
+</div>
+
+
+
+
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+
+<dl class="tabs" data-tab>
+  <dd><a href="#panel-title">Config description (optional)</a></dd>
+  <dd class="active"><a href="#panel-language">Language(s)</a></dd>
+  <dd><a href="#panel-ocr">OCR</a></dd>
+  <dd><a href="#panel-ner">Named Entity Recognition (NER)</a></dd>
+</dl>
+
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="tabs-content">
+
+  <section class="content" id="panel-title">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>Name or notes</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+<p>Not necessary, only for managing purpose</p>
+
+        {{ form.title.errors }}
+        <label for="id_title">Title:</label>
+        {{ form.title }}
+
+<div class="row">
+
+    <div class="small-12 medium-8 columns">
+    <h3>Notes</h3>
+        {{ form.description.errors }}
+        <label for="id_description">Description or Notes</label>
+        {{ form.description }}
+    </div>
+
+
+</div>
+
+</section>
+
+  <section class="content active" id="panel-language">
+
+<div class="row">
+
+	<div class="small-12 columns text-center">
+
+		<h2>Language of user interface</h2>
+		
+
+			{{ form.language.errors }}
+			<label for="id_language">User Interface:</label>
+			{{ form.language }}
+
+	</div>
+
+</div>
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+		<h2>Grammar (stemming)</h2>
+	</div>
+</div>
+
+<div class="row">
+			<p>You can activate all grammars dependent on document language, since for each document only the grammar of the document language is applied. If your documents are only or mainly in one language, you should force a grammar, so it is applied even if the document language is not recognized correct.
+
+	<div class="small-6 columns text-center">
+
+		
+			<h3>Use grammar (dependent on document language)</h3>
+			<p>Use grammar (stemming) if the document language was autodetected</p>
+
+			{{ form.languages.errors }}
+			<label for="id_languages">Grammars:</label>
+			{{ form.languages }}
+
+	</div>
+	
+	<div class="small-6 columns text-center">
+
+			<h3>Force grammar (independent of document language)</h3>
+			<p>Force grammar(s) / stemmers for all documents (even if other language)</p>
+
+			{{ form.languages_force.errors }}
+			<label for="id_languages_forced">Forced grammar(s):</label>
+			{{ form.languages_force }}
+
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns text-center">
+
+		<h2>OCR dictionaries</h2>
+		
+			<p>Dictionaries to use for optical character recognition of scanned documents</p>
+
+
+			{{ form.ocr_languages.errors }}
+			<label for="id_ocr_languages">OCR dictionaries:</label>
+			{{ form.ocr_languages }}
+
+
+
+    </div>
+
+
+</div>
+
+
+
+</section>
+
+
+
+  <section class="content" id="panel-ocr">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>OCR of scanned documents and images</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+
+<p>Extract & find text from scanned or photographed documents by optical character recognition (OCR) of images</p>
+
+
+<h2>OCR</h2>
+
+<p>Extract text from images by optical character recognition</p>
+
+        {{ form.ocr.errors }}
+        <label for="id_ocr">OCR:</label>
+        {{ form.ocr }}
+
+
+<h2>OCR of images in PDF documents</h2>
+
+<p>Extract text in images embedded in PDF documents (f.e. scanned documents)</p>
+
+        {{ form.ocr_pdf.errors }}
+        <label for="id_ocr_pdf">OCR images in PDF:</label>
+        {{ form.ocr_pdf }}
+
+
+<h2>Descew</h2>
+
+<p>Additionally descew images before OCR, which sometimes improves OCR results for bad quality scans.</p>
+
+        {{ form.ocr_descew.errors }}
+        <label for="id_ocr_descew">Descew:</label>
+        {{ form.ocr_descew }}
+
+<p>Warning: This will take long time / multiple the time for OCR but in some cases of bad quality scans more can be recognized.</p>
+
+
+</div>
+
+</section>
+
+
+  <section class="content" id="panel-ner">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>Named Entity Recognition (NER) by machine learning</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+<p>Named Entity recognition needs many CPU ressources while indexing documents, but will extract automatically many entities like persons, organizaztions or places for interactive filters & enhanced analysis that are not configured in your thesaurus.</p>
+
+<h2>SpaCy NER</h2>
+
+<p>Extract named entities by SpaCy NER</p>
+
+        {{ form.ner_spacy.errors }}
+        <label for="id_ner_spacy">Spacy NER:</label>
+        {{ form.ner_spacy }}
+
+
+<h2>Stanford NER</h2>
+
+<p>Additionally to recognize some entities which SpaCy did not recognize you can use the NER models of another NER freamework Stanford NER</p>
+        {{ form.ner_stanford.errors }}
+        <label for="id_ner_stanford">Stanford NER:</label>
+        {{ form.ner_stanford }}
+
+<p>Warning: Low performance while indexing of documents!</p>
+
+</div>
+
+</section>
+
+
+<hr>
+
+
+<div class="row">
+    <div class="small-12 columns">
+
+<h2>Save changes</h2>
+
+    <input class="button" type="submit" value="Save" />
+
+
+    <a class="button" href="{% url 'setup:detail' setup.id %}">Cancel</a>
+
+</div>
+</div>
+
+</form>
+{% endblock content %}
