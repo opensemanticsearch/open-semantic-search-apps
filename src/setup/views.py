@@ -27,13 +27,14 @@ LANGUAGE_CHOICES = (
 LANGUAGES_CHOICES = (
 	('en', 'English'),
 	('ar', 'Arabic'),
+	('cz', 'Czech'),
 	('de', 'Deutsch (German)'),
 	('fa', 'Farsi (Persian)'),
 	('fr', 'Francais (French)'),
 	('it', 'Italian'),
 	('nl', 'Dutch (Netherlands)'),
 	('pt', 'Portuguese'),
-	('es', 'Spanish'),
+	('ro', 'Romanian'),
 )
 
 
@@ -41,6 +42,7 @@ LANGUAGES_CHOICES = (
 OCR_LANGUAGES_CHOICES = (
 	('eng', 'English'),
 	('ara', 'Arabic'),
+	('ces', 'Czech'),
 	('deu', 'Deutsch (German)'),
 	('deu-frak', 'Deutsch Frakturschrift (Old German)'),
 	('far', 'Farsi (Persian)'),
@@ -49,6 +51,7 @@ OCR_LANGUAGES_CHOICES = (
 	('ita', 'Italian'),
 	('nld', 'Dutch (Netherlands)'),
 	('por', 'Portuguese'),
+	('ron', 'Romanian'),
 	('spa', 'Spanish'),
 )
 
