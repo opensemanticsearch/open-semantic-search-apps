@@ -177,7 +177,7 @@ def generate_configfiles():
 # Updated an setup
 #
 
-def update_setup(request, pk):
+def update_setup(request, pk=1):
 
 	setup = Setup.objects.get(pk=pk)
 	
