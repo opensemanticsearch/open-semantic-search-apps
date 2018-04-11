@@ -94,6 +94,83 @@ class UpdateView(generic.UpdateView):
 
 
 #
+# Write setup from database to Open Semantic ETL config file
+#
+def	generate_etl_configfile(filename="/etc/opensemanticsearch/etl-webadmin"):
+
+	setup = Setup.objects.get(pk=1)
+
+	configfile = open(filename, "w", encoding="utf-8")
+
+	configfile.write( "# Warning: Do not edit here, will be overwritten by the web admin user interface\n" )
+
+	configfile.write( "config['languages'] = " + str(setup.languages.split(',')) + "\n" )
+
+	configfile.write( "config['languages_force'] = " + str(setup.languages_force.split(',')) + "\n" )
+
+	configfile.write( "config['ocr_lang'] = \'" + "+".join(setup.ocr_languages.split(',')) + "\'\n" )
+
+	if setup.ocr_pdf:
+		configfile.write( "if not 'enhance_pdf_ocr' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].append('enhance_pdf_ocr')" + "\n" )
+	else:
+		configfile.write( "if 'enhance_pdf_ocr' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].remove('enhance_pdf_ocr')" + "\n" )
+	
+	if setup.ocr_descew:
+		configfile.write( "if not 'enhance_ocr_descew' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].append('enhance_ocr_descew')" + "\n" )
+	else:
+		configfile.write( "if 'enhance_ocr_descew' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].remove('enhance_ocr_descew')" + "\n" )
+
+	if setup.ner_spacy:
+		configfile.write( "if not 'enhance_ner_spacy' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].append('enhance_ner_spacy')" + "\n" )
+	else:
+		configfile.write( "if 'enhance_ner_spacy' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].remove('enhance_ner_spacy')" + "\n" )
+
+	if setup.ner_stanford:
+		configfile.write( "if not 'enhance_ner_stanford' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].append('enhance_ner_stanford')" + "\n" )
+	else:
+		configfile.write( "if 'enhance_ner_stanford' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].remove('enhance_ner_stanford')" + "\n" )
+
+	configfile.close()
+
+
+#
+# Write setup from database to Solr PHP UI config file
+#
+def	generate_ui_configfile(filename="/etc/solr-php-ui/config.webadmin.php"):
+
+	setup = Setup.objects.get(pk=1)
+
+	configfile = open(filename, "w", encoding="utf-8")
+
+	configfile.write( "<?php\n" )
+	configfile.write( "// Warning: Do not edit here, will be overwritten by the web admin user interface\n" )
+
+
+	if setup.language:	
+		configfile.write( "$cfg['language'] = \'" + str(setup.language) + "\';\n" )
+		
+	configfile.write( "$cfg['languages'] = array(" + str(setup.languages.split(','))[1:-1] + ");\n" )
+
+	configfile.write( "?>" )
+
+	configfile.close()
+
+
+def generate_configfiles():
+
+	generate_etl_configfile()
+	generate_ui_configfile()
+
+
+#
 # Updated an setup
 #
 
@@ -114,6 +191,8 @@ def update_setup(request, pk):
 			setup.ocr_languages = (',').join( form.cleaned_data['ocr_languages'] )
 
 			form.save()
+
+			generate_configfiles()
 
 			return HttpResponseRedirect( reverse('setup:detail', args=[pk])) # Redirect after POST
 		

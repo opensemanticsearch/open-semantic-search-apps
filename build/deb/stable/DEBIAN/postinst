@@ -45,6 +45,16 @@ chgrp www-data /etc/opensemanticsearch/facets
 chmod g+r /etc/opensemanticsearch/facets
 chmod g+w /etc/opensemanticsearch/facets
 
+# allow Django running in apache2 context to write ETL config
+chgrp www-data /etc/opensemanticsearch/etl-webadmin
+chmod g+r /etc/opensemanticsearch/etl-webadmin
+chmod g+w /etc/opensemanticsearch/etl-webadmin
+
+# allow Django running in apache2 context to write UI config
+chgrp www-data /etc/solr-php-ui/config.webadmin.php
+chmod g+r /etc/solr-php-ui/config.webadmin.php
+chmod g+w /etc/solr-php-ui/config.webadmin.php
+
 # enable apache2 module for Django
 a2enmod wsgi
 
