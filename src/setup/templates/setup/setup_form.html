@@ -27,8 +27,8 @@
 
 
 <dl class="tabs" data-tab>
-  <dd><a href="#panel-title">Config description (optional)</a></dd>
-  <dd class="active"><a href="#panel-language">Language(s)</a></dd>
+  <dd><a href="#panel-ui">Search user interface</a></dd>
+  <dd class="active"><a href="#panel-language">Document language(s)</a></dd>
   <dd><a href="#panel-ocr">OCR</a></dd>
   <dd><a href="#panel-ner">Named Entity Recognition (NER)</a></dd>
 </dl>
@@ -80,22 +80,33 @@
 
 </section>
 
-  <section class="content active" id="panel-language">
+
+  <section class="content" id="panel-ui">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>User interface</h2>
+	</div>
+</div>
 
 <div class="row">
 
 	<div class="small-12 columns text-center">
 
-		<h2>Language of user interface</h2>
-		
-
 			{{ form.language.errors }}
-			<label for="id_language">User Interface:</label>
+			<label for="id_language">Language of search user interface:</label>
 			{{ form.language }}
 
 	</div>
 
 </div>
+
+
+</section>
+
+
+  <section class="content active" id="panel-language">
 
 
 <div class="row">
@@ -105,7 +116,7 @@
 </div>
 
 <div class="row">
-			<p>You can activate all grammars dependent on document language, since for each document only the grammar of the document language is applied. If your documents are only or mainly in one language, you should force a grammar, so it is applied even if the document language is not recognized correct.
+			<p>You can enable all document language dependent grammars, since for each document only the grammar of the document language will be applied. If your documents are only or mainly in one language, you should force a grammar, so the grammar is applied even if the document language is not recognized correct.
 
 	<div class="small-6 columns text-center">
 
@@ -134,7 +145,7 @@
 <div class="row">
 	<div class="small-12 columns text-center">
 
-		<h2>OCR dictionaries</h2>
+		<h3>OCR dictionaries</h3>
 		
 			<p>Dictionaries to use for optical character recognition of scanned documents</p>
 
@@ -172,7 +183,7 @@
 <p>Extract & find text from scanned or photographed documents by optical character recognition (OCR) of images</p>
 
 
-<h2>OCR</h2>
+<h3>OCR</h3>
 
 <p>Extract text from images by optical character recognition</p>
 
@@ -181,16 +192,16 @@
         {{ form.ocr }}
 
 
-<h2>OCR of images in PDF documents</h2>
+<h3>OCR of images in PDF documents</h3>
 
-<p>Extract text in images embedded in PDF documents (f.e. scanned documents)</p>
+<p>Extract text from images embedded in PDF documents (f.e. scanned documents)</p>
 
         {{ form.ocr_pdf.errors }}
         <label for="id_ocr_pdf">OCR images in PDF:</label>
         {{ form.ocr_pdf }}
 
 
-<h2>Descew</h2>
+<h3>Descew</h3>
 
 <p>Additionally descew images before OCR, which sometimes improves OCR results for bad quality scans.</p>
 
@@ -200,6 +211,10 @@
 
 <p>Warning: This will take long time / multiple the time for OCR but in some cases of bad quality scans more can be recognized.</p>
 
+
+<h3>OCR dictionaries</h3>
+
+<p>Set up the used language specific OCR dictionaries in the tab <i>Document language(s)</i></p>
 
 </div>
 
@@ -218,9 +233,9 @@
 <div class="row">
 	<div class="small-12 columns">
 
-<p>Named Entity recognition needs many CPU ressources while indexing documents, but will extract automatically many entities like persons, organizaztions or places for interactive filters & enhanced analysis that are not configured in your thesaurus.</p>
+<p>Named Entity recognition needs many CPU ressources while indexing documents, but will extract automatically many entities like persons, organizaztions or places (that are not configured in your thesaurus or ontologies) for interactive filters & enhanced analysis.</p>
 
-<h2>SpaCy NER</h2>
+<h3>SpaCy NER</h3>
 
 <p>Extract named entities by SpaCy NER</p>
 
@@ -229,9 +244,9 @@
         {{ form.ner_spacy }}
 
 
-<h2>Stanford NER</h2>
+<h3>Stanford NER</h3>
 
-<p>Additionally to recognize some entities which SpaCy did not recognize you can use the NER models of another NER freamework Stanford NER</p>
+<p>Alternate (or additionally to recognize some entities which SpaCy did not recognize) you can use the NER models of another NER framework Stanford NER</p>
         {{ form.ner_stanford.errors }}
         <label for="id_ner_stanford">Stanford NER:</label>
         {{ form.ner_stanford }}
