@@ -113,6 +113,11 @@ def	generate_etl_configfile(filename="/etc/opensemanticsearch/etl-webadmin"):
 
 	configfile.write( "config['ocr_lang'] = \'" + "+".join(setup.ocr_languages.split(',')) + "\'\n" )
 
+	if setup.ocr:
+		configfile.write( "config['ocr'] = True\n" )
+	else:
+		configfile.write( "config['ocr'] = False\n" )
+		
 	if setup.ocr_pdf:
 		configfile.write( "if not 'enhance_pdf_ocr' in config['plugins']:" + "\n" )
 		configfile.write( "\tconfig['plugins'].append('enhance_pdf_ocr')" + "\n" )
