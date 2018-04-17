@@ -18,6 +18,7 @@ import opensemanticetl.etl_sparql
 import opensemanticetl.export_solr
 
 from solr_ontology_tagger import OntologyTagger
+from dictionary.manager import Dictionary_Manager
 
 import os.path
 import tempfile
@@ -148,12 +149,9 @@ def get_ontology_file(ontology):
 
 	elif ontology.sparql_endpoint:
 		
-		print ("Endpoint")
-
 		is_tempfile = True
 
 		if ontology.sparql_query.startswith("SELECT "):
-			print ("select")
 			filename = opensemanticetl.etl_sparql.sparql_select_to_list_file(ontology.sparql_endpoint, ontology.sparql_query)
 		else:
 			filename = opensemanticetl.etl_sparql.download_rdf_from_sparql_endpoint(ontology.sparql_endpoint, ontology.sparql_query)
@@ -290,40 +288,13 @@ def if_not_exist_create_empty_list(targetfilename):
 # Write Solr config to extract entries of generated lists/dictionaries to configured facets
 #
 
-def write_solr_schema_config(configfilename, facets):
+def write_solr_schema_config(facets):
 	
-	configfile = open(configfilename, 'w', encoding="utf-8")
+	dictionary_manager = Dictionary_Manager()
 
 	for facet in facets:
 
-		configfile.write(	"""
-<field name="{}" type="string" indexed="true" stored="true" multiValued="true"/>
-<field name="{}_match_shingle" type="{}_match_shingle" indexed="true" stored="false" multiValued="true"/>
-<copyField source="*" dest="{}_match_shingle"/>
-<fieldType name="{}_match_shingle" class="solr.TextField" sortMissingLast="true" omitNorms="true">
-<analyzer>
-  <tokenizer class="solr.WhitespaceTokenizerFactory"/>
-    <filter class="solr.ShingleFilterFactory"
-            minShingleSize="2" maxShingleSize="5"
-            outputUnigramsIfNoShingles="true"
-    />
-    <filter class="solr.KeepWordFilterFactory"
-            words="named_entities/{}.txt" ignoreCase="true"/>
-    <filter class="solr.LowerCaseFilterFactory"/>
-  </analyzer>
-</fieldType>
-""".format(
-					facet,
-					facet,
-					facet,
-					facet,
-					facet,
-					facet
-					)
-	)
-	
-	configfile.close()
-
+		dictionary_manager.create_dictionary('dictionary_matcher_' + facet, 'named_entities/' + facet + '.txt')
 
 #
 # Write facets config for search UI
@@ -367,7 +338,7 @@ def write_facet_config(automatch_facets=[]):
 		
 		
 		if facet.facet in automatch_facets:
-			configfile_php.write("\n$cfg['facets']['{}_match_shingle'] = array ('label'=>'{} (automatic & shingled match)', 'facet_limit'=>'{}', 'snippets_limit'=>'{}',".format(	facet.facet, facet.label, facet.facet_limit, facet.snippets_limit))
+			configfile_php.write("\n$cfg['facets']['dictionary_matcher_{}'] = array ('label'=>'{} (automatic & shingled match)', 'facet_limit'=>'{}', 'snippets_limit'=>'{}',".format(	facet.facet, facet.label, facet.facet_limit, facet.snippets_limit))
 
 			if facet.snippets_enabled:
 				configfile_php.write("'snippets_enabled'=>true")
@@ -386,7 +357,7 @@ def write_facet_config(automatch_facets=[]):
 			
 			configfile_php.write( "\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format( facet, ontology ) )
 			if facet in automatch_facets:
-				configfile_php.write( "\n$cfg['facets']['{}_match_shingle'] = array ('label'=>'{} (automatic shingeld match)');\n".format( facet, ontology ) )
+				configfile_php.write( "\n$cfg['facets']['dictionary_matcher_{}'] = array ('label'=>'{} (automatic match)');\n".format( facet, ontology ) )
 
 	configfile_php.write('?>')
 	
@@ -417,6 +388,7 @@ def clean_facetname(facet):
 	facet = facet.replace(" ", "_")
 
 	facet=facet.strip()
+	facet=facet+'_ss'
 	
 	return facet
 
@@ -583,9 +555,8 @@ def	write_named_entities_config(request):
 	os.rename(tmp_entities_configfilename, entities_configfilename)
 	os.rename(tmp_wordlist_configfilename, wordlist_configfilename)
 	
-	# Create config for schema.xml include for all facets
-	configfilename = solr_config_path + os.path.sep + 'schema_named_entities.xml'
-	write_solr_schema_config(configfilename, facets)
+	# Create Solr schema config for all facets
+	write_solr_schema_config(facets)
 	
 	# Create config for UI
 	write_facet_config(automatch_facets=facets)
