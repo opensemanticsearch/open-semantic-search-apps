@@ -324,15 +324,18 @@ def write_facet_config(automatch_facets=[]):
 		
 		configfile_php.write("\n$cfg['facets']['{}'] = array ('label'=>'{}', 'facet_limit'=>'{}', 'snippets_limit'=>'{}'," . format( facet.facet, facet.label, facet.facet_limit, facet.snippets_limit))
 
-		configfile_python.write( "config['facets']['{}'] = ". format(facet.facet) )
-		configfile_python.write( "{" )
-		configfile_python.write( "'label': '{}', 'uri': '{}', 'facet_limit': '{}', 'snippets_limit': '{}'," . format( facet.label, facet.uri, facet.facet_limit, facet.snippets_limit) )
-
 		if facet.snippets_enabled:
 			configfile_php.write("'snippets_enabled'=>true")
 		else:
 			configfile_php.write("'snippets_enabled'=>false")
 		configfile_php.write(");\n")
+
+		configfile_python.write( "config['facets']['{}'] = ". format(facet.facet) )
+		configfile_python.write( "{" )
+		configfile_python.write( "'label': '{}', 'uri': '{}', 'facet_limit': '{}', 'snippets_limit': '{}'," . format( facet.label, facet.uri, facet.facet_limit, facet.snippets_limit) )
+
+		if facet.facet in automatch_facets:
+			configfile_python.write( "'dictionary': {}".format('dictionary_matcher_' + facet.facet) )
 
 		configfile_python.write("}\n")
 		
@@ -356,8 +359,17 @@ def write_facet_config(automatch_facets=[]):
 			facets_done.append(facet)
 			
 			configfile_php.write( "\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format( facet, ontology ) )
+
+			configfile_python.write( "config['facets']['{}'] = ". format(facet) )
+			configfile_python.write( "{" )
+			configfile_python.write( "'label': '{}', 'uri': '{}', 'facet_limit': '{}', 'snippets_limit': '{}'," . format( ontology.title, ontology.uri, 0, 0) )
+
 			if facet in automatch_facets:
+				configfile_python.write( " 'dictionary': '{}'".format('dictionary_matcher_' + facet) )
+
 				configfile_php.write( "\n$cfg['facets']['dictionary_matcher_{}'] = array ('label'=>'{} (automatic match)');\n".format( facet, ontology ) )
+
+			configfile_python.write("}\n")
 
 	configfile_php.write('?>')
 	
@@ -445,17 +457,14 @@ def get_contenttype_and_encoding(filename):
 
 def	write_named_entities_config(request):
 
-	solr_config_path = "/var/solr/data/core1/conf/named_entities"
+	solr_config_path = "/var/solr/data/core1-dictionary/conf/named_entities"
 
 	wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt"
-
-	entities_configfilename = "/etc/opensemanticsearch/entities/entities.tsv"
 	
 	synonyms_configfilename = solr_config_path + os.path.sep + 'synonyms.txt'
 	
 	tmp_synonyms_configfilename = solr_config_path + os.path.sep + 'tmp_synonyms.txt'
 	tmp_wordlist_configfilename = solr_config_path + os.path.sep + 'tmp_ocr_dictionary.txt'
-	tmp_entities_configfilename = solr_config_path + os.path.sep + 'tmp_entities.tsv'
 
 	# create empty synonym config file for the case there are no synonyms in ontologies or thesaurus
 	if_not_exist_create_empty_list(tmp_synonyms_configfilename)
@@ -499,14 +508,15 @@ def	write_named_entities_config(request):
 			# don't tag documents in index, now we want only write the synonyms config
 			ontology_tagger.solr = False
 			
+			# but add the labels to entities index for normalization and entity linking
+			ontology_tagger.solr_entities = 'http://localhost:8983/solr/'
+			ontology_tagger.solr_core_entities = 'core1-dictionary'
+			
 			# append synonyms to Solr config file
 			ontology_tagger.synonyms_configfile = tmp_synonyms_configfilename
 
 			# append single words of concept labels to wordlist for OCR word dictionary
 			ontology_tagger.wordlist_configfile = tmp_wordlist_configfilename
-
-			# append entities for ETL plugin for normalizing of/and dictionary based entity extraction
-			ontology_tagger.entities_configfile = tmp_entities_configfilename
 
 			# append all labels to the facets labels list
 			ontology_tagger.labels_configfile = tmplistfilename
@@ -533,7 +543,7 @@ def	write_named_entities_config(request):
 
 	# Write thesaurus entries to facet entities list / dictionary
 	# and to to ETL config for dictionary based named entites extraction
-	thesaurus_facets = thesaurus.views.append_thesaurus_labels_to_dictionaries(synoynms_configfilename=tmp_synonyms_configfilename, entities_configfilename=tmp_entities_configfilename)
+	thesaurus_facets = thesaurus.views.append_thesaurus_labels_to_dictionaries(synoynms_configfilename=tmp_synonyms_configfilename)
 
 	# Append single words of concept labels to wordlist for OCR word dictionary
 	thesaurus.views.append_concept_words_to_wordlist(wordlist_configfilename=tmp_wordlist_configfilename)
@@ -552,7 +562,6 @@ def	write_named_entities_config(request):
 
 	# Move temp synonyms and OCR words config file to destination
 	os.rename(tmp_synonyms_configfilename, synonyms_configfilename)
-	os.rename(tmp_entities_configfilename, entities_configfilename)
 	os.rename(tmp_wordlist_configfilename, wordlist_configfilename)
 	
 	# Create Solr schema config for all facets
@@ -565,4 +574,3 @@ def	write_named_entities_config(request):
 	# so added config files / ontolgies / facets / new dictionary entries will be considered by analyzing/indexing new documents
 	# Todo: Use the Solr URI from config
 	urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=core1')
-

@@ -430,13 +430,13 @@ def get_labels(concept):
 # Write thesaurus entries to facet entities list / dictionary
 #
 
-def append_thesaurus_labels_to_dictionaries(synoynms_configfilename, entities_configfilename):
+def append_thesaurus_labels_to_dictionaries(synoynms_configfilename):
 
 	facets = []
 
 	for concept in Concept.objects.all():
 		
-		append_concept_labels_to_dictionary(concept=concept, synoynms_configfilename=synoynms_configfilename, entities_configfilename=entities_configfilename)
+		append_concept_labels_to_dictionary(concept=concept, synoynms_configfilename=synoynms_configfilename)
 
 		if concept.facet:
 			facet= concept.facet.facet
@@ -453,9 +453,9 @@ def append_thesaurus_labels_to_dictionaries(synoynms_configfilename, entities_co
 # Append concept labels and aliases to dictionary of facet and write aliases to synonyms config file
 #
 
-def append_concept_labels_to_dictionary(concept, synoynms_configfilename=None, entities_configfilename=None):
+def append_concept_labels_to_dictionary(concept, synoynms_configfilename=None):
 
-	solr_config_path = "/var/solr/data/core1/conf/named_entities"
+	solr_config_path = "/var/solr/data/core1-dictionary/conf/named_entities"
 
 	if concept.facet:
 		facet = concept.facet.facet
@@ -475,22 +475,6 @@ def append_concept_labels_to_dictionary(concept, synoynms_configfilename=None, e
 		dict_file.write(label + "\n")
 
 	dict_file.close()
-
-	#
-	# append entities with id and labels to entities dictionary file
-	#
-	entities_file = open(entities_configfilename, 'a', encoding="UTF-8")
-	
-	uri = str(concept.id)
-
-	entities_file.write(facet + "\t" + uri)
-	for label in labels:
-		entities_file.write("\t" + label)
-
-	entities_file.write("\n")
-
-	entities_file.close()
-
 
 	if synoynms_configfilename:
 		# if synonyms, append to synoynms config file
