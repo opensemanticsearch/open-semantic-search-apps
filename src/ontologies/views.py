@@ -335,7 +335,7 @@ def write_facet_config(automatch_facets=[]):
 		configfile_python.write( "'label': '{}', 'uri': '{}', 'facet_limit': '{}', 'snippets_limit': '{}'," . format( facet.label, facet.uri, facet.facet_limit, facet.snippets_limit) )
 
 		if facet.facet in automatch_facets:
-			configfile_python.write( "'dictionary': {}".format('dictionary_matcher_' + facet.facet) )
+			configfile_python.write( "'dictionary': '{}'".format('dictionary_matcher_' + facet.facet) )
 
 		configfile_python.write("}\n")
 		
@@ -458,13 +458,14 @@ def get_contenttype_and_encoding(filename):
 def	write_named_entities_config(request):
 
 	solr_config_path = "/var/solr/data/core1-dictionary/conf/named_entities"
+	solr_dictionary_config_path = "/var/solr/data/core1-dictionary/conf/named_entities"
 
 	wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt"
 	
 	synonyms_configfilename = solr_config_path + os.path.sep + 'synonyms.txt'
 	
 	tmp_synonyms_configfilename = solr_config_path + os.path.sep + 'tmp_synonyms.txt'
-	tmp_wordlist_configfilename = solr_config_path + os.path.sep + 'tmp_ocr_dictionary.txt'
+	tmp_wordlist_configfilename = solr_dictionary_config_path + os.path.sep + 'tmp_ocr_dictionary.txt'
 
 	# create empty synonym config file for the case there are no synonyms in ontologies or thesaurus
 	if_not_exist_create_empty_list(tmp_synonyms_configfilename)
@@ -488,7 +489,7 @@ def	write_named_entities_config(request):
 
 
 		# file to export all labels			
-		tmplistfilename = solr_config_path + os.path.sep + 'tmp_' + facet + '.txt'
+		tmplistfilename = solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
 		
 		#
 		# export entries to listfiles
@@ -556,8 +557,8 @@ def	write_named_entities_config(request):
 	# Move new and complete facet file to destination
 	for facet in facets:
 		
-		tmplistfilename = solr_config_path + os.path.sep + 'tmp_' + facet + '.txt'
-		listfilename = solr_config_path + os.path.sep + facet + '.txt'
+		tmplistfilename = solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
+		listfilename = solr_dictionary_config_path + os.path.sep + facet + '.txt'
 		os.rename(tmplistfilename, listfilename)
 
 	# Move temp synonyms and OCR words config file to destination
