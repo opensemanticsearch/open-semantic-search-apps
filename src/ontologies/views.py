@@ -457,7 +457,7 @@ def get_contenttype_and_encoding(filename):
 
 def	write_named_entities_config(request):
 
-	solr_config_path = "/var/solr/data/core1-dictionary/conf/named_entities"
+	solr_config_path = "/var/solr/data/core1/conf/named_entities"
 	solr_dictionary_config_path = "/var/solr/data/core1-dictionary/conf/named_entities"
 
 	wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt"
