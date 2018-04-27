@@ -14,7 +14,6 @@ class Migration(migrations.Migration):
     operations = [
 	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('tag_ss','Tags','http://schema.org/keywords', 1, 10, 1, 10, 2);"),
 	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('language_s','Language','http://schema.org/inLanguage', 1, 10, 0, 10, 10);"),
-	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('author_s','Author','http://schema.org/author', 1, 10, 0, 10, 1);"),
 	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('person_ss','Persons','http://schema.org/Person', 1, 10, 1, 10, 3);"),
 	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('organization_ss','Organizations','http://schema.org/Organization', 1, 10, 1, 10, 4);"),
 	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('location_ss','Locations','http://schema.org/Place', 1, 10, 1, 10, 5);"),
