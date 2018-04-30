@@ -90,6 +90,9 @@ def update_concept(request, pk):
 
 			messages.add_message( request, messages.INFO, "Saved concept \"{}\"".format(concept.prefLabel) )
 			
+			# export to Open Semantic Entity Search API config
+			export_entity(concept=concept)
+		
 			# tag all docs containing concept or one of its aliases
 			tag_concept_and_message_stats(request=request, concept=concept)
 
@@ -117,6 +120,9 @@ def create_concept(request):
 		form = ConceptForm(request.POST, request.FILES)
 		if form.is_valid():
 			concept = form.save()
+
+			# export to Open Semantic Entity Search API config
+			export_entity(concept=concept)
 
 			# tag all docs containing concept or one of its aliases
 			tag_concept_and_message_stats(request=request, concept=concept)
@@ -430,71 +436,63 @@ def get_labels(concept):
 # Write thesaurus entries to facet entities list / dictionary
 #
 
-def append_thesaurus_labels_to_dictionaries(synoynms_configfilename):
+def export_entities(wordlist_configfilename=None, facet_dictionary_is_tempfile=False):
 
 	facets = []
+	appended_words=[]
 
 	for concept in Concept.objects.all():
 		
-		append_concept_labels_to_dictionary(concept=concept, synoynms_configfilename=synoynms_configfilename)
+		appended_words = export_entity(concept=concept, wordlist_configfilename=wordlist_configfilename, appended_words = appended_words, facet_dictionary_is_tempfile=facet_dictionary_is_tempfile)
 
 		if concept.facet:
-			facet= concept.facet.facet
+			facet = concept.facet.facet
 		else:
 			facet = "tag_ss"
 	
 		if not facet in facets:
 			facets.append(facet)
-
+	
 	return facets
 
 
 #
-# Append concept labels and aliases to dictionary of facet and write aliases to synonyms config file
+# Append concept labels and aliases to facet dictionary and write aliases to synonyms config file
 #
 
-def append_concept_labels_to_dictionary(concept, synoynms_configfilename=None):
-
-	solr_config_path = "/var/solr/data/core1-dictionary/conf/named_entities"
-
+def export_entity(concept, wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt", appended_words = [], facet_dictionary_is_tempfile=False):
+	
+	facet = "tag_ss"
 	if concept.facet:
 		facet = concept.facet.facet
-	else:
-		facet = "tag_ss"
 
-	dict_filename = solr_config_path + os.path.sep + 'tmp_' + facet + '.txt'
+	solr_dictionary_config_path = "/var/solr/data/opensemanticsearch-entities/conf/entities"
+
+	if facet_dictionary_is_tempfile:
+		dict_filename = solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
+	else:
+		dict_filename = solr_dictionary_config_path + os.path.sep + facet + '.txt'
 
 	labels = get_labels(concept)
 	
-	#
 	# append labels to dictionary file	
-	#
 	dict_file = open(dict_filename, 'a', encoding="UTF-8")
 
 	for label in labels:
 		dict_file.write(label + "\n")
 
 	dict_file.close()
+	
 
-	if synoynms_configfilename:
-		# if synonyms, append to synoynms config file
-		if len(labels) > 1:
-			solr_ontology_tagger.append_labels_to_synonyms_configfile(labels, synoynms_configfilename)
+	# if synonyms, append to synoynms config file
+	if len(labels) > 1:
+		connector = export_solr()
+		connector.append_synonyms(resourceid='skos', label=labels[0], synonyms=labels[1:])
 
-#
-# Append single words of concept labels to wordlist for OCR word dictionary
-#
 
-def append_concept_words_to_wordlist(wordlist_configfilename, concept=None):
-
-	appended_words = []
-
-	for concept in Concept.objects.all():
-
-		labels = get_labels(concept)
-
+	# Append single words of concept labels to wordlist for OCR word dictionary
+	if wordlist_configfilename:
 		wordlist_file = open(wordlist_configfilename, 'a', encoding="UTF-8")
-
 		for label in labels:
 			words = label.split()
 			for word in words:
@@ -506,4 +504,5 @@ def append_concept_words_to_wordlist(wordlist_configfilename, concept=None):
 						wordlist_file.write(word + "\n")
 						wordlist_file.write(word.upper() + "\n")
 		wordlist_file.close()
-
+	
+	return appended_words

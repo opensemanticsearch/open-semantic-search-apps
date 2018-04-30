@@ -20,10 +20,12 @@ chown www-data:www-data /var/lib/opensemanticsearch/db.sqlite3
 # but others should not be able to read DB entries
 chmod o-r /var/lib/opensemanticsearch/db.sqlite3
 
-# allow Django running in apache2 context to write Entities config
-chgrp -R www-data /var/solr/data/core1-dictionary/conf/named_entities
-chmod -R g+r /var/solr/data/core1-dictionary/conf/named_entities
-chmod -R g+w /var/solr/data/core1-dictionary/conf/named_entities
+# allow Django running in apache2 context to write dictionaries of named entities
+chgrp -R www-data /var/solr/data/opensemanticsearch-entities/conf/entities
+chmod -R g+r /var/solr/data/opensemanticsearch-entities/conf/entities
+chmod -R g+w /var/solr/data/opensemanticsearch-entities/conf/entities
+chmod o+x /var/solr/data/opensemanticsearch-entities
+chmod o+x /var/solr/data/opensemanticsearch-entities/conf
 
 # allow Django running in apache2 context to write OCR dictionary
 chgrp www-data /etc/opensemanticsearch/ocr

@@ -26,10 +26,6 @@ import tempfile
 from urllib.request import urlretrieve
 from urllib.request import urlopen
 
-import rdflib.util
-from rdflib import Graph
-from rdflib import RDFS
-
 
 class OntologiesForm(ModelForm):
 
@@ -192,6 +188,7 @@ def tag_by_ontology(ontology):
 		ontology_tagger.parse(filename)
 
 		# tag the documents on Solr server with all matching entities of the ontology	
+		ontology_tagger.tag = True
 		ontology_tagger.apply(target_facet=facet)
 
 	elif contenttype.startswith('text/plain'):
@@ -283,18 +280,6 @@ def if_not_exist_create_empty_list(targetfilename):
 	target = open(targetfilename, 'a')
 	target.close()
 
-
-#
-# Write Solr config to extract entries of generated lists/dictionaries to configured facets
-#
-
-def write_solr_schema_config(facets):
-	
-	dictionary_manager = Dictionary_Manager()
-
-	for facet in facets:
-
-		dictionary_manager.create_dictionary('dictionary_matcher_' + facet, 'named_entities/' + facet + '.txt')
 
 #
 # Write facets config for search UI
@@ -440,7 +425,7 @@ def get_contenttype_and_encoding(filename):
 		parameters = {}
 		parameters['filename'] = filename
 		parameters, data = tika.process(parameters=parameters, data = {})
-		contenttype = data['content_type']
+		contenttype = data['content_type_ss']
 
 		# get charset if plain text file to extract with right charset
 		if 'encoding_s' in data:
@@ -452,23 +437,17 @@ def get_contenttype_and_encoding(filename):
 
 
 #
-# Write entities to lists and add lists to Solr schema config
+# Write entities configs
 #
 
 def	write_named_entities_config(request):
 
-	solr_config_path = "/var/solr/data/core1/conf/named_entities"
-	solr_dictionary_config_path = "/var/solr/data/core1-dictionary/conf/named_entities"
+	solr_config_path = "/var/solr/data/opensemanticsearch/conf"
+	solr_dictionary_config_path = "/var/solr/data/opensemanticsearch-entities/conf/entities"
 
 	wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt"
 	
-	synonyms_configfilename = solr_config_path + os.path.sep + 'synonyms.txt'
-	
-	tmp_synonyms_configfilename = solr_config_path + os.path.sep + 'tmp_synonyms.txt'
 	tmp_wordlist_configfilename = solr_dictionary_config_path + os.path.sep + 'tmp_ocr_dictionary.txt'
-
-	# create empty synonym config file for the case there are no synonyms in ontologies or thesaurus
-	if_not_exist_create_empty_list(tmp_synonyms_configfilename)
 
 	facets = []
 
@@ -488,7 +467,7 @@ def	write_named_entities_config(request):
 		print ( "Detected encoding: {}".format(encoding) )
 
 
-		# file to export all labels			
+		# file to export all labels
 		tmplistfilename = solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
 		
 		#
@@ -511,10 +490,10 @@ def	write_named_entities_config(request):
 			
 			# but add the labels to entities index for normalization and entity linking
 			ontology_tagger.solr_entities = 'http://localhost:8983/solr/'
-			ontology_tagger.solr_core_entities = 'core1-dictionary'
+			ontology_tagger.solr_core_entities = 'opensemanticsearch-entities'
 			
-			# append synonyms to Solr config file
-			ontology_tagger.synonyms_configfile = tmp_synonyms_configfilename
+			# append synonyms to Solr managed synonyms ressource "skos"
+			ontology_tagger.synonyms_ressourceid = 'skos'
 
 			# append single words of concept labels to wordlist for OCR word dictionary
 			ontology_tagger.wordlist_configfile = tmp_wordlist_configfilename
@@ -542,12 +521,8 @@ def	write_named_entities_config(request):
 		if is_tempfile:
 			os.remove(filename)
 
-	# Write thesaurus entries to facet entities list / dictionary
-	# and to to ETL config for dictionary based named entites extraction
-	thesaurus_facets = thesaurus.views.append_thesaurus_labels_to_dictionaries(synoynms_configfilename=tmp_synonyms_configfilename)
-
-	# Append single words of concept labels to wordlist for OCR word dictionary
-	thesaurus.views.append_concept_words_to_wordlist(wordlist_configfilename=tmp_wordlist_configfilename)
+	# Write thesaurus entries to facet entities list(s) / dictionaries, entities index and synonyms
+	thesaurus_facets = thesaurus.views.export_entities(wordlist_configfilename=tmp_wordlist_configfilename, facet_dictionary_is_tempfile=True)
 
 	# add facets used in thesaurus but not yet in an ontology to facet config
 	for thesaurus_facet in thesaurus_facets:
@@ -562,16 +537,19 @@ def	write_named_entities_config(request):
 		os.rename(tmplistfilename, listfilename)
 
 	# Move temp synonyms and OCR words config file to destination
-	os.rename(tmp_synonyms_configfilename, synonyms_configfilename)
 	os.rename(tmp_wordlist_configfilename, wordlist_configfilename)
 	
-	# Create Solr schema config for all facets
-	write_solr_schema_config(facets)
-	
+	# Add facet dictionaries to Open Semantic Entity Search API config
+	dictionary_manager = Dictionary_Manager()
+
+	for facet in facets:
+
+		dictionary_manager.create_dictionary('dictionary_matcher_' + facet, 'entities/' + facet + '.txt')
+
 	# Create config for UI
 	write_facet_config(automatch_facets=facets)
 	
 	# Reload/restart Solr core / schema / config to apply changed configs
 	# so added config files / ontolgies / facets / new dictionary entries will be considered by analyzing/indexing new documents
 	# Todo: Use the Solr URI from config
-	urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=core1')
+	urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=opensemanticsearch-entities')

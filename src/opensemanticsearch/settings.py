@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     'querytagger',
     'morphology',
     'hypothesis',
+    'entity_rest_api',
 )
 
 MIDDLEWARE_CLASSES = (
