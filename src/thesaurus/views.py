@@ -17,7 +17,7 @@ import solr_ontology_tagger
 from thesaurus.models import Concept, Alternate, Hidden, Group, GroupTag, ConceptTag, Facet, Broader, Narrower, Related
 
 from opensemanticetl.export_solr import export_solr
-
+from entity_manager.manager import Entity_Manager
 
 class ConceptForm(ModelForm):
 
@@ -413,26 +413,6 @@ def tag_concept(concept):
 
 
 #
-# Get labels and aliases of the concept
-#
-		
-def get_labels(concept):
-		
-		labels = []
-
-		if concept.prefLabel:
-			labels.append(concept.prefLabel)
-
-		for alternate in Alternate.objects.filter(concept = concept.id):
-			labels.append(alternate.altLabel)
-
-		for hidden in Hidden.objects.filter(concept = concept.id):
-			labels.append(hidden.hiddenLabel)
-		
-		return labels
-
-
-#
 # Write thesaurus entries to facet entities list / dictionary
 #
 
@@ -466,31 +446,21 @@ def export_entity(concept, wordlist_configfilename = "/etc/opensemanticsearch/oc
 	if concept.facet:
 		facet = concept.facet.facet
 
-	solr_dictionary_config_path = "/var/solr/data/opensemanticsearch-entities/conf/entities"
-
-	if facet_dictionary_is_tempfile:
-		dict_filename = solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
-	else:
-		dict_filename = solr_dictionary_config_path + os.path.sep + facet + '.txt'
-
-	labels = get_labels(concept)
+	altLabels = []
+	for alternate in Alternate.objects.filter(concept = concept.id):
+		altLabels.append(alternate.altLabel)
+	for hidden in Hidden.objects.filter(concept = concept.id):
+		altLabels.append(hidden.hiddenLabel)
+			
+	entity_manager = Entity_Manager()
 	
-	# append labels to dictionary file	
-	dict_file = open(dict_filename, 'a', encoding="UTF-8")
-
-	for label in labels:
-		dict_file.write(label + "\n")
-
-	dict_file.close()
-	
-
-	# if synonyms, append to synoynms config file
-	if len(labels) > 1:
-		connector = export_solr()
-		connector.append_synonyms(resourceid='skos', label=labels[0], synonyms=labels[1:])
+	entity_manager.add(id=concept.prefLabel, preferred_label=concept.prefLabel, prefLabels=[concept.prefLabel], labels=altLabels, dictionary=facet, facet_dictionary_is_tempfile=True)
 
 
-	# Append single words of concept labels to wordlist for OCR word dictionary
+	# Append single words of concept labels to wordlist of OCR word dictionary
+	labels = [concept.prefLabel]
+	labels.extend(altLabels)
+
 	if wordlist_configfilename:
 		wordlist_file = open(wordlist_configfilename, 'a', encoding="UTF-8")
 		for label in labels:
