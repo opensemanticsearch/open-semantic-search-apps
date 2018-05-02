@@ -552,4 +552,5 @@ def	write_named_entities_config(request):
 	# Reload/restart Solr core / schema / config to apply changed configs
 	# so added config files / ontolgies / facets / new dictionary entries will be considered by analyzing/indexing new documents
 	# Todo: Use the Solr URI from config
+	urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=opensemanticsearch')
 	urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=opensemanticsearch-entities')
