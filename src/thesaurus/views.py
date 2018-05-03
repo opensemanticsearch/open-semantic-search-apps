@@ -454,7 +454,7 @@ def export_entity(concept, wordlist_configfilename = "/etc/opensemanticsearch/oc
 			
 	entity_manager = Entity_Manager()
 	
-	entity_manager.add(id=concept.prefLabel, preferred_label=concept.prefLabel, prefLabels=[concept.prefLabel], labels=altLabels, dictionary=facet, facet_dictionary_is_tempfile=facet_dictionary_is_tempfile)
+	entity_manager.add(id=concept.prefLabel, types=[facet], preferred_label=concept.prefLabel, prefLabels=[concept.prefLabel], labels=altLabels, dictionary=facet, facet_dictionary_is_tempfile=facet_dictionary_is_tempfile)
 
 
 	# Append single words of concept labels to wordlist of OCR word dictionary
