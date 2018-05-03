@@ -19,6 +19,7 @@ import opensemanticetl.export_solr
 
 from solr_ontology_tagger import OntologyTagger
 from dictionary.manager import Dictionary_Manager
+from entity_import.entity_import_list import Entity_Importer_List
 
 import os.path
 import tempfile
@@ -238,20 +239,16 @@ def tag_by_list(filename, field, encoding='utf-8'):
 # Append entries/lines from an list/dictionary to another
 #
 
-def append_from_txtfile(sourcefilename, targetfilename, encoding='utf-8', wordlist_configfilename=None):
+def append_from_txtfile(sourcefilename, encoding='utf-8', wordlist_configfilename=None):
 	
 	appended_words = []
 
 	source = open(sourcefilename, 'r', encoding=encoding)
-	target = open(targetfilename, 'a', encoding="utf-8")
 
-
-	if wordlist_configfilename:
-		wordlist_file = open(wordlist_configfilename, 'a', encoding="UTF-8")
+	wordlist_file = open(wordlist_configfilename, 'a', encoding="UTF-8")
 
 	for line in source:
 		if line:
-			target.write(line)
 
 			if wordlist_configfilename:
 				# Append single words of concept labels to wordlist for OCR word dictionary
@@ -268,17 +265,8 @@ def append_from_txtfile(sourcefilename, targetfilename, encoding='utf-8', wordli
 
 
 	source.close()
-	target.close()
 
-	if wordlist_configfilename:
-		wordlist_file.close()
-
-
-# An empty list file for a facet won't cause error opening/reading it, even if no entry exists
-def if_not_exist_create_empty_list(targetfilename):
-
-	target = open(targetfilename, 'a')
-	target.close()
+	wordlist_file.close()
 
 
 #
@@ -469,11 +457,15 @@ def	write_named_entities_config(request):
 
 		# file to export all labels
 		tmplistfilename = solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
-		
+
+		# An empty list file for a facet won't cause error opening/reading it, even if no entry exists
+		list = open(tmplistfilename, 'a')
+		list.close()
+
 		#
 		# export entries to listfiles
 		#
-					
+		
 		if contenttype=='application/rdf+xml':
 
 			#
@@ -506,13 +498,13 @@ def	write_named_entities_config(request):
 
 			
 		elif contenttype.startswith('text/plain'):
-			append_from_txtfile(sourcefilename=filename, targetfilename=tmplistfilename, encoding=encoding, wordlist_configfilename=tmp_wordlist_configfilename)
-			
-		else:
-			# create empty list so configs of field in schema.xml pointing to this file or in facet config of UI will not break
-			print ( "Unknown format {}".format(contenttype) )
-			if_not_exist_create_empty_list(targetfilename=tmplistfilename)
+			append_from_txtfile(sourcefilename=filename, encoding=encoding, wordlist_configfilename=tmp_wordlist_configfilename)
+			importer = Entity_Importer_List()
+			importer.import_entities(filename=filename, types=[facet], dictionary=facet, facet_dictionary_is_tempfile=True, encoding=encoding)
 
+		else:
+			print ( "Unknown format {}".format(contenttype) )
+		
 		# remember each new facet for which there a list has been created so we can later write all this facets to schema.xml config part
 		if not facet in facets:
 			facets.append(facet)
@@ -544,7 +536,7 @@ def	write_named_entities_config(request):
 
 	for facet in facets:
 
-		dictionary_manager.create_dictionary('dictionary_matcher_' + facet, 'entities/' + facet + '.txt')
+		dictionary_manager.create_dictionary(facet, 'entities/' + facet + '.txt')
 
 	# Create config for UI
 	write_facet_config(automatch_facets=facets)
