@@ -373,7 +373,6 @@ def clean_facetname(facet):
 	facet = facet.replace(" ", "_")
 
 	facet=facet.strip()
-	facet=facet+'_ss'
 	
 	return facet
 
@@ -386,18 +385,21 @@ def get_facetname(ontology):
 
 	if ontology.facet:
 		facet = ontology.facet.facet
-	elif ontology.title:
-		facet = ontology.title
-	elif ontology.file.name:
-		# filename without path
-		facet = os.path.basename(ontology.file.name)
-	# not every uri can be used as filename, so don't use it, take better id
-	#elif ontology.uri:
-	#	facet = ontology.uri
 	else:
-		facet = "ontology_{}".format(ontology.id)
+		if ontology.title:
+			facet = ontology.title
+		elif ontology.file.name:
+			# filename without path
+			facet = os.path.basename(ontology.file.name)
+		# not every uri can be used as filename, so don't use it, take better id
+		#elif ontology.uri:
+		#	facet = ontology.uri
+		else:
+			facet = "ontology_{}".format(ontology.id)
 
-	facet = clean_facetname(facet)
+		# remove special chars and add type suffix
+		facet = clean_facetname(facet)
+		facet = facet+'_ss'
 
 	return facet
 
@@ -430,12 +432,11 @@ def get_contenttype_and_encoding(filename):
 
 def	write_named_entities_config(request):
 
-	solr_config_path = "/var/solr/data/opensemanticsearch/conf"
-	solr_dictionary_config_path = "/var/solr/data/opensemanticsearch-entities/conf/entities"
+	dictionary_manager = Dictionary_Manager()
 
 	wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt"
 	
-	tmp_wordlist_configfilename = solr_dictionary_config_path + os.path.sep + 'tmp_ocr_dictionary.txt'
+	tmp_wordlist_configfilename = dictionary_manager.solr_dictionary_config_path + os.path.sep + 'tmp_ocr_dictionary.txt'
 
 	facets = []
 
@@ -456,7 +457,7 @@ def	write_named_entities_config(request):
 
 
 		# file to export all labels
-		tmplistfilename = solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
+		tmplistfilename = dictionary_manager.solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
 
 		# An empty list file for a facet won't cause error opening/reading it, even if no entry exists
 		list = open(tmplistfilename, 'a')
@@ -524,19 +525,17 @@ def	write_named_entities_config(request):
 	# Move new and complete facet file to destination
 	for facet in facets:
 		
-		tmplistfilename = solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
-		listfilename = solr_dictionary_config_path + os.path.sep + facet + '.txt'
+		tmplistfilename = dictionary_manager.solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
+		listfilename = dictionary_manager.solr_dictionary_config_path + os.path.sep + facet + '.txt'
 		os.rename(tmplistfilename, listfilename)
 
 	# Move temp synonyms and OCR words config file to destination
 	os.rename(tmp_wordlist_configfilename, wordlist_configfilename)
 	
 	# Add facet dictionaries to Open Semantic Entity Search API config
-	dictionary_manager = Dictionary_Manager()
-
 	for facet in facets:
 
-		dictionary_manager.create_dictionary(facet, 'entities/' + facet + '.txt')
+		dictionary_manager.create_dictionary(facet)
 
 	# Create config for UI
 	write_facet_config(automatch_facets=facets)
