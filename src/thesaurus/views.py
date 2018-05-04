@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 import django.core.urlresolvers
 import os.path
+from urllib.request import urlopen
 import solr_ontology_tagger
 
 from thesaurus.models import Concept, Alternate, Hidden, Group, GroupTag, ConceptTag, Facet, Broader, Narrower, Related
@@ -408,7 +409,6 @@ def tag_concept(concept):
 			
 			log.append ("Tagged {} yet untagged entries containing hidden label \"{}\" with tags of the concept \"{}\"".format( count, alias.label, concept.prefLabel ) )
 
-
 	return count_queries, count_tagged, log
 
 
@@ -423,7 +423,7 @@ def export_entities(wordlist_configfilename=None, facet_dictionary_is_tempfile=F
 
 	for concept in Concept.objects.all():
 		
-		appended_words = export_entity(concept=concept, wordlist_configfilename=wordlist_configfilename, appended_words = appended_words, facet_dictionary_is_tempfile=facet_dictionary_is_tempfile)
+		appended_words = export_entity(concept=concept, wordlist_configfilename=wordlist_configfilename, appended_words = appended_words, facet_dictionary_is_tempfile=facet_dictionary_is_tempfile, commit=False)
 
 		if concept.facet:
 			facet = concept.facet.facet
@@ -440,7 +440,7 @@ def export_entities(wordlist_configfilename=None, facet_dictionary_is_tempfile=F
 # Append concept labels and aliases to facet dictionary and write aliases to synonyms config file
 #
 
-def export_entity(concept, wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt", appended_words = [], facet_dictionary_is_tempfile=False):
+def export_entity(concept, wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt", appended_words = [], facet_dictionary_is_tempfile=False, commit=True):
 	
 	facet = "tag_ss"
 	if concept.facet:
@@ -476,4 +476,8 @@ def export_entity(concept, wordlist_configfilename = "/etc/opensemanticsearch/oc
 						wordlist_file.write(word.upper() + "\n")
 		wordlist_file.close()
 	
+	if commit:
+		# reload changed dictionary matcher dictionaries in schema of entities index
+		urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=opensemanticsearch-entities')
+
 	return appended_words
