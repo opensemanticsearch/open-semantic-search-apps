@@ -61,4 +61,7 @@ service apache2 restart
 # load our cron table
 service cron restart
 
+# setup facets/classes in Open Semantic ETL and entities in Open Semantic Search API
+python3 /var/lib/opensemanticsearch/manage.py entities
+
 exit 0
