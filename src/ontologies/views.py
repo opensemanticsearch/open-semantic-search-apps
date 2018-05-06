@@ -530,7 +530,8 @@ def	write_named_entities_config():
 		os.rename(tmplistfilename, listfilename)
 
 	# Move temp synonyms and OCR words config file to destination
-	os.rename(tmp_wordlist_configfilename, wordlist_configfilename)
+	if os.path.isfile(tmp_wordlist_configfilename):
+		os.rename(tmp_wordlist_configfilename, wordlist_configfilename)
 	
 	# Add facet dictionaries to Open Semantic Entity Search API config
 	for facet in facets:
