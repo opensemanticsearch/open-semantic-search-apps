@@ -60,7 +60,7 @@ def create_ontology(request):
 		if form.is_valid():
 			ontology = form.save()
 
-			write_named_entities_config(request=request)
+			write_named_entities_config()
 
 			return HttpResponseRedirect( reverse('ontologies:detail', args=[ontology.pk]) ) # Redirect after POST
 
@@ -86,7 +86,7 @@ def update_ontology(request, pk):
 		if form.is_valid():
 			form.save()
 
-			write_named_entities_config(request=request)
+			write_named_entities_config()
 
 			return HttpResponseRedirect( reverse('ontologies:detail', args=[pk])) # Redirect after POST
 		
@@ -430,7 +430,7 @@ def get_contenttype_and_encoding(filename):
 # Write entities configs
 #
 
-def	write_named_entities_config(request):
+def	write_named_entities_config():
 
 	dictionary_manager = Dictionary_Manager()
 
