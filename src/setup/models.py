@@ -21,3 +21,9 @@ class Setup(models.Model):
 	ner_spacy = models.BooleanField(default=True)
 
 	ner_stanford = models.BooleanField(default=False)
+
+	graph_neo4j = models.BooleanField(default=True)
+	graph_neo4j_host = models.CharField(max_length=1000, blank=True)
+	graph_neo4j_user = models.CharField(max_length=1000, blank=True)
+	graph_neo4j_password = models.CharField(max_length=1000, blank=True)
+	graph_neo4j_browser = models.CharField(max_length=1000, blank=True)

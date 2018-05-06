@@ -31,6 +31,7 @@
   <dd class="active"><a href="#panel-language">Document language(s)</a></dd>
   <dd><a href="#panel-ocr">OCR</a></dd>
   <dd><a href="#panel-ner">Named Entity Recognition (NER)</a></dd>
+  <dd><a href="#panel-neo4j">Graph DB (Neo4j)</a></dd>
 </dl>
 
 	</div>
@@ -252,6 +253,58 @@
         {{ form.ner_stanford }}
 
 <p>Warning: Low performance while indexing of documents!</p>
+
+</div>
+
+</section>
+
+
+  <section class="content" id="panel-neo4j">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>Graph database (neo4j)</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+<p>Export entities in documents and connections from/to documents to graph database for analysis and exploration of indirect connections.</p>
+
+<h3>Export extracted entities and connections</h3>
+
+<p>Export entities connections to Neo4j graph database</p>
+
+        {{ form.graph_neo4j.errors }}
+        <label for="id_graph_neo4j">Enable Neo4j plugin:</label>
+        {{ form.graph_neo4j }}
+
+<p><i>If you don't need analyze indirect connections since direct connections by faceted search are enough you can disable the plugin for performance issues.</i></p>
+
+<h3>Neo4j server</h3>
+
+        {{ form.graph_neo4j_host.errors }}
+        <label for="id_graph_neo4j_host">Host:</label>
+        {{ form.graph_neo4j_host }}
+
+        {{ form.graph_neo4j_user.errors }}
+        <label for="id_graph_neo4j_user">User:</label>
+        {{ form.graph_neo4j_user }}
+
+        {{ form.graph_neo4j_password.errors }}
+        <label for="id_graph_neo4j_password">Password:</label>
+        {{ form.graph_neo4j_password }}
+
+
+<h3>Neo4j browser</h3>
+
+<p>Links from search UI to Neo4j browser for exploration and visualization if the graph</p>
+
+        {{ form.graph_neo4j_browser.errors }}
+        <label for="id_graph_neo4j_browser">Neo4j browser URL:</label>
+        {{ form.graph_neo4j_browser }}
 
 </div>
 

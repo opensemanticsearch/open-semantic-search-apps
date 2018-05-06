@@ -241,6 +241,19 @@ def	generate_etl_configfile(filename="/etc/opensemanticsearch/etl-webadmin"):
 		configfile.write( "if 'enhance_ner_stanford' in config['plugins']:" + "\n" )
 		configfile.write( "\tconfig['plugins'].remove('enhance_ner_stanford')" + "\n" )
 
+	if setup.graph_neo4j:
+		configfile.write( "if not 'export_neo4j' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].append('export_neo4j')" + "\n" )
+		if setup.graph_neo4j_host:
+			configfile.write( "config['neo4j_host'] = '" + str(setup.graph_neo4j_host) + "'\n" )
+		if setup.graph_neo4j_user:
+			configfile.write( "config['neo4j_user'] = '" + str(setup.graph_neo4j_user) + "'\n" )
+		if setup.graph_neo4j_password:
+			configfile.write( "config['neo4j_password'] = '" + str(setup.graph_neo4j_password) + "'\n" )
+	else:
+		configfile.write( "if 'export_neo4j' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].remove('export_neo4j')" + "\n" )
+
 	configfile.close()
 
 
@@ -261,6 +274,11 @@ def	generate_ui_configfile(filename="/etc/solr-php-ui/config.webadmin.php"):
 		configfile.write( "$cfg['language'] = \'" + str(setup.language) + "\';\n" )
 		
 	configfile.write( "$cfg['languages'] = array(" + str(setup.languages.split(','))[1:-1] + ");\n" )
+
+
+	if setup.graph_neo4j and setup.graph_neo4j_browser:	
+		configfile.write( "$cfg['neo4j_browser'] = \'" + str(setup.graph_neo4j_browser) + "\';\n" )
+
 
 	configfile.write( "?>" )
 
