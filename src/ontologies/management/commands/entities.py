@@ -8,4 +8,4 @@ class Command(BaseCommand):
 
         ontologies.views.write_named_entities_config()
 
-        self.stdout.write(self.style.SUCCESS('Setup done'))
+        self.stdout.write('Entities setup done')
