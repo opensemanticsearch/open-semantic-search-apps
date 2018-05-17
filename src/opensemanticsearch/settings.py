@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     'querytagger',
     'morphology',
     'hypothesis',
+    'visual_graph_explorer',
     'entity_rest_api',
 )
 

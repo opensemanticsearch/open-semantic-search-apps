@@ -21,5 +21,6 @@ urlpatterns = [
 	url(r'^csv/', include('csv_manager.urls', namespace="csv_manager")),
 	url(r'^ontologies/', include('ontologies.urls', namespace="ontologies")),
 	url(r'^hypothesis/', include('hypothesis.urls', namespace="hypothesis")),
+	url(r'^graph/', include('visual_graph_explorer.urls', namespace="graph")),
 	url(r'^morphology/', include('morphology.urls', namespace="morphology")),
 ]
