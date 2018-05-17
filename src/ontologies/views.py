@@ -295,12 +295,18 @@ def write_facet_config(automatch_facets=[]):
 	for facet in Facet.objects.filter(enabled=True).order_by('facet_order'):
 		facets_done.append(facet.facet)
 		
-		configfile_php.write("\n$cfg['facets']['{}'] = array ('label'=>'{}', 'facet_limit'=>'{}', 'snippets_limit'=>'{}'," . format( facet.facet, facet.label, facet.facet_limit, facet.snippets_limit))
+		configfile_php.write("\n$cfg['facets']['{}'] = array ('label'=>'{}', 'facet_limit'=>'{}', 'snippets_limit'=>'{}', 'graph_limit'=>'{}'" . format( facet.facet, facet.label, facet.facet_limit, facet.snippets_limit, facet.graph_limit))
 
 		if facet.snippets_enabled:
-			configfile_php.write("'snippets_enabled'=>true")
+			configfile_php.write(",'snippets_enabled'=>true")
 		else:
-			configfile_php.write("'snippets_enabled'=>false")
+			configfile_php.write(",'snippets_enabled'=>false")
+
+		if facet.graph_enabled:
+			configfile_php.write(",'graph_enabled'=>true")
+		else:
+			configfile_php.write(",'graph_enabled'=>false")
+
 		configfile_php.write(");\n")
 
 		configfile_python.write( "config['facets']['{}'] = ". format(facet.facet) )
@@ -311,17 +317,7 @@ def write_facet_config(automatch_facets=[]):
 			configfile_python.write( "'dictionary': '{}'".format('dictionary_matcher_' + facet.facet) )
 
 		configfile_python.write("}\n")
-		
-		
-		if facet.facet in automatch_facets:
-			configfile_php.write("\n$cfg['facets']['dictionary_matcher_{}'] = array ('label'=>'{} (automatic & shingled match)', 'facet_limit'=>'{}', 'snippets_limit'=>'{}',".format(	facet.facet, facet.label, facet.facet_limit, facet.snippets_limit))
-
-			if facet.snippets_enabled:
-				configfile_php.write("'snippets_enabled'=>true")
-			else:
-				configfile_php.write("'snippets_enabled'=>false")
-			configfile_php.write(");\n")
-	
+			
 	# add facets of ontolgoies
 	for ontology in Ontologies.objects.all():
 
@@ -339,8 +335,6 @@ def write_facet_config(automatch_facets=[]):
 
 			if facet in automatch_facets:
 				configfile_python.write( " 'dictionary': '{}'".format('dictionary_matcher_' + facet) )
-
-				configfile_php.write( "\n$cfg['facets']['dictionary_matcher_{}'] = array ('label'=>'{} (automatic match)');\n".format( facet, ontology ) )
 
 			configfile_python.write("}\n")
 

@@ -18,7 +18,12 @@ class Facet(models.Model):
 	facet_limit = models.IntegerField(default=20, null=True, blank=True)
 	snippets_enabled = models.NullBooleanField(default=True, null=True, blank=True)
 	snippets_limit = models.IntegerField(default=10, null=True, blank=True)
+	graph_enabled = models.NullBooleanField(default=True, null=True, blank=True)
+	graph_limit = models.IntegerField(default=50, null=True, blank=True)
 	facet_order = models.IntegerField(default=0, null=True, blank=True)
+
+	style_color = models.CharField(max_length=20, blank=True, default = 'black')
+	style_color_background = models.CharField(max_length=20, blank=True, default = 'lightgray')
 
 	uri = models.CharField(max_length=1000, blank=True)
 	
