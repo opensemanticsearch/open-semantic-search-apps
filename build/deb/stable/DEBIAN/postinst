@@ -58,6 +58,9 @@ a2enmod wsgi
 # reload apache configs to enable our additional apache settings
 service apache2 restart
 
+# set rights of cron table
+chown root:root /etc/cron.d/open-semantic-search
+
 # load our cron table
 service cron restart
 
