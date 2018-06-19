@@ -471,16 +471,15 @@ def	write_named_entities_config():
 
 			# load graph from RDF file
 			ontology_tagger.parse(filename)
-
-			# don't tag documents in index, now we want only write the synonyms config
-			ontology_tagger.solr = False
 			
-			# but add the labels to entities index for normalization and entity linking
+			# add the labels to entities index for normalization and entity linking
 			ontology_tagger.solr_entities = 'http://localhost:8983/solr/'
 			ontology_tagger.solr_core_entities = 'opensemanticsearch-entities'
 			
-			# append synonyms to Solr managed synonyms ressource "skos"
-			ontology_tagger.synonyms_ressourceid = 'skos'
+			# append synonyms to Solr managed synonyms resource "skos"
+			ontology_tagger.solr = 'http://localhost:8983/solr/'
+			ontology_tagger.solr_core = 'opensemanticsearch'
+			ontology_tagger.synonyms_resourceid = 'skos'
 
 			# append single words of concept labels to wordlist for OCR word dictionary
 			ontology_tagger.wordlist_configfile = tmp_wordlist_configfilename
