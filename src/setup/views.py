@@ -31,6 +31,7 @@ LANGUAGES_CHOICES = (
 	('de', 'Deutsch (German)'),
 	('fa', 'Farsi (Persian)'),
 	('fr', 'Francais (French)'),
+	('hu', 'Hungarian'),
 	('it', 'Italian'),
 	('nl', 'Dutch (Netherlands)'),
 	('pt', 'Portuguese'),
