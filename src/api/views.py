@@ -4,6 +4,7 @@ from django.http import HttpResponse
 
 import json
 
+from opensemanticetl.tasks import delete
 from opensemanticetl.tasks import enrich
 from opensemanticetl.tasks import index_file
 from opensemanticetl.tasks import index_filedirectory
