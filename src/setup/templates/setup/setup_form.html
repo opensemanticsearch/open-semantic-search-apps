@@ -31,6 +31,7 @@
   <dd class="active"><a href="#panel-language">Document language(s)</a></dd>
   <dd><a href="#panel-ocr">OCR</a></dd>
   <dd><a href="#panel-ner">Named Entity Recognition (NER)</a></dd>
+  <dd><a href="#panel-segmentation">Segmentation (pages)</a></dd>
   <dd><a href="#panel-neo4j">Graph DB (Neo4j)</a></dd>
 </dl>
 
@@ -253,6 +254,32 @@
         {{ form.ner_stanford }}
 
 <p>Warning: Low performance while indexing of documents!</p>
+
+</div>
+
+</section>
+
+
+
+  <section class="content" id="panel-segmentation">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>Segmentation to pages</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+<p>By segmentation of PDF files to single pages you can find and analyze PDF documents more granular by single pages.</p>
+
+        {{ form.segmentation_pages.errors }}
+        <label for="id_segmentation_pages">Segmentation to pages:</label>
+        {{ form.segmentation_pages }}
+
+<p>Warning: Will double indexing time and index size!</p>
 
 </div>
 

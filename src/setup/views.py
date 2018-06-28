@@ -242,6 +242,13 @@ def	generate_etl_configfile(filename="/etc/opensemanticsearch/etl-webadmin"):
 		configfile.write( "if 'enhance_ner_stanford' in config['plugins']:" + "\n" )
 		configfile.write( "\tconfig['plugins'].remove('enhance_ner_stanford')" + "\n" )
 
+	if setup.segmentation_pages:
+		configfile.write( "if not 'enhance_pdf_page' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].append('enhance_pdf_page')" + "\n" )
+	else:
+		configfile.write( "if 'enhance_pdf_page' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].remove('enhance_pdf_page')" + "\n" )
+
 	if setup.graph_neo4j:
 		configfile.write( "if not 'export_neo4j' in config['plugins']:" + "\n" )
 		configfile.write( "\tconfig['plugins'].append('export_neo4j')" + "\n" )
