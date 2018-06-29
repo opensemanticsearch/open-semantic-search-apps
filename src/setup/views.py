@@ -203,9 +203,19 @@ def	generate_etl_configfile(filename="/etc/opensemanticsearch/etl-webadmin"):
 
 	configfile.write( "# Warning: Do not edit here, will be overwritten by the web admin user interface\n" )
 
-	configfile.write( "config['languages'] = " + str(setup.languages.split(',')) + "\n" )
+	if setup.languages:
+		languages = setup.languages.split(',')
+	else:
+		languages = []
 
-	configfile.write( "config['languages_force'] = " + str(setup.languages_force.split(',')) + "\n" )
+	configfile.write( "config['languages'] = " + str(languages) + "\n" )
+
+	if setup.languages_force:
+		languages_force = setup.languages_force.split(',')
+	else:
+		languages_force = []
+
+	configfile.write( "config['languages_force'] = " +  str(languages_force) + "\n" )
 
 	configfile.write( "config['ocr_lang'] = \'" + "+".join(setup.ocr_languages.split(',')) + "\'\n" )
 
