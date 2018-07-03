@@ -118,13 +118,13 @@
 </div>
 
 <div class="row">
-			<p>You can enable all document language dependent grammars, since for each document only the grammar of the document language will be applied. If your documents are only or mainly in one language, you should force a grammar, so the grammar is applied even if the document language is not recognized correct.
+			<p>You can enable all document language dependent grammars, since for each document only the grammar of the document language will be applied. If your documents are only or mainly in one language, you should force a grammar, so the grammar is applied even if the document language is not recognized correct.</p>
 
 	<div class="small-6 columns text-center">
 
 		
 			<h3>Use grammar (dependent on document language)</h3>
-			<p>Use grammar (stemming) if the document language was autodetected</p>
+			<p>Use grammar heuristic (stemming) if the document language was autodetected</p>
 
 			{{ form.languages.errors }}
 			<label for="id_languages">Grammars:</label>
@@ -140,6 +140,33 @@
 			{{ form.languages_force.errors }}
 			<label for="id_languages_forced">Forced grammar(s):</label>
 			{{ form.languages_force }}
+
+	</div>
+</div>
+
+<div class="row">
+			<p>Additional (results in bigger index) or alternate you can enable stemming by grammar rules and dictionary based Hunspell stemmer:</p>
+
+	<div class="small-6 columns text-center">
+
+		
+			<h3>Use Hunspell stemmer (dependent on document language)</h3>
+			<p>Use Hunspell rules & dictionary if the document language was autodetected</p>
+
+			{{ form.languages_hunspell.errors }}
+			<label for="id_languages_hunspell">Hunspell grammars:</label>
+			{{ form.languages_hunspell }}
+
+	</div>
+	
+	<div class="small-6 columns text-center">
+
+			<h3>Force Hunspell stemmer (independent of document language)</h3>
+			<p>Force Hunspell language rules & dictionaries for all documents (even if other language)</p>
+
+			{{ form.languages_force_hunspell.errors }}
+			<label for="id_languages_forced_hunspell">Forced hunspell grammar(s):</label>
+			{{ form.languages_force_hunspell }}
 
 	</div>
 </div>

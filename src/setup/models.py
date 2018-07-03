@@ -9,6 +9,9 @@ class Setup(models.Model):
 
 	languages = models.CharField(max_length=300, default="en", blank=True)
 	languages_force = models.CharField(max_length=300, default="en", blank=True)
+
+	languages_hunspell = models.CharField(max_length=300, default="hu", blank=True)
+	languages_force_hunspell = models.CharField(max_length=300, default="", blank=True)
 	
 	ocr = models.BooleanField(default=True)
 
@@ -24,7 +27,7 @@ class Setup(models.Model):
 
 	segmentation_pages = models.BooleanField(default=False)
 
-	graph_neo4j = models.BooleanField(default=True)
+	graph_neo4j = models.BooleanField(default=False)
 	graph_neo4j_host = models.CharField(max_length=1000, blank=True)
 	graph_neo4j_user = models.CharField(max_length=1000, blank=True)
 	graph_neo4j_password = models.CharField(max_length=1000, blank=True)

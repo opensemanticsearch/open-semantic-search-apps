@@ -38,6 +38,10 @@ LANGUAGES_CHOICES = (
 	('ro', 'Romanian'),
 )
 
+LANGUAGES_CHOICES_HUNSPELL = (
+	('hu', 'Hungarian'),
+)
+
 
 # OCR dictionaries
 OCR_LANGUAGES_CHOICES = (
@@ -156,7 +160,7 @@ class SetupForm(ModelForm):
 
 	class Meta:
 		model = Setup
-		exclude = ['language', 'languages', 'languages_force', 'ocr_languages']
+		exclude = ['language', 'languages', 'languages_force', 'languages_hunspell', 'languages_force_hunspell', 'ocr_languages']
 
 		
 	language = forms.ChoiceField(
@@ -174,6 +178,18 @@ class SetupForm(ModelForm):
 		required=False,
 		widget=forms.CheckboxSelectMultiple,
 		choices=LANGUAGES_CHOICES,
+    )
+
+	languages_hunspell = forms.MultipleChoiceField(
+		required=False,
+		widget=forms.CheckboxSelectMultiple,
+		choices=LANGUAGES_CHOICES_HUNSPELL,
+    )
+
+	languages_force_hunspell = forms.MultipleChoiceField(
+		required=False,
+		widget=forms.CheckboxSelectMultiple,
+		choices=LANGUAGES_CHOICES_HUNSPELL,
     )
 
 	ocr_languages = forms.MultipleChoiceField(
@@ -216,6 +232,20 @@ def	generate_etl_configfile(filename="/etc/opensemanticsearch/etl-webadmin"):
 		languages_force = []
 
 	configfile.write( "config['languages_force'] = " +  str(languages_force) + "\n" )
+
+	if setup.languages_hunspell:
+		languages_hunspell = setup.languages_hunspell.split(',')
+	else:
+		languages_hunspell = []
+
+	configfile.write( "config['languages_hunspell'] = " + str(languages_hunspell) + "\n" )
+
+	if setup.languages_force_hunspell:
+		languages_force_hunspell = setup.languages_force_hunspell.split(',')
+	else:
+		languages_force_hunspell = []
+
+	configfile.write( "config['languages_force_hunspell'] = " +  str(languages_force_hunspell) + "\n" )
 
 	configfile.write( "config['ocr_lang'] = \'" + "+".join(setup.ocr_languages.split(',')) + "\'\n" )
 
@@ -291,7 +321,17 @@ def	generate_ui_configfile(filename="/etc/solr-php-ui/config.webadmin.php"):
 	if setup.language:	
 		configfile.write( "$cfg['language'] = \'" + str(setup.language) + "\';\n" )
 		
-	configfile.write( "$cfg['languages'] = array(" + str(setup.languages.split(','))[1:-1] + ");\n" )
+	languages = []
+
+	if setup.languages:
+		for language in setup.languages.split(','):
+			languages.append("'" + language + "'")
+
+	if setup.languages_hunspell:
+		for language in setup.languages_hunspell.split(','):
+			languages.append("'hunspell_" + language + "'")
+
+	configfile.write( "$cfg['languages'] = array(" + ','.join(languages)  + ");\n" )
 
 
 	if setup.graph_neo4j and setup.graph_neo4j_browser:	
@@ -327,6 +367,8 @@ def update_setup(request, pk=1):
 			# manual handled MultipleChoiceField is saved comma separeted in a single CharField
 			setup.languages = (',').join( form.cleaned_data['languages'] )
 			setup.languages_force = (',').join( form.cleaned_data['languages_force'] )
+			setup.languages_hunspell = (',').join( form.cleaned_data['languages_hunspell'] )
+			setup.languages_force_hunspell = (',').join( form.cleaned_data['languages_force_hunspell'] )
 			setup.ocr_languages = (',').join( form.cleaned_data['ocr_languages'] )
 
 			form.save()
@@ -343,9 +385,11 @@ def update_setup(request, pk=1):
 		language = setup.language
 		languages = setup.languages.split(",")
 		languages_force = setup.languages_force.split(",")
+		languages_hunspell = setup.languages_hunspell.split(",")
+		languages_force_hunspell = setup.languages_force_hunspell.split(",")
 		ocr_languages = setup.ocr_languages.split(",")
 
-		form = SetupForm( instance=setup, initial={ 'language': language, 'languages': languages, 'languages_force': languages_force, 'ocr_languages': ocr_languages } )
+		form = SetupForm( instance=setup, initial={ 'language': language, 'languages': languages, 'languages_force': languages_force, 'languages_hunspell': languages_hunspell, 'languages_force_hunspell': languages_force_hunspell, 'ocr_languages': ocr_languages } )
 
 	return render(request, 'setup/setup_form.html', 
 			{'form': form, 'setup': setup } )
