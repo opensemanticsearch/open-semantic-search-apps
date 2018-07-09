@@ -453,10 +453,6 @@ def	write_named_entities_config():
 		# file to export all labels
 		tmplistfilename = dictionary_manager.solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
 
-		# An empty list file for a facet won't cause error opening/reading it, even if no entry exists
-		list = open(tmplistfilename, 'a')
-		list.close()
-
 		#
 		# export entries to listfiles
 		#
