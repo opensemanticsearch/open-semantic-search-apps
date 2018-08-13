@@ -7,6 +7,8 @@ from django.forms import ModelForm
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 
+from setup.models import Setup
+
 from ontologies.models import Ontologies
 
 import thesaurus.views
@@ -169,6 +171,50 @@ def get_ontology_file(ontology):
 
 
 #
+# get the search fields for all configured languages
+#
+def get_stemmed_fields():
+
+	setup = Setup.objects.get(pk=1)
+
+	# default field
+	fields = ['_text_']
+
+	# configured languages / stemmers
+	languages = []
+
+	if setup.languages:
+		languages.extend(setup.languages.split(','))
+
+	if setup.languages_force:
+		languages.extend(setup.languages_force.split(','))
+
+	for language in languages:
+		fieldname = 'text_txt_' + language
+		if not fieldname in fields:
+			fields.append(fieldname)
+
+
+	# configured languages / hunspell stemmers
+	languages_hunspell = []
+
+	if setup.languages_hunspell:
+		languages_hunspell.extend(setup.languages_hunspell.split(','))
+
+	if setup.languages_force_hunspell:
+		languages_hunspell.extend(setup.languages_force_hunspell.split(','))
+
+	for language in languages_hunspell:
+		fieldname = 'text_txt_hunspell_' + language
+		if not fieldname in fields:
+			fields.append(fieldname)
+
+		
+
+	return fields
+
+
+#
 #  Tag indexed documents containing this entry or label(s) of every entry/entity in ontology or list
 #
 
@@ -181,6 +227,8 @@ def tag_by_ontology(ontology):
 
 	contenttype, encoding = get_contenttype_and_encoding(filename)
 	
+	queryfields = " ".join(get_stemmed_fields())
+	
 	if contenttype == 'application/rdf+xml':
 
 		ontology_tagger = OntologyTagger()
@@ -190,10 +238,10 @@ def tag_by_ontology(ontology):
 
 		# tag the documents on Solr server with all matching entities of the ontology	
 		ontology_tagger.tag = True
-		ontology_tagger.apply(target_facet=facet)
+		ontology_tagger.apply(target_facet=facet, queryfields=queryfields)
 
 	elif contenttype.startswith('text/plain'):
-		tag_by_list(filename=filename, field=facet, encoding=encoding)
+		tag_by_list(filename=filename, field=facet, encoding=encoding, queryfields=queryfields)
 	
 	else:
 		# create empty list so configs of field in schema.xml pointing to this file or in facet config of UI will not break
@@ -212,7 +260,7 @@ def tag_by_ontology(ontology):
 
 # Therefore search for each line of plaintextfile and add/tag the entity/entry/line to the facet/field of all documents matching this entry
 
-def tag_by_list(filename, field, encoding='utf-8'):
+def tag_by_list(filename, field, encoding='utf-8', queryfields='_text_'):
 
 	# open and read plaintext file line for line
 
@@ -230,16 +278,16 @@ def tag_by_list(filename, field, encoding='utf-8'):
 			solr = opensemanticetl.export_solr.export_solr()
 			
 			# tag the field/facet of all ducuments matching this query by value of entry
-			count = solr.update_by_query( searchquery, field=field, value=value)
+			count = solr.update_by_query( searchquery, field=field, value=value, queryparameters={'qf': queryfields} )
 
 	file.close()
 
 
 #
-# Append entries/lines from an list/dictionary to another
+# Append entries/lines from an list/dictionary to list of separated words
 #
 
-def append_from_txtfile(sourcefilename, encoding='utf-8', wordlist_configfilename=None):
+def dictionary2wordlist(sourcefilename, encoding='utf-8', wordlist_configfilename=None):
 	
 	appended_words = []
 
@@ -492,7 +540,7 @@ def	write_named_entities_config():
 
 			
 		elif contenttype.startswith('text/plain'):
-			append_from_txtfile(sourcefilename=filename, encoding=encoding, wordlist_configfilename=tmp_wordlist_configfilename)
+			dictionary2wordlist(sourcefilename=filename, encoding=encoding, wordlist_configfilename=tmp_wordlist_configfilename)
 			importer = Entity_Importer_List()
 			importer.import_entities(filename=filename, types=[facet], dictionary=facet, facet_dictionary_is_tempfile=True, encoding=encoding)
 
