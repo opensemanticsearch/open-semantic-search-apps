@@ -394,3 +394,21 @@ def update_setup(request, pk=1):
 	return render(request, 'setup/setup_form.html', 
 			{'form': form, 'setup': setup } )
 
+
+def setup_language(request):
+
+	setup = Setup.objects.get(pk=1)
+
+	setup.language = request.GET["language"]
+
+	setup.languages_force = request.GET["languagesforce"]
+	
+	setup.languages = request.GET["languages"]
+	
+	setup.ocr_languages = request.GET["ocrlanguages"]
+	
+	setup.save()
+	
+	generate_configfiles()
+
+	return HttpResponse()
