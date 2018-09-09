@@ -8,15 +8,26 @@ from django.shortcuts import render
 from django import forms
 
 from thesaurus.models import Concept
+from setup.models import Setup
 
 #import pysolr
 import urllib
 import json
 import os
 
-#stemmers = ['_text_','stemmed', 'stemmed_hunspell_en']
-#stemmers = ['_text_','stemmed', 'stemmed_hunspell_de']
-stemmers = ['content','_text_','stemmed','synonyms']
+stemmers = ['_text_']
+
+setup = Setup.objects.get(pk=1)
+
+if setup.languages:
+
+	for language in setup.languages.split(','):
+			stemmers.append('text_txt_' + language)
+
+if setup.languages_hunspell:
+	for language in setup.languages_hunspell.split(','):
+			languages.append('text_txt_hunspell_' + language)
+
 
 
 class ListForm(forms.Form):
@@ -124,7 +135,7 @@ def index(request):
 
 	verbose = False
 
-	uri_search="/search/?q="
+	uri_search = "/search/?q="
 
 
 	if request.method == 'POST': # If the form has been submitted...
@@ -184,8 +195,10 @@ def search(query, filterquery=None, operator='AND', stemmers=[]):
 	for stemmer in stemmers:
 	
 		# todo: read Solr URI from config
-		uri = 'http://localhost:8983/solr/core1/select?df=' + stemmer +'&q.op=' + operator + '&wt=json&deftype=edismax&fl=id&limit=1000000&hl=true&hl.snippets=1000&hl.fragsize=1&hl.fl=' + stemmer
+		uri = 'http://localhost:8983/solr/opensemanticsearch/select?qf=' + stemmer +'&q.op=' + operator + '&wt=json&defType=edismax&fl=id&limit=1000000&hl=true&hl.snippets=1000&hl.fragsize=1&hl.fl=' + stemmer
 		uri += '&q=' + urllib.parse.quote( query )
+
+		print (uri)
 	
 		if filterquery:
 			uri += '&fq=' + urllib.parse.quote( filterquery )
