@@ -168,7 +168,7 @@ def search(query, filterquery=None, operator='AND'):
 #	} )
 
 	# todo: read Solr URI from config
-	uri = 'http://localhost:8983/solr/core1/select?q.op=' + operator + '&wt=json&deftype=edismax&fl=id,score&hl=true&hl.fl=*'
+	uri = 'http://localhost:8983/solr/opensemanticsearch/select?q.op=' + operator + '&wt=json&deftype=edismax&fl=id,score&hl=true&hl.fl=*'
 	uri += '&q=' + urllib.parse.quote( query )
 
 	if filterquery:
@@ -372,7 +372,7 @@ def search_list(list, verbose=False, filterquery=None, stopwords=None, do_find_p
 			except BaseException as e:
 				import sys
 
-				error_message = "Error: Exception while searching line " + str(rowcount) + ": " + line + " - " + e.message
+				error_message = "Error: Exception while searching line {}: {} - {}" .format(rowcount, line, e)
 				
 				sys.stderr.write( error_message )
 				error_messages.append(error_message)
