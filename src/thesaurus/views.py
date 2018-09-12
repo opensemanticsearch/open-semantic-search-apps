@@ -316,7 +316,7 @@ def tag_concept(concept):
 	count_queries = 0
 	count_tagged = 0
 	
-	connector = export_solr(verbose = verbose)
+	connector = export_solr( config = {'verbose': verbose} )
 	
 	log = []
 
