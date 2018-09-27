@@ -10,7 +10,6 @@ from django import forms
 from thesaurus.models import Concept
 from setup.models import Setup
 
-#import pysolr
 import urllib
 import json
 import os
@@ -35,159 +34,155 @@ class ListForm(forms.Form):
 	
 	filterquery = forms.CharField(widget=forms.TextInput, required=False)
 
+	similar = forms.BooleanField(required=False, initial=True)
+
 	prefix = forms.BooleanField(required=False, initial=True)
 	suffix = forms.BooleanField(required=False, initial=True)
-
-
-# recommend morphology by an concept of the thesaurus
-def morph_concept(request, pk):
-
-	# read preflabel, alternate labels and hidden labels and generate AND search query
-
-	verbose = False
-
-	uri_search="/search/?q="
-
-	concept = Concept.objects.get(pk=pk)
-
-	list = []
-
-	if concept.query:
-		list.append(concept.query)
-
-	if concept.prefLabel:
-		list.append(concept.prefLabel)
-		list.append(concept.prefLabel + '*')
-		list.append( '*' + concept.prefLabel)
-		list.append( '*' + concept.prefLabel + '*')
-		list.append(concept.prefLabel + '~')
 	
-	for alternate in concept.alternates():
-
-		if alternate.query:
-			list.append(alternate.query)
-
-		list.append(alternate.altLabel)
-		list.append(alternate.altLabel + '*')
-		list.append( '*' + alternate.altLabel)
-		list.append( '*' + alternate.altLabel + '*')
-		list.append(alternate.altLabel + '~')
-
-	for hidden in concept.hiddens():
-		if hidden.query:
-			list.append(hidden.query)
-
-		list.append(hidden.hiddenLabel)
-		list.append(hidden.hiddenLabel + '*')
-		list.append( '*' + hidden.hiddenLabel)
-		list.append( '*' + hidden.hiddenLabel + '*')
-		list.append(hidden.hiddenLabel + '~')
-
-	# do searches
-	results, error_messages = search_list(list, verbose=verbose, filterquery=None, stemmers = stemmers)
-
-	#todo: variable aggregated with words from all stemmers
-	
-	aggregation = []
-	for line in list:
-		for stemmer in stemmers:
-			for result in results[line][stemmer]:
-				if result not in aggregation:
-					aggregation.append(result)
-				
-	# terms not yet in concepts thesaurus entry
-
-	aggregation_new = []
-
-	for term in aggregation:
-
-		is_in_hidden = False
-		
-		for hidden in concept.hiddens():
-			if hidden.hiddenLabel == term:
-				is_in_hidden = True
+	limit = forms.IntegerField(required=False, initial=1000)
 
 
-		is_in_alternates = False
-		
-		for alternate in concept.alternates():
-			if alternate.altLabel == term:
-				is_in_alternates = True
-
-		
-		if not term == concept.prefLabel and not is_in_hidden and not is_in_alternates:
-			aggregation_new.append(term)
-				
-	return render(request, 'morphology_concept.html', 
-				{	
-					"concept": concept,
-					"aggregation": aggregation,
-					"aggregation_new": aggregation_new,
-					"uri_search": uri_search,
-					"error_messages": error_messages,
-					"stemmers": stemmers,
-
-					"results": results,
-				})
-
-
-def index(request):
-
+def index(request, pk):
 	verbose = False
 
 	uri_search = "/search/?q="
 
+	concept = Concept.objects.get(pk=pk)
 
 	if request.method == 'POST': # If the form has been submitted...
 		form = ListForm(request.POST) # A form bound to the POST data
 		if form.is_valid():
 
 			list = form.cleaned_data['list']
+			list = list.replace("\r", "")
 			list = list.split("\n")
 
 			filterquery = form.cleaned_data['filterquery']
 			
-
 			prefix = form.cleaned_data['prefix']
 			suffix = form.cleaned_data['suffix']
 
+			similar = form.cleaned_data['similar']
+
+			limit = form.cleaned_data['limit']
+
+			variantlist = []
+			
+			for entry in list:
+
+				terms = entry.split()
+
+				if " " in entry:
+					variantlist.append("\"" + entry + "\"")
+				else:
+					variantlist.append(entry)
+				
+				if prefix and suffix:
+					terms_prefix_and_suffix = []
+					for term in terms:
+						terms_prefix_and_suffix.append( '*' + term + '*' )
+					entry_prefix_and_suffix = " ".join(terms_prefix_and_suffix)
+					if " " in entry_prefix_and_suffix:
+						entry_prefix_and_suffix = "\"" + entry_prefix_and_suffix + "\""
+					variantlist.append(entry_prefix_and_suffix)
+					
+				if prefix and not suffix:
+					variantlist.append('*' + entry)
+				
+				if suffix and not prefix:
+					variantlist.append(entry + '*')
+
+				if similar:
+					
+					terms_similar = []
+					for term in terms:
+						terms_similar.append(term + "~")
+
+					entry_similar = " ".join(terms_similar)
+					if " " in entry_similar:
+						entry_similar = "\"" + entry_similar + "\""
+					
+					variantlist.append(entry_similar)
+		
 
 			# do searches
-			results, error_messages = search_list(list, verbose=verbose, filterquery=filterquery,	stemmers = stemmers)
+			results, error_messages = search_list(variantlist, verbose=verbose, filterquery=filterquery, stemmers=stemmers, limit=limit)
+		
+			aggregation = []
+			for line in variantlist:
+				for stemmer in stemmers:
+					for result in results[line][stemmer]:
+						if result not in aggregation:
+							aggregation.append(result)
+						
+			# terms not yet in concepts thesaurus entry
+			aggregation_new = []
+		
+			for term in aggregation:
+		
+				is_in_hidden = False
+				
+				for hidden in concept.hiddens():
+					if hidden.hiddenLabel == term:
+						is_in_hidden = True
+		
+		
+				is_in_alternates = False
+				
+				for alternate in concept.alternates():
+					if alternate.altLabel == term:
+						is_in_alternates = True
+		
+				
+				if not term == concept.prefLabel and not is_in_hidden and not is_in_alternates:
+					aggregation_new.append(term)
 
 			
 
 			return render(request, 'morphology_index.html', 
 				{	
+					"is_result": True,
 					"form": form,
+					"concept": concept,
+					"aggregation": aggregation,
+					"aggregation_new": aggregation_new,
 					"uri_search": uri_search,
 					"error_messages": error_messages,
 					"stemmers": stemmers,
-
 					"results": results,
 				})
 
+
 		else:
-			return render(request, 'morphology_index.html', {'form': form,})
+			return render(request, 'morphology_index.html', {'is_result': False, 'form': form,})
 
 	else:
-		form = ListForm() # An unbound form
+
+		variantlist = []
+
+		if concept.prefLabel:
+			variantlist.append(concept.prefLabel)
+	
+		for alternate in concept.alternates():
+
+			variantlist.append(alternate.altLabel)
+
+		for hidden in concept.hiddens():
+
+			variantlist.append(hidden.hiddenLabel)
+
+				
+		form = ListForm( initial = { 'list': "\n".join(variantlist) } ) # An unbound form
 
 		return render(request, 'morphology_index.html', {'form': form,})
 
 
-def search(query, filterquery=None, operator='AND', stemmers=[]):
+def search(query, filterquery=None, stemmers=[], limit=1000):
 
 	count = 0
 
-# not yet with pysolr until it repairs encoding problem with unicode that cannot be encoded into utf-8
-#	solr = pysolr.Solr(solr)
-	
-#	results = solr.search(query, **{
-#		'fl': 'score',
-#		'defType': 'edismax'
-#	} )
 	results = {}
+
 	for stemmer in stemmers:
 		results[stemmer] = []
 
@@ -195,7 +190,7 @@ def search(query, filterquery=None, operator='AND', stemmers=[]):
 	for stemmer in stemmers:
 	
 		# todo: read Solr URI from config
-		uri = 'http://localhost:8983/solr/opensemanticsearch/select?qf=' + stemmer +'&q.op=' + operator + '&wt=json&defType=edismax&fl=id&limit=1000000&hl=true&hl.snippets=1000&hl.fragsize=1&hl.fl=' + stemmer
+		uri = 'http://localhost:8983/solr/opensemanticsearch/select?df=' + stemmer + '&wt=json&defType=complexphrase&fl=id&limit=' + str(limit) + '&hl=true&hl.snippets=1000&hl.fragsize=1&hl.fl=' + stemmer
 		uri += '&q=' + urllib.parse.quote( query )
 
 		print (uri)
@@ -212,25 +207,44 @@ def search(query, filterquery=None, operator='AND', stemmers=[]):
 		
 		count = result['response']['numFound']
 			
+		queryterms_count = len(query.split(" "))
+
 		if count:
 	
 			for doc in result['response']['docs']:
 				if 'highlighting' in result:
 					if doc['id'] in result['highlighting']:
 						if stemmer in result['highlighting'][doc['id']]:
+							
+							i = 0
+							highlighted_terms = []
+							
 							for value in result['highlighting'][doc['id']][stemmer]:
+
+								i += 1
 	
 								# extract value from between <em></em>
-								value = value[value.find('<em>')+4 : value.find('</em>')]
-								if not value in results[stemmer]:
-									results[stemmer].append(value)
+								term = value[value.find('<em>')+4 : value.find('</em>')]
+	
+								if i <= queryterms_count:
+									highlighted_terms.append(term)
+																		
+								if i == queryterms_count:
+									
+									highlighted_phrase = " ".join(highlighted_terms)
+									
+									if not highlighted_phrase in results[stemmer]:
+										results[stemmer].append(highlighted_phrase)
+
+									i = 0
+									highlighted_terms = []
 	
 	
 	return results
 
 
 
-def search_list(list, verbose=False, filterquery=None, stemmers=[] ):
+def search_list(list, verbose=False, filterquery=None, stemmers=[], limit=1000 ):
 	
 	#todo queries_done als Sammlung zum ausschliessen mit for query_done in queries_done...
 	

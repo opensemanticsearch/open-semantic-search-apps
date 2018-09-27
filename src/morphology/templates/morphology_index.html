@@ -4,9 +4,6 @@
 {% block content %}
 
 
-
-<a class="button" href="">New search (reset query)</a>
-
 {% if error_messages %}
 <h1>Errors</h1>
 <ul>
@@ -17,56 +14,122 @@
 {% endif %}
 
 
-<h1>Stemming results in indexed corupus for searched words</h1>
+{% if is_result %}
+
+
+<h1>Fuzzy search result variants for concept <strong><i>{{concept}}</i></strong> within indexed documents (corpus)</h1>
+
+{% if aggregation_new %}
+
+<h2>Suggestions (not yet assigned to the concept entry in thesaurus)</h2>
+Suggestions of potential additional variants of all labels, alternate labels and hidden labels based on enabled stemmers, compounded words by wildcards and fuzzy search results by edit distance:
+
+<ul>
+
+{% for result in aggregation_new %}
+
+<li>
+<h3>{{ result }}</h3>
+<a target="_blank" href="{% url 'thesaurus:api' %}?pk={{concept.id}}&relation=altLabel&label={{result}}">[Add to alternate labels, aliases or synonyms]</a>
+|
+<a target="_blank" href="{% url 'thesaurus:api' %}?pk={{concept.id}}&relation=hiddenLabel&label={{result}}">[Add to hidden labels or misspellings]</a>
+|
+ Todo: [Add as broader concept] | [Add as narrower concept] | [Exclude (false positive)]
+
+</li>
+
+{% endfor %}
+</ul>
+
+{% else %}
+
+<p>No new variants found.</p>
+
+{% endif %}
+
+
+<a class="tiny button" id="show_analysis" onclick="document.getElementById('analysis').style.display = 'block'; document.getElementById('show_analysis').style.display = 'none';">Show details of the analysis leading to this results</a>
+
+<div id="analysis" style="display: none;">
+
+<h2>Aggregation of analysis results</h2>
+Aggregated variants of all labels, alternate labels and hidden labels and all stemmers, compounded words and fuzzy search by edit distance:
+
+<ul>
+
+{% for result in aggregation %}
+
+<li>{{ result }}</li>
+
+
+{% endfor %}
+</ul>
+
+
+
+This aggregate is result of all following search operations:
 
 {% for result, values in results.items %}
 
-<h1>
-{{ result }}
-</h1>
+<h1>Analysis of <i>{{ result }}</i></h1>
+
+
+
 
 {% for stemmer, stemmed_values in values.items %}
 
-<h2>
-{{stemmer}}
-</h2>
+<h2>Analysis of <i>{{ result }}</i> by <i>{{stemmer}}</i></h2>
 
 
-{% for stemmed in stemmed_values %}
 
-<li>{{ stemmed }}
+	{% if stemmed_values %}
+		<ul>
+		{% for stemmed in stemmed_values %}
+
+			<li>{{ stemmed }}</li>
 
 
+		{% endfor %}
+		</ul>
+
+	{% else %}
+	
+			<p>No results.</p>
+				
+	{% endif %}
 
 {% endfor %}
 
 {% endfor %}
 
-{% endfor %}
+
+
+</div>
 
 
 
 
 <hr/>
 
+{% endif %}
 
 
 
-<h1>Search for following terms</h1>
+<h1>Search for variants of following terms or names</h1>
 
 <form action="" method="post">{% csrf_token %}
 
 
 
     <div class="fieldWrapper">
-        <label for="id_list">List:</label>
+        <label for="id_list">Known variants:</label>
         {{ form.list }}
         {{ form.list.errors }}
 
     </div>
 
 
-<input class="button" type="submit" value="Search for each list entry" />
+<input class="button" type="submit" value="Search for additional variants of each list entry" />
 
 
 <div class="row">
@@ -74,26 +137,46 @@
 
     <div class="small-12 medium-8 columns">
 
+	<h3>Similarity and misspellings by low edit distance (Levensthein distance)</h3>
 
+        {{ form.similar }}
+        <label for="similar">Low edit distance</label>
+
+			(Example: Search for <i>misspelling</i> would find <i>misspelign</i> or some OCR failures in scanned documents)
         
         <h3>Compounded words</h3>
 			
 		<div>
         {{ form.prefix }}
         <label for="prefix">Prefix</label>
+        (Example: Search for <i>sleep</i> would find <i>sleepwalk</i>)
         
-        </div>
+      </div>
 		<div>
         {{ form.suffix }}
         <label for="suffix">Suffix</label>
-        
-        </div>
-        		
+        (Example: Search for <i>walk</i> would find <i>sleepwalk</i>)
+      </div>
+
+<h3>Proximity</h3>
+
+Todo.
+
+(Example: Search for <i>Barack Obama</i> would find <i>Barack Hussein Obama</i>)
+ 
 	</div>
 
 
 
     <div class="small-12 medium-4 columns">
+
+<h3>Limit</h3>
+		<div>
+        {{ form.limit.errors }}
+        <label for="id_limit">Limit:</label>
+        {{ form.limit }}
+<p>Sample count of found documents to analyze for each query (Todo: All).</p>
+    	</div>
     
 	
 	<h3>Filter query</h3>
