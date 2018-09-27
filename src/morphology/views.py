@@ -14,20 +14,6 @@ import urllib
 import json
 import os
 
-stemmers = ['_text_']
-
-setup = Setup.objects.get(pk=1)
-
-if setup.languages:
-
-	for language in setup.languages.split(','):
-			stemmers.append('text_txt_' + language)
-
-if setup.languages_hunspell:
-	for language in setup.languages_hunspell.split(','):
-			languages.append('text_txt_hunspell_' + language)
-
-
 
 class ListForm(forms.Form):
 	list = forms.CharField(widget=forms.Textarea)
@@ -43,9 +29,24 @@ class ListForm(forms.Form):
 
 
 def index(request, pk):
+
 	verbose = False
 
 	uri_search = "/search/?q="
+
+	stemmers = ['_text_']
+
+	setup = Setup.objects.get(pk=1)
+
+	if setup.languages:
+
+		for language in setup.languages.split(','):
+			stemmers.append('text_txt_' + language)
+
+	if setup.languages_hunspell:
+		for language in setup.languages_hunspell.split(','):
+			languages.append('text_txt_hunspell_' + language)
+
 
 	concept = Concept.objects.get(pk=pk)
 
@@ -260,18 +261,18 @@ def search_list(list, verbose=False, filterquery=None, stemmers=[], limit=1000 )
 
 		if not line=='':
 			
-#			try:
+			try:
 		
 				
 				results[line] = search(line, filterquery=filterquery, stemmers = stemmers )
 
 		
-#			except BaseException as e:
-#				import sys
+			except BaseException as e:
+				import sys
 
-#				error_message = "Error: Exception while searching line {} ({}): {}".format(rowcount, line, e)
+				error_message = "Error: Exception while searching line {} ({}): {}".format(rowcount, line, e)
 				
-#				sys.stderr.write( error_message )
-#				error_messages.append(error_message)
+				sys.stderr.write( error_message )
+				error_messages.append(error_message)
 
 	return results, error_messages
