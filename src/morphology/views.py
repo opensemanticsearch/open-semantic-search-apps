@@ -45,7 +45,7 @@ def index(request, pk):
 
 	if setup.languages_hunspell:
 		for language in setup.languages_hunspell.split(','):
-			languages.append('text_txt_hunspell_' + language)
+			stemmers.append('text_txt_hunspell_' + language)
 
 
 	concept = Concept.objects.get(pk=pk)
