@@ -170,6 +170,13 @@ def api(request):
 	#if relation_name == 'narrower':
 	#if relation_name == 'related':
 
+	# export to Open Semantic Entity Search API config
+	export_entity(concept=concept)
+		
+	# tag all docs containing concept or one of its aliases
+	tag_concept_and_message_stats(request=request, concept=concept)
+
+
 	return redirect(concept)
 
 
