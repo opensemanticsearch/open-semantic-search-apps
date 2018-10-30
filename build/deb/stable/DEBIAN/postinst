@@ -20,13 +20,6 @@ chown www-data:www-data /var/lib/opensemanticsearch/db.sqlite3
 # but others should not be able to read DB entries
 chmod o-r /var/lib/opensemanticsearch/db.sqlite3
 
-# allow Django running in apache2 context to write OCR dictionary
-chgrp www-data /etc/opensemanticsearch/ocr
-chmod g+r /etc/opensemanticsearch/ocr
-chmod g+w /etc/opensemanticsearch/ocr
-chgrp www-data /etc/opensemanticsearch/ocr/dictionary.txt
-chmod g+r /etc/opensemanticsearch/ocr/dictionary.txt
-chmod g+w /etc/opensemanticsearch/ocr/dictionary.txt
 
 # allow Django running in apache2 context to write facets config
 chgrp www-data /etc/opensemanticsearch/facets
@@ -57,5 +50,13 @@ service cron restart
 
 # setup facets/classes in Open Semantic ETL and entities in Open Semantic Search API
 python3 /var/lib/opensemanticsearch/manage.py entities
+
+# allow Django running in apache2 context to write OCR dictionary
+chgrp www-data /etc/opensemanticsearch/ocr
+chmod g+r /etc/opensemanticsearch/ocr
+chmod g+w /etc/opensemanticsearch/ocr
+chgrp www-data /etc/opensemanticsearch/ocr/dictionary.txt
+chmod g+r /etc/opensemanticsearch/ocr/dictionary.txt
+chmod g+w /etc/opensemanticsearch/ocr/dictionary.txt
 
 exit 0
