@@ -20,7 +20,6 @@ import opensemanticetl.etl_sparql
 import opensemanticetl.export_solr
 
 from solr_ontology_tagger import OntologyTagger
-from dictionary.manager import Dictionary_Manager
 from entity_import.entity_import_list import Entity_Importer_List
 
 import os.path
@@ -393,8 +392,7 @@ def write_facet_config(automatch_facets=[]):
 
 
 #
-# Clean facetname and listfilename
-# so it can be used in XML configs within quotes
+# Clean facetname
 #
 
 def clean_facetname(facet):
@@ -474,11 +472,9 @@ def get_contenttype_and_encoding(filename):
 
 def	write_named_entities_config():
 
-	dictionary_manager = Dictionary_Manager()
-
 	wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt"
 	
-	tmp_wordlist_configfilename = dictionary_manager.solr_dictionary_config_path + os.path.sep + 'tmp_ocr_dictionary.txt'
+	tmp_wordlist_configfilename = tempfile.gettempdir() + os.path.sep +  next(tempfile._get_candidate_names()) + '_ocr_dictionary.txt'
 
 	facets = []
 
@@ -498,11 +494,8 @@ def	write_named_entities_config():
 		print ( "Detected encoding: {}".format(encoding) )
 
 
-		# file to export all labels
-		tmplistfilename = dictionary_manager.solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
-
 		#
-		# export entries to listfiles
+		# export entries to entities index
 		#
 		
 		if contenttype=='application/rdf+xml':
@@ -527,9 +520,6 @@ def	write_named_entities_config():
 
 			# append single words of concept labels to wordlist for OCR word dictionary
 			ontology_tagger.wordlist_configfile = tmp_wordlist_configfilename
-
-			# append all labels to the facets labels list
-			ontology_tagger.labels_configfile = tmplistfilename
 			
 			# write synonyms config file
 			ontology_tagger.apply(target_facet=facet)
@@ -538,7 +528,7 @@ def	write_named_entities_config():
 		elif contenttype.startswith('text/plain'):
 			dictionary2wordlist(sourcefilename=filename, encoding=encoding, wordlist_configfilename=tmp_wordlist_configfilename)
 			importer = Entity_Importer_List()
-			importer.import_entities(filename=filename, types=[facet], dictionary=facet, facet_dictionary_is_tempfile=True, encoding=encoding)
+			importer.import_entities(filename=filename, types=[facet], dictionary=facet, encoding=encoding)
 
 		else:
 			print ( "Unknown format {}".format(contenttype) )
@@ -552,34 +542,20 @@ def	write_named_entities_config():
 			os.remove(filename)
 
 	# Write thesaurus entries to facet entities list(s) / dictionaries, entities index and synonyms
-	thesaurus_facets = thesaurus.views.export_entities(wordlist_configfilename=tmp_wordlist_configfilename, facet_dictionary_is_tempfile=True)
+	thesaurus_facets = thesaurus.views.export_entities(wordlist_configfilename=tmp_wordlist_configfilename)
 
 	# add facets used in thesaurus but not yet in an ontology to facet config
 	for thesaurus_facet in thesaurus_facets:
 		if not thesaurus_facet in facets:
 			facets.append(thesaurus_facet)
 
-	# Move new and complete facet file to destination
-	for facet in facets:
-		
-		tmplistfilename = dictionary_manager.solr_dictionary_config_path + os.path.sep + 'tmp_' + facet + '.txt'
-		listfilename = dictionary_manager.solr_dictionary_config_path + os.path.sep + facet + '.txt'
-		os.rename(tmplistfilename, listfilename)
-
-	# Move temp synonyms and OCR words config file to destination
+	# Move temp OCR words config file to destination
 	if os.path.isfile(tmp_wordlist_configfilename):
 		os.rename(tmp_wordlist_configfilename, wordlist_configfilename)
 	
-	# Add facet dictionaries to Open Semantic Entity Search API config
-	for facet in facets:
-
-		dictionary_manager.create_dictionary(facet)
-
 	# Create config for UI
 	write_facet_config(automatch_facets=facets)
 	
-	# Reload/restart Solr core / schema / config to apply changed configs
-	# so added config files / ontolgies / facets / new dictionary entries will be considered by analyzing/indexing new documents
+	# Reload/restart Solr core with new synonyms config
 	# Todo: Use the Solr URI from config
 	urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=opensemanticsearch')
-	urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=opensemanticsearch-entities')
