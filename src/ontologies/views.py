@@ -528,7 +528,7 @@ def	write_named_entities_config():
 		elif contenttype.startswith('text/plain'):
 			dictionary2wordlist(sourcefilename=filename, encoding=encoding, wordlist_configfilename=tmp_wordlist_configfilename)
 			importer = Entity_Importer_List()
-			importer.import_entities(filename=filename, types=[facet], dictionary=facet, encoding=encoding)
+			importer.import_entities(filename=filename, types=[facet], encoding=encoding)
 
 		else:
 			print ( "Unknown format {}".format(contenttype) )
