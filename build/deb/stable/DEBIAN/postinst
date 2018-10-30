@@ -4,7 +4,7 @@
 # export static files to directory for webserver
 python3 /var/lib/opensemanticsearch/manage.py collectstatic --noinput
 
-# create or update DB
+# create or upgrade DB
 python3 /var/lib/opensemanticsearch/manage.py migrate
 
 # create directory for file uploads
@@ -19,7 +19,6 @@ chown www-data:www-data /var/lib/opensemanticsearch/db.sqlite3
 
 # but others should not be able to read DB entries
 chmod o-r /var/lib/opensemanticsearch/db.sqlite3
-
 
 # allow Django running in apache2 context to write facets config
 chgrp www-data /etc/opensemanticsearch/facets
@@ -42,21 +41,17 @@ a2enmod wsgi
 # reload apache configs to enable our additional apache settings
 service apache2 restart
 
+# setup facets/classes in Open Semantic ETL and entities in Open Semantic Search API
+python3 /var/lib/opensemanticsearch/manage.py entities
+
+# allow Django running in apache2 context to write OCR dictionary
+chown www-data:www-data /etc/opensemanticsearch/ocr/dictionary.txt
+chmod o+r /etc/opensemanticsearch/ocr/dictionary.txt
+
 # set rights of cron table
 chown root:root /etc/cron.d/open-semantic-search
 
 # load our cron table
 service cron restart
-
-# setup facets/classes in Open Semantic ETL and entities in Open Semantic Search API
-python3 /var/lib/opensemanticsearch/manage.py entities
-
-# allow Django running in apache2 context to write OCR dictionary
-chgrp www-data /etc/opensemanticsearch/ocr
-chmod g+r /etc/opensemanticsearch/ocr
-chmod g+w /etc/opensemanticsearch/ocr
-chgrp www-data /etc/opensemanticsearch/ocr/dictionary.txt
-chmod g+r /etc/opensemanticsearch/ocr/dictionary.txt
-chmod g+w /etc/opensemanticsearch/ocr/dictionary.txt
 
 exit 0
