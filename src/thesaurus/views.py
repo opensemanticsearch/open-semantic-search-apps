@@ -423,14 +423,14 @@ def tag_concept(concept):
 # Write thesaurus entries to facet entities list / dictionary and to synonym config
 #
 
-def export_entities(wordlist_configfilename=None, facet_dictionary_is_tempfile=False):
+def export_entities(wordlist_configfilename=None):
 
 	facets = []
 	appended_words=[]
 
 	for concept in Concept.objects.all():
 		
-		appended_words = export_entity(concept=concept, wordlist_configfilename=wordlist_configfilename, appended_words = appended_words, facet_dictionary_is_tempfile=facet_dictionary_is_tempfile, commit=False)
+		appended_words = export_entity(concept=concept, wordlist_configfilename=wordlist_configfilename, appended_words = appended_words)
 
 		if concept.facet:
 			facet = concept.facet.facet
@@ -447,7 +447,7 @@ def export_entities(wordlist_configfilename=None, facet_dictionary_is_tempfile=F
 # Append concept labels and aliases to facet dictionary and write aliases to synonyms config file
 #
 
-def export_entity(concept, wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt", appended_words = [], facet_dictionary_is_tempfile=False, commit=True):
+def export_entity(concept, wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt", appended_words = []):
 	
 	facet = "tag_ss"
 	if concept.facet:
@@ -462,7 +462,7 @@ def export_entity(concept, wordlist_configfilename = "/etc/opensemanticsearch/oc
 	entity_manager = Entity_Manager()
 	
 	uri = reverse('thesaurus:detail', args=[concept.pk])
-	entity_manager.add(id=uri, types=[facet], preferred_label=concept.prefLabel, prefLabels=[concept.prefLabel], labels=altLabels, dictionary=facet, facet_dictionary_is_tempfile=facet_dictionary_is_tempfile)
+	entity_manager.add(id=uri, types=[facet], preferred_label=concept.prefLabel, prefLabels=[concept.prefLabel], labels=altLabels, dictionary=facet)
 
 
 	# Append single words of concept labels to wordlist of OCR word dictionary
@@ -483,8 +483,4 @@ def export_entity(concept, wordlist_configfilename = "/etc/opensemanticsearch/oc
 						wordlist_file.write(word.upper() + "\n")
 		wordlist_file.close()
 	
-	if commit:
-		# reload changed dictionary matcher dictionaries in schema of entities index
-		urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=opensemanticsearch-entities')
-
 	return appended_words
