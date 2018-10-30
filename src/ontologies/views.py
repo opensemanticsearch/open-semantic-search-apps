@@ -24,6 +24,7 @@ from entity_import.entity_import_list import Entity_Importer_List
 
 import os.path
 import tempfile
+import shutil
 
 from urllib.request import urlretrieve
 from urllib.request import urlopen
@@ -551,7 +552,7 @@ def	write_named_entities_config():
 
 	# Move temp OCR words config file to destination
 	if os.path.isfile(tmp_wordlist_configfilename):
-		os.rename(tmp_wordlist_configfilename, wordlist_configfilename)
+		shutil.move(tmp_wordlist_configfilename, wordlist_configfilename)
 	
 	# Create config for UI
 	write_facet_config(automatch_facets=facets)
