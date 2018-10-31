@@ -35,6 +35,7 @@
   <dd class="active"><a href="#panel-datasource">Datasource (URL or upload)</a></dd>
   <dd><a href="#panel-query">SPARQL query (optional)</a></dd>
   <dd><a href="#panel-facet">Target facet or target field or property (optional)</a></dd>
+  <dd><a href="#panel-language">Grammar / stemming (optional)</a></dd>
 </dl>
 
 	</div>
@@ -190,6 +191,73 @@
 	</div>
 </div>
 </section>
+
+  <section class="content" id="panel-language">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+		<h2>Grammar (stemming)</h2>
+	</div>
+</div>
+
+<div class="row">
+			<p>You can enable all document language dependent grammars, since for each document only the grammar of the document language will be applied. If your documents are only or mainly in one language, you should force a grammar, so the grammar is applied even if the document language is not recognized correct.</p>
+
+	<div class="small-6 columns text-center">
+
+		
+			<h3>Use grammar (dependent on document language)</h3>
+			<p>Use grammar heuristic (stemming) if the document language was autodetected</p>
+
+			{{ form.stemming.errors }}
+			<label for="id_stemming">Grammars:</label>
+			{{ form.stemming }}
+
+	</div>
+	
+	<div class="small-6 columns text-center">
+
+			<h3>Force grammar (independent of document language)</h3>
+			<p>Force grammar(s) / stemmers for all documents (even if other language)</p>
+
+			{{ form.stemming_force.errors }}
+			<label for="id_stemming_forced">Forced grammar(s):</label>
+			{{ form.stemming_force }}
+
+	</div>
+</div>
+
+<div class="row">
+			<p>Additional or alternate you can enable stemming by grammar rules and dictionary based Hunspell stemmer:</p>
+
+	<div class="small-6 columns text-center">
+
+		
+			<h3>Use Hunspell stemmer (dependent on document language)</h3>
+			<p>Use Hunspell rules & dictionary if the document language was autodetected</p>
+
+			{{ form.stemming_hunspell.errors }}
+			<label for="id_stemming_hunspell">Hunspell grammars:</label>
+			{{ form.stemming_hunspell }}
+
+	</div>
+	
+	<div class="small-6 columns text-center">
+
+			<h3>Force Hunspell stemmer (independent of document language)</h3>
+			<p>Force Hunspell language rules & dictionaries for all documents (even if other language)</p>
+
+			{{ form.stemming_force_hunspell.errors }}
+			<label for="id_stemming_forced_hunspell">Forced hunspell grammar(s):</label>
+			{{ form.stemming_force_hunspell }}
+
+	</div>
+</div>
+
+
+</section>
+
 
 
 

@@ -6,6 +6,7 @@ from django.views import generic
 from django.forms import ModelForm
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django import forms
 
 from setup.models import Setup
 
@@ -29,12 +30,48 @@ import shutil
 from urllib.request import urlretrieve
 from urllib.request import urlopen
 
+# Grammar / Stemming languages
+LANGUAGES_CHOICES = (
+	('en', 'English'),
+	('de', 'Deutsch (German)'),
+	('hu', 'Hungarian'),
+)
+
+LANGUAGES_CHOICES_HUNSPELL = (
+	('hu', 'Hungarian'),
+)
+
+
 
 class OntologiesForm(ModelForm):
 
 	class Meta:
 		model = Ontologies
-		fields = '__all__'
+		exclude = ['stemming', 'stemming_force', 'stemming_hunspell', 'stemming_force_hunspell']
+
+	stemming = forms.MultipleChoiceField(
+		required=False,
+		widget=forms.CheckboxSelectMultiple,
+		choices=LANGUAGES_CHOICES,
+    )
+
+	stemming_force = forms.MultipleChoiceField(
+		required=False,
+		widget=forms.CheckboxSelectMultiple,
+		choices=LANGUAGES_CHOICES,
+    )
+
+	stemming_hunspell = forms.MultipleChoiceField(
+		required=False,
+		widget=forms.CheckboxSelectMultiple,
+		choices=LANGUAGES_CHOICES_HUNSPELL,
+    )
+
+	stemming_force_hunspell = forms.MultipleChoiceField(
+		required=False,
+		widget=forms.CheckboxSelectMultiple,
+		choices=LANGUAGES_CHOICES_HUNSPELL,
+    )
 
 class IndexView(generic.ListView):
 	model = Ontologies
@@ -86,6 +123,13 @@ def update_ontology(request, pk):
 		form = OntologiesForm(request.POST, request.FILES, instance=ontology)
 		
 		if form.is_valid():
+
+			# manual handled MultipleChoiceField is saved comma separeted in a single CharField
+			ontology.stemming = (',').join( form.cleaned_data['stemming'] )
+			ontology.stemming_force = (',').join( form.cleaned_data['stemming_force'] )
+			ontology.stemming_hunspell = (',').join( form.cleaned_data['stemming_hunspell'] )
+			ontology.stemming_force_hunspell = (',').join( form.cleaned_data['stemming_force_hunspell'] )
+
 			form.save()
 
 			write_named_entities_config()
@@ -94,7 +138,14 @@ def update_ontology(request, pk):
 		
 			pass
 	else:
-		form = OntologiesForm(instance=ontology)
+		# The forms MultipleChoiceField is saved comma separeted in singe CharField,
+		# so manual handling and turn over by form parameter initial
+		stemming = ontology.stemming.split(",")
+		stemming_force = ontology.stemming_force.split(",")
+		stemming_hunspell = ontology.stemming_hunspell.split(",")
+		stemming_force_hunspell = ontology.stemming_force_hunspell.split(",")
+
+		form = OntologiesForm(instance=ontology, initial={ 'stemming': stemming, 'stemming_force': stemming_force, 'stemming_hunspell': stemming_hunspell, 'stemming_force_hunspell': stemming_force_hunspell })
 
 	return render(request, 'ontologies/ontologies_form.html', 
 			{'form': form, 'ontology': ontology } )
