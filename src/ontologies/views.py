@@ -573,10 +573,26 @@ def	write_named_entities_config():
 			# append single words of concept labels to wordlist for OCR word dictionary
 			ontology_tagger.wordlist_configfile = tmp_wordlist_configfilename
 			
-			# write synonyms config file
+			# additional all labels fields for language dependent / additional analyzers/stemmers
+			if ontology.stemming:
+				for stemmer in ontology.stemming.split(','):
+					ontology_tagger.additional_all_labels_fields.append('all_labels_stemming_' + stemmer + '_ss')
+
+			if ontology.stemming_force:
+				for stemmer in ontology.stemming_force.split(','):
+					ontology_tagger.additional_all_labels_fields.append('all_labels_stemming_' + stemmer + '_ss')
+
+			if ontology.stemming_hunspell:
+				for stemmer in ontology.stemming_hunspell.split(','):
+					ontology_tagger.additional_all_labels_fields.append('all_labels_stemming_hunspell_' + stemmer + '_ss')
+
+			if ontology.stemming_force_hunspell:
+				for stemmer in ontology.stemming_force_hunspell.split(','):
+					ontology_tagger.additional_all_labels_fields.append('all_labels_stemming_hunspell_' + stemmer + '_ss')
+
+			# setup synonyms config and entities index
 			ontology_tagger.apply(target_facet=facet)
 
-			
 		elif contenttype.startswith('text/plain'):
 			dictionary2wordlist(sourcefilename=filename, encoding=encoding, wordlist_configfilename=tmp_wordlist_configfilename)
 			importer = Entity_Importer_List()
