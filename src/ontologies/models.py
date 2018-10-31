@@ -21,7 +21,11 @@ class Ontologies(models.Model):
 
 	sparql_query = models.TextField(blank = True)
 
-	do_stemming = models.BooleanField(blank=True, default=True)
+	stemming = models.CharField(max_length=300, default="en", blank=True)
+	stemming_force = models.CharField(max_length=300, default="", blank=True)
+
+	stemming_hunspell = models.CharField(max_length=300, default="", blank=True)
+	stemming_force_hunspell = models.CharField(max_length=300, default="", blank=True)
 
 	exclude_uri = models.CharField(max_length=16000, blank = True)
 	exclude_file = models.FileField(upload_to='uploads', blank = True)
