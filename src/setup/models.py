@@ -15,7 +15,7 @@ class Setup(models.Model):
 	
 	ocr = models.BooleanField(default=True)
 
-	ocr_languages = models.CharField(max_length=300, default="en", blank=True)
+	ocr_languages = models.CharField(max_length=300, default="eng", blank=True)
 
 	ocr_descew = models.BooleanField(default=False)
 
