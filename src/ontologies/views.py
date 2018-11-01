@@ -13,6 +13,8 @@ from setup.models import Setup
 from ontologies.models import Ontologies
 
 import thesaurus.views
+import setup.views
+
 from thesaurus.models import Facet
 from thesaurus.models import Concept
 
@@ -623,6 +625,9 @@ def	write_named_entities_config():
 	
 	# Create config for UI
 	write_facet_config(automatch_facets=facets)
+	
+	# Create config for ETL / entity extraction
+	setup.views.generate_etl_configfile()
 	
 	# Reload/restart Solr core with new synonyms config
 	# Todo: Use the Solr URI from config

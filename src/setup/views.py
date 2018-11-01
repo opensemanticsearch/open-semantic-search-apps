@@ -11,6 +11,7 @@ from django import forms
 
 
 from setup.models import Setup
+from ontologies.models import Ontologies
 
 
 # Language of UI
@@ -301,6 +302,54 @@ def	generate_etl_configfile(filename="/etc/opensemanticsearch/etl-webadmin"):
 	else:
 		configfile.write( "if 'export_neo4j' in config['plugins']:" + "\n" )
 		configfile.write( "\tconfig['plugins'].remove('export_neo4j')" + "\n" )
+
+
+	#
+	# Entity extraction stemming config
+	#
+
+	entity_linking_taggers = ['all_labels_ss_tag']
+	entity_linking_taggers_document_language_dependent = {}
+	
+	# set stemming fields / text tagger config for named entity extraction from activated stemmers of all ontologies
+	for ontology in Ontologies.objects.all():
+
+		# forced stemmers
+
+		if ontology.stemming_force:
+			for language in ontology.stemming_force.split(','):
+				tagger = 'all_labels_stemming_force_' + language + '_ss_tag'
+				if not tagger in entity_linking_taggers:
+					entity_linking_taggers.append(tagger)
+
+		if ontology.stemming_force_hunspell:
+			for language in ontology.stemming_force_hunspell.split(','):
+				tagger = 'all_labels_stemming_force_hunspell_' + language + '_ss_tag'
+				if not tagger in entity_linking_taggers:
+					entity_linking_taggers.append(tagger)
+		
+		# document language dependent stemmers
+		
+		if ontology.stemming:
+			for language in ontology.stemming.split(','):
+				if not language in entity_linking_taggers_document_language_dependent:
+					entity_linking_taggers_document_language_dependent[language] = []
+				tagger = 'all_labels_stemming_' + language + '_ss_tag'
+				if not tagger in entity_linking_taggers_document_language_dependent[language]:
+					entity_linking_taggers_document_language_dependent[language].append(tagger)
+
+		if ontology.stemming_hunspell:
+			for language in ontology.stemming_hunspell.split(','):
+				if not language in entity_linking_taggers_document_language_dependent:
+					entity_linking_taggers_document_language_dependent[language] = []
+				tagger = 'all_labels_stemming_hunspell_' + language + '_ss_tag'
+				if not tagger in entity_linking_taggers_document_language_dependent[language]:
+					entity_linking_taggers_document_language_dependent[language].append(tagger)
+
+	configfile.write( "config['entity_linking_taggers'] = " +  str(entity_linking_taggers) + "\n" )
+
+	configfile.write( "config['entity_linking_taggers_document_language_dependent'] = " +  str(entity_linking_taggers_document_language_dependent) + "\n" )
+		
 
 	configfile.close()
 
