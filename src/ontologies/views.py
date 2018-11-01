@@ -580,7 +580,7 @@ def	write_named_entities_config():
 
 			if ontology.stemming_force:
 				for stemmer in ontology.stemming_force.split(','):
-					ontology_tagger.additional_all_labels_fields.append('all_labels_stemming_' + stemmer + '_ss')
+					ontology_tagger.additional_all_labels_fields.append('all_labels_stemming_force_' + stemmer + '_ss')
 
 			if ontology.stemming_hunspell:
 				for stemmer in ontology.stemming_hunspell.split(','):
@@ -588,7 +588,7 @@ def	write_named_entities_config():
 
 			if ontology.stemming_force_hunspell:
 				for stemmer in ontology.stemming_force_hunspell.split(','):
-					ontology_tagger.additional_all_labels_fields.append('all_labels_stemming_hunspell_' + stemmer + '_ss')
+					ontology_tagger.additional_all_labels_fields.append('all_labels_stemming_force_hunspell_' + stemmer + '_ss')
 
 			# setup synonyms config and entities index
 			ontology_tagger.apply(target_facet=facet)
