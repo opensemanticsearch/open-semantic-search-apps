@@ -144,11 +144,12 @@ def create_concept(request):
 
 def api(request):
 
-	concept_pk = request.GET["pk"]
+	concept_id = request.GET["id"]
+	
 	relation_name = request.GET["relation"]
 	label = request.GET["label"]
 
-	concept = Concept.objects.get(pk=concept_pk)
+	concept = Concept.objects.get(pk=concept_id)
 
 	if relation_name == 'altLabel':
 		   alternate = Alternate()
@@ -414,7 +415,7 @@ def tag_concept(concept):
 		if count:
 			count_tagged += count
 			
-			log.append ("Tagged {} yet untagged entries containing hidden label \"{}\" with tags of the concept \"{}\"".format( count, alias.label, concept.prefLabel ) )
+			log.append ("Tagged {} yet untagged entries containing hidden label \"{}\" with tags of the concept \"{}\"".format( count, hidden.hiddenLabel, concept.prefLabel ) )
 
 	return count_queries, count_tagged, log
 
@@ -461,8 +462,7 @@ def export_entity(concept, wordlist_configfilename = "/etc/opensemanticsearch/oc
 			
 	entity_manager = Entity_Manager()
 	
-	uri = reverse('thesaurus:detail', args=[concept.pk])
-	entity_manager.add(id=uri, types=[facet], preferred_label=concept.prefLabel, prefLabels=[concept.prefLabel], labels=altLabels)
+	entity_manager.add(id=concept.pk, types=[facet], preferred_label=concept.prefLabel, prefLabels=[concept.prefLabel], labels=altLabels)
 
 
 	# Append single words of concept labels to wordlist of OCR word dictionary

@@ -16,8 +16,11 @@
 
 {% if is_result %}
 
-
-<h1>Fuzzy search result variants for concept <strong><i>{{concept}}</i></strong> within indexed documents (corpus)</h1>
+{% if preferred_label %}
+<h1>Fuzzy search result variants for concept <strong><i>{{preferred_label}}</i></strong> within indexed documents (corpus)</h1>
+{% else %}
+<h1>Fuzzy search result variants for searched concept(s) within indexed documents (corpus)</h1>
+{% endif %}
 
 {% if aggregation_new %}
 
@@ -30,9 +33,9 @@ Suggestions of potential additional variants of all labels, alternate labels and
 
 <li>
 <h3>{{ result }}</h3>
-<a target="_blank" href="{% url 'thesaurus:api' %}?pk={{concept.id}}&relation=altLabel&label={{result}}">[Add to alternate labels, aliases or synonyms]</a>
+<a target="_blank" href="{% url 'thesaurus:api' %}?id={{entity_id}}&relation=altLabel&label={{result}}">[Add to alternate labels, aliases or synonyms]</a>
 |
-<a target="_blank" href="{% url 'thesaurus:api' %}?pk={{concept.id}}&relation=hiddenLabel&label={{result}}">[Add to hidden labels or misspellings]</a>
+<a target="_blank" href="{% url 'thesaurus:api' %}?id={{entity_id}}&relation=hiddenLabel&label={{result}}">[Add to hidden labels or misspellings]</a>
 |
  Todo: [Add as broader concept] | [Add as narrower concept] | [Exclude (false positive)]
 
@@ -48,7 +51,7 @@ Suggestions of potential additional variants of all labels, alternate labels and
 {% endif %}
 
 
-<a class="tiny button" id="show_analysis" onclick="document.getElementById('analysis').style.display = 'block'; document.getElementById('show_analysis').style.display = 'none';">Show details of the analysis leading to this results</a>
+<a class="tiny button" id="show_analysis" onclick="document.getElementById('analysis').style.display = 'block'; document.getElementById('show_analysis').style.display = 'none';">Show details of the analysis leading to this recommendations</a>
 
 <div id="analysis" style="display: none;">
 
@@ -67,14 +70,18 @@ Aggregated variants of all labels, alternate labels and hidden labels and all st
 
 
 
-This aggregate is result of all following search operations:
+<p>This aggregate is result of all following search operations.</p>
+
+<p>Warning:</p>
+
+<p>For better performance only variants from documents were considered, that do not contain the known variant (and so are found by standard search with AND operator without the additional variant, too).</p>
+
+<p>Additionally, all variants that were found by a former another search/analysis method, will not be searched again in further steps with other analysis methods, so some found variants that were found and included in the agregated overview are missing for the separated list of some methods, even if this method would find them, too.
+If you want to analyze which variants are found by only one method/stemmer/analyzer, swich off all other options.</p>
 
 {% for result, values in results.items %}
 
 <h1>Analysis of <i>{{ result }}</i></h1>
-
-
-
 
 {% for stemmer, stemmed_values in values.items %}
 
@@ -122,7 +129,7 @@ This aggregate is result of all following search operations:
 
 
     <div class="fieldWrapper">
-        <label for="id_list">Known variants:</label>
+        <label for="id_list">Known variant(s) (one entry per line):</label>
         {{ form.list }}
         {{ form.list.errors }}
 
@@ -170,22 +177,13 @@ Todo.
 
     <div class="small-12 medium-4 columns">
 
-<h3>Limit</h3>
-		<div>
-        {{ form.limit.errors }}
-        <label for="id_limit">Limit:</label>
-        {{ form.limit }}
-<p>Sample count of found documents to analyze for each query (Todo: All).</p>
-    	</div>
-    
-	
 	<h3>Filter query</h3>
 		<div>
         {{ form.filterquery.errors }}
         <label for="id_filterquery">Additional filter query:</label>
         {{ form.filterquery }}
 <p>Results have to match this additional query part, too. So its not enough to match only the search entry of the list.</p>
-<p>I.e. for filtering with additional criterias like a path, person or project name. Or to search only in some documents or data.</p>
+<p>I.e. for filtering with additional criterias like a path, person or project name. Or to search only in some documents, data or context.</p>
     	</div>
     	
     	
