@@ -3,18 +3,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django import forms
 
-from thesaurus.models import Concept
-from setup.models import Setup
-
 import requests
 import json
 import os
-
-
-
-solr_entities = "http://localhost:8983/solr/"
-solr_core_entities = "opensemanticsearch-entities"
-
 
 
 def solr_mask(string_to_mask, solr_specialchars = '\+-&|!(){}[]^"~*?:/'):
@@ -27,10 +18,10 @@ def solr_mask(string_to_mask, solr_specialchars = '\+-&|!(){}[]^"~*?:/'):
 		return masked
 
 
-def get_entity_labels(entity_id):
+def get_entity_labels(entity_id, solr_url, solr_core):
 
 	labels = []	
-	url = solr_entities + solr_core_entities + "/" + "select"
+	url = solr_url + solr_core + "/" + "select"
 
 	params = {"wt": "json", "defType": "edismax", "qf": 'id', "fl": 'id,preferred_label_s,all_labels_ss' }
 
@@ -66,25 +57,53 @@ def index(request):
 
 	verbose = False
 
-	uri_search = "/search/?q="
+	solr_url ='http://localhost:8983/solr/'
+	solr_core = 'opensemanticsearch'
+
+	solr_entities = "http://localhost:8983/solr/"
+	solr_core_entities = "opensemanticsearch-entities"
 
 	exact_fields = ['_text_']
 
 	stemmed_fields = []
 
+	# read config from config file
+	if os.path.isfile('/etc/opensemanticsearch/apps/morphology.json'):
+		
+		f = open('/etc/opensemanticsearch/apps/morphology.json')
+		config = json.load(f)
+		f.close()
+
+		if 'solr_url' in config:
+			solr_url = config['solr_url']
+		if 'solr_core' in config:
+			solr_core = config['solr_core']
+		if 'exact_fields' in config:
+			exact_fields = config['exact_fields']
+		if 'stemmed_fields' in config:
+			stemmed_fields = config['stemmed_fields']
+
+			
+
+	# read config from database
+	else:
+		from setup.models import Setup
+		
+		setup = Setup.objects.get(pk=1)
+	
+		if setup.languages:
+			for language in setup.languages.split(','):
+				stemmed_fields.append('text_txt_' + language)
+	
+		if setup.languages_hunspell:
+			for language in setup.languages_hunspell.split(','):
+				stemmed_fields.append('text_txt_hunspell_' + language)
+
+	uri_search = "/search/?q="
+
+
 	# todo: ignore false positives
 	false_positives = []
-
-
-	setup = Setup.objects.get(pk=1)
-
-	if setup.languages:
-		for language in setup.languages.split(','):
-			stemmed_fields.append('text_txt_' + language)
-
-	if setup.languages_hunspell:
-		for language in setup.languages_hunspell.split(','):
-			stemmed_fields.append('text_txt_hunspell_' + language)
 
 	if request.method == 'POST': # If the form has been submitted...
 		form = ListForm(request.POST) # A form bound to the POST data
@@ -98,7 +117,7 @@ def index(request):
 	
 			# read known labels from entity index
 			if entity_id:
-				preferred_label, labels = get_entity_labels(entity_id)
+				preferred_label, labels = get_entity_labels(entity_id, solr_url=solr_entities, solr_core=solr_core_entities)
 		
 			list = form.cleaned_data['list']
 			list = list.replace("\r", "")
@@ -157,7 +176,7 @@ def index(request):
 			fields.extend(stemmed_fields)
 
 			# do searches
-			results, error_messages = search_list(querylist=querylist, verbose=verbose, filterquery=filterquery, fields=fields, known_variants=list.copy(), exact_fields=exact_fields)
+			results, error_messages = search_querylist(solr_url, solr_core, querylist=querylist, verbose=verbose, filterquery=filterquery, fields=fields, known_variants=list.copy(), exact_fields=exact_fields)
 				
 			aggregation = []
 			for line in querylist:
@@ -205,7 +224,7 @@ def index(request):
 
 		# read known labels from entity index
 		if entity_id:
-			preferred_label, labels = get_entity_labels(entity_id)
+			preferred_label, labels = get_entity_labels(entity_id, solr_url=solr_entities, solr_core=solr_core_entities)
 			variantlist += "\n".join(labels)
 
 				
@@ -214,7 +233,7 @@ def index(request):
 		return render(request, 'morphology_index.html', {'form': form,})
 
 
-def get_matches(query, filterquery=None, fields=[], limit=50, known_variants=[], exact_fields=[]):
+def get_matches(solr_url, solr_core, query, filterquery=None, fields=[], limit=50, known_variants=[], exact_fields=[]):
 
 	count = 0
 	
@@ -223,94 +242,105 @@ def get_matches(query, filterquery=None, fields=[], limit=50, known_variants=[],
 	results = {}
 
 	for field in fields:
+
 		results[field] = []
 
-
-	for field in fields:
-		
-		count_new_variants = 0
-
-		for i in range(max_iter):
-		
-			# todo: read Solr URI from config
-			uri = 'http://localhost:8983/solr/opensemanticsearch/select'
-			
-			params = {	'wt': 'json',
-						'defType': 'complexphrase',
-						'df': field,
-						'fl': 'id',
-						'limit': limit,
-						'hl': 'true',
-						'hl.snippets': 1000,
-						'hl.fragsize': 1,
-						'hl.fl': field,
-						'q': query,
-						}
-				
-		
-			params['fq'] = []
-
-			if filterquery:
-				params['fq'].append(filterquery)
-				
-
-			for exact_field in exact_fields:
-				for known_variant in known_variants:
-					params['fq'].append( '-' + exact_field + ':(' + known_variant + ')' )
-			
-			r = requests.post(uri, data=params)
-
-			result = json.loads(r.text)
-			
-			numFound = result['response']['numFound']
-				
-			if numFound:
-				
-				queryterms_count = len(query.split(" "))
-		
-				for doc in result['response']['docs']:
-					if 'highlighting' in result:
-						if doc['id'] in result['highlighting']:
-							if field in result['highlighting'][doc['id']]:
-
-								# todo: warn if count of highlitings in a doc on limit (parameter hl.snippets) and so matches maybe over limit
-								i = 0
-								highlighted_terms = []
-								
-								for value in result['highlighting'][doc['id']][field]:
+		try:
 	
-									i += 1
+			
+			count_new_variants = 0
+	
+			for i in range(max_iter):
+			
+				# Solr URL
+				url = solr_url
+				if not url.endswith('/'):
+					url += '/'
+				url += solr_core
+				if not url.endswith('/'):
+					url += '/'
+	
+				url += 'select'
+				
+				params = {	'wt': 'json',
+							'defType': 'complexphrase',
+							'df': field,
+							'fl': 'id',
+							'limit': limit,
+							'hl': 'true',
+							'hl.snippets': 1000,
+							'hl.fragsize': 1,
+							'hl.fl': field,
+							'q': query,
+							}
+					
+			
+				params['fq'] = []
+	
+				if filterquery:
+					params['fq'].append(filterquery)
+	
+				for exact_field in exact_fields:
+					for known_variant in known_variants:
+						params['fq'].append( '-' + exact_field + ':("' + known_variant + '")' )
+				
+				r = requests.post(url, data=params)
+				debug_full_url = r.url
+	
+				result = json.loads(r.text)
+				
+				numFound = result['response']['numFound']
+					
+				if numFound:
+					
+					queryterms_count = len(query.split(" "))
+			
+					for doc in result['response']['docs']:
+						if 'highlighting' in result:
+							if doc['id'] in result['highlighting']:
+								if field in result['highlighting'][doc['id']]:
+	
+									# todo: warn if count of highlitings in a doc on limit (parameter hl.snippets) and so matches maybe over limit
+									i = 0
+									highlighted_terms = []
+									
+									for value in result['highlighting'][doc['id']][field]:
 		
-									# extract value from between <em></em>
-									term = value[value.find('<em>')+4 : value.find('</em>')]
-		
-									if i <= queryterms_count:
-										highlighted_terms.append(term)
-																			
-									if i == queryterms_count:
-										
-										highlighted_phrase = " ".join(highlighted_terms)
-										
-										if not highlighted_phrase in results[field]:
-											results[field].append(highlighted_phrase)
-											known_variants.append(highlighted_phrase)
+										i += 1
+			
+										# extract value from between <em></em>
+										term = value[value.find('<em>')+4 : value.find('</em>')]
+			
+										if i <= queryterms_count:
+											highlighted_terms.append(term)
+																				
+										if i == queryterms_count:
 											
-											# if many new variants, add additional max iterations
-											if len(known_variants) * 2 > max_iter:
-												max_iter = len(known_variants) * 2
+											highlighted_phrase = " ".join(highlighted_terms)
+											
+											if not highlighted_phrase in results[field]:
+												results[field].append(highlighted_phrase)
+												known_variants.append(highlighted_phrase)
+												
+												# if many new variants, add additional max iterations
+												if len(known_variants) * 2 > max_iter:
+													max_iter = len(known_variants) * 2
+		
+											i = 0
+											highlighted_terms = []
 	
-										i = 0
-										highlighted_terms = []
+				# no further iteration/search for this field if no new/additional documents to last batch / (limited) samples
+				if numFound < limit:
+					break
 
-			# no further iteration/search for this field if no new/additional documents to last batch / (limited) samples
-			if numFound < limit:
-				break
-
+		except BaseException as e:
+			results[field].append('Error: {}'.format(r.text))
+			
 	return results
 
 
 
-def search_list(querylist, verbose=False, filterquery=None, fields=[], limit=50, known_variants=[], exact_fields=[] ):
+def search_querylist(solr_url, solr_core, querylist, verbose=False, filterquery=None, fields=[], limit=50, known_variants=[], exact_fields=[] ):
 		
 	error_messages = []
 	results = {}
@@ -319,21 +349,17 @@ def search_list(querylist, verbose=False, filterquery=None, fields=[], limit=50,
 	for line in querylist:
 		rowcount = rowcount + 1
 		
-		# strip emtpy
-		line = line.strip()
-
-		if not line=='':
-			
-			try:
+		try:
 				
-				results[line] = get_matches(line, filterquery = filterquery, fields = fields, known_variants = known_variants, exact_fields=exact_fields)
+			results[line] = get_matches(solr_url, solr_core, line, filterquery = filterquery, fields = fields, known_variants = known_variants, exact_fields=exact_fields)
 
-			except BaseException as e:
-				import sys
+		except BaseException as e:
 
-				error_message = "Error: Exception while searching line {} ({}): {}".format(rowcount, line, e)
+			import sys
+
+			error_message = "Error: Exception while searching line {} ({}): {}".format(rowcount, line, e)
 				
-				sys.stderr.write( error_message )
-				error_messages.append(error_message)
+			sys.stderr.write( error_message )
+			error_messages.append(error_message)
 
 	return results, error_messages
