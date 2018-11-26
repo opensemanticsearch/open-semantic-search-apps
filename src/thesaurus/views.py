@@ -445,6 +445,57 @@ def export_entities(wordlist_configfilename=None):
 
 
 #
+# get full taxonomy with all broader concepts
+#
+
+def get_taxonomy(concept, path_ids=None, path_labels=None, results=[]):
+
+	if not path_labels:
+		path_labels = [ str(concept) ]
+
+	if not path_ids:
+		path_ids = []
+
+
+	pks_broader = []
+
+	# get ids/primary keys of broader concept(s)
+	for relation in Broader.objects.filter(concept=concept):
+		pks_broader.append(relation.broader.id)
+
+	# same, if concept is narrower in other concept(s)
+	for relation in Narrower.objects.filter(narrower=concept):
+		pks_broader.append(relation.concept.id)
+
+	# add id to yet or now traversed ids stack
+	extended_path_ids = path_ids.copy()
+	extended_path_ids.append(concept.id)
+
+	traversal_done = True
+	
+	# recursion, if broader concepts
+	for pk in pks_broader:
+
+		# pk not in yet traversed path_ids (stack for loop detection stoping traversal, if a broader concept has a relation of type broader to one of its narrower yet traversed children)
+		if not pk in extended_path_ids:
+			
+			traversal_done = False
+			broader_concept = Concept.objects.get(pk=pk)
+					
+			extended_path_labels=path_labels.copy()
+			extended_path_labels.append(str(broader_concept))
+			results = get_taxonomy(concept=broader_concept, path_ids=extended_path_ids, path_labels=extended_path_labels, results=results)
+
+	if traversal_done:
+		# reverse the traversal path to start with broadest, not outgoing concept
+		path_labels.reverse()
+		results.append("\t".join(path_labels))
+				
+	return results
+
+
+
+#
 # Append concept labels and aliases to facet dictionary and write aliases to synonyms config file
 #
 
@@ -462,7 +513,16 @@ def export_entity(concept, wordlist_configfilename = "/etc/opensemanticsearch/oc
 			
 	entity_manager = Entity_Manager()
 	
-	entity_manager.add(id=concept.pk, types=[facet], preferred_label=concept.prefLabel, prefLabels=[concept.prefLabel], labels=altLabels)
+	fields = {}
+
+	# taxonomy
+	taxonomy = get_taxonomy(concept)
+	
+	if taxonomy:
+		fields['skos_broader_taxonomy_prefLabel_ss'] = taxonomy
+
+	
+	entity_manager.add(id=concept.pk, types=[facet], preferred_label=concept.prefLabel, prefLabels=[concept.prefLabel], labels=altLabels, fields=fields)
 
 
 	# Append single words of concept labels to wordlist of OCR word dictionary
