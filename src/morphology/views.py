@@ -18,6 +18,7 @@ def solr_mask(string_to_mask, solr_specialchars = '\+-&|!(){}[]^"~*?:/'):
 		return masked
 
 
+# read labels of an entity id from Open Semantic Entity Search index, if got an ID/URI for entities from thesaurus or ontologies
 def get_entity_labels(entity_id, solr_url, solr_core):
 
 	labels = []	
@@ -57,6 +58,10 @@ def index(request):
 
 	verbose = False
 
+	preset_similar = True
+	preset_suffix = True
+	preset_prefix = True
+	
 	solr_url ='http://localhost:8983/solr/'
 	solr_core = 'opensemanticsearch'
 
@@ -82,6 +87,13 @@ def index(request):
 			exact_fields = config['exact_fields']
 		if 'stemmed_fields' in config:
 			stemmed_fields = config['stemmed_fields']
+
+		if 'preset_similar' in config:
+			preset_similar = config['preset_similar']
+		if 'preset_prefix' in config:
+			preset_prefix = config['preset_prefix']
+		if 'preset_suffix' in config:
+			preset_suffix = config['preset_suffix']
 
 			
 
@@ -228,10 +240,13 @@ def index(request):
 			variantlist += "\n".join(labels)
 
 				
-		form = ListForm( initial = { 'preferred_label': preferred_label, 'list': variantlist } ) # An unbound form
+		form = ListForm( initial = { 'preferred_label': preferred_label, 'list': variantlist, 'similar': preset_similar, 'prefix': preset_prefix, 'suffix': preset_suffix } ) # An unbound form
 
 		return render(request, 'morphology_index.html', {'form': form,})
 
+#
+# get matches of the searched query (search by Solr complex phrase search parser) from search results where matches are marked by Solr highlighting component
+#
 
 def get_matches(solr_url, solr_core, query, filterquery=None, fields=[], limit=50, known_variants=[], exact_fields=[]):
 
