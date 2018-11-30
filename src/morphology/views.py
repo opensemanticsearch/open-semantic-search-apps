@@ -56,6 +56,18 @@ class ListForm(forms.Form):
 
 def index(request):
 
+	configfiledir = '/etc/opensemanticsearch/apps/morphology/'
+	configfilename = configfiledir + 'default.json'
+
+	configfilenames = os.listdir(configfiledir)
+
+	if 'config' in request.GET:
+		if request.GET['config'] in configfilenames:
+			configfilename = configfiledir + request.GET['config']
+		elif request.GET['config'] + '.json' in configfilenames:
+			configfilename = configfiledir + request.GET['config'] + '.json'
+
+
 	verbose = False
 
 	preset_similar = True
@@ -73,9 +85,9 @@ def index(request):
 	stemmed_fields = []
 
 	# read config from config file
-	if os.path.isfile('/etc/opensemanticsearch/apps/morphology.json'):
+	if os.path.isfile(configfilename):
 		
-		f = open('/etc/opensemanticsearch/apps/morphology.json')
+		f = open(configfilename)
 		config = json.load(f)
 		f.close()
 
