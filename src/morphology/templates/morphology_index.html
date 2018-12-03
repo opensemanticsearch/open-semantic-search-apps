@@ -29,16 +29,18 @@ Suggestions of potential additional variants of all labels, alternate labels and
 
 <ul>
 
-{% for result in aggregation_new %}
+{% for result, values in aggregation_new.items %}
 
 <li>
 <h3>{{ result }}</h3>
+<p>Variant occurs in <strong>{{values.count}}</strong> documents (additional <strong>+{{values.diff}}</strong> documents found by this variant, since not including a yet known variant)</p>
+<p>
 <a target="_blank" href="{% url 'thesaurus:api' %}?id={{entity_id}}&relation=altLabel&label={{result}}">[Add to alternate labels, aliases or synonyms]</a>
 |
 <a target="_blank" href="{% url 'thesaurus:api' %}?id={{entity_id}}&relation=hiddenLabel&label={{result}}">[Add to hidden labels or misspellings]</a>
 |
  Todo: [Add as broader concept] | [Add as narrower concept] | [Exclude (false positive)]
-
+</p>
 </li>
 
 {% endfor %}

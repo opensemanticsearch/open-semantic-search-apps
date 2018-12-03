@@ -17,6 +17,38 @@ def solr_mask(string_to_mask, solr_specialchars = '\+-&|!(){}[]^"~*?:/'):
 			
 		return masked
 
+#
+# how many documents for query in index?
+#
+def count_documents(solr, solr_core, query, operator="PHRASE", fields=None, filterquery=None):
+
+	url = solr + solr_core + "/" + "select"
+
+	params = {"wt": "json", "defType": "edismax", "sow":"false", "rows": 0}
+
+	if fields:
+		params["qf"] = fields
+
+	if filterquery:
+		params["fq"] = filterquery
+
+	solr_query = solr_mask(query)
+
+	if operator=="PHRASE":
+		solr_query = "\"" + solr_query + "\""
+	else:
+		params["q.op"] = operator
+	
+	params["q"] = solr_query
+		
+	response = requests.get(url, params = params)
+
+	r = response.json()
+
+	numFound = r['response']['numFound']
+	
+	return numFound
+
 
 # read labels of an entity id from Open Semantic Entity Search index, if got an ID/URI for entities from thesaurus or ontologies
 def get_entity_labels(entity_id, solr_url, solr_core):
@@ -93,6 +125,8 @@ def index(request):
 
 		if 'solr_url' in config:
 			solr_url = config['solr_url']
+			if not solr_url.endswith('/'):
+				solr_url += '/'
 		if 'solr_core' in config:
 			solr_core = config['solr_core']
 		if 'exact_fields' in config:
@@ -210,11 +244,34 @@ def index(request):
 							aggregation.append(result)
 						
 			# variant not yet in known variants
-			aggregation_new = []
+			aggregation_new = {}
 		
 			for variant in aggregation:
 				if not variant in list:
-					aggregation_new.append(variant)
+					
+					# add yet unknown variant to new variants list
+					aggregation_new[variant] = {}
+
+					aggregation_new[variant]['count'] = count_documents(solr=solr_url, solr_core=solr_core, query=variant, operator="PHRASE", fields=exact_fields)
+					
+					# build filterquery of yet known variants to count diff (count of documents with potential new variant without documents including the known variant)
+					
+					filterquery_knownvariants = []
+	
+					if filterquery:
+						filterquery_knownvariants.append(filterquery)
+	
+					for exact_field in exact_fields:
+						for known_variant in list:
+		
+							# if not empty line
+							known_variant = known_variant.strip()
+							if known_variant:
+								filterquery_knownvariants.append( '-' + exact_field + ':("' + known_variant + '")' )
+
+					# count documents found addional by new variant
+					aggregation_new[variant]['diff'] = count_documents(solr=solr_url, solr_core=solr_core, query=variant, operator="PHRASE", fields=exact_fields, filterquery=filterquery_knownvariants)
+
 			
 
 			return render(request, 'morphology_index.html', 
