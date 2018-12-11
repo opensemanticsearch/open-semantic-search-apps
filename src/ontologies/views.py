@@ -376,7 +376,7 @@ def dictionary2wordlist(sourcefilename, encoding='utf-8', wordlist_configfilenam
 
 # Collect all used facets so they can be displayed for search UI config
 
-def write_facet_config(automatch_facets=[]):
+def write_facet_config():
 	# Todo: graph with labels or JSON instead of PHP config
 	
 	configfilename_php = '/etc/solr-php-ui/config.facets.php'
@@ -392,11 +392,14 @@ def write_facet_config(automatch_facets=[]):
 
 	facets_done=[]
 
+	configfile_php.write("\n$cfg['facets']['path'] = array ('label'=>'Path(s)', 'facet_limit'=>10, 'snippets_limit'=>10, 'graph_limit'=>0, 'snippets_enabled'=>false, 'graph_enabled'=>false, 'tree'=> true);\n")
+
+
 	# add facets of named entities
 	for facet in Facet.objects.filter(enabled=True).order_by('facet_order'):
 		facets_done.append(facet.facet)
 		
-		configfile_php.write("\n$cfg['facets']['{}'] = array ('label'=>'{}', 'facet_limit'=>'{}', 'snippets_limit'=>'{}', 'graph_limit'=>'{}'" . format( facet.facet, facet.label, facet.facet_limit, facet.snippets_limit, facet.graph_limit))
+		configfile_php.write("\n$cfg['facets']['{}'] = array ('label'=>'{}', 'facet_limit'=>'{}', 'snippets_limit'=>'{}', 'graph_limit'=>'{}', 'tree'=>false" . format( facet.facet, facet.label, facet.facet_limit, facet.snippets_limit, facet.graph_limit))
 
 		if facet.snippets_enabled:
 			configfile_php.write(",'snippets_enabled'=>true")
@@ -414,9 +417,6 @@ def write_facet_config(automatch_facets=[]):
 		configfile_python.write( "{" )
 		configfile_python.write( "'label': '{}', 'uri': '{}', 'facet_limit': '{}', 'snippets_limit': '{}'," . format( facet.label, facet.uri, facet.facet_limit, facet.snippets_limit) )
 
-		if facet.facet in automatch_facets:
-			configfile_python.write( "'dictionary': '{}'".format('dictionary_matcher_' + facet.facet) )
-
 		configfile_python.write("}\n")
 			
 	# add facets of ontolgoies
@@ -428,14 +428,21 @@ def write_facet_config(automatch_facets=[]):
 		
 			facets_done.append(facet)
 			
-			configfile_php.write( "\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format( facet, ontology ) )
+			configfile_php.write( "\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format( facet, str(ontology) + ' (exact match)' ) )
+
+			
+			# additional all labels fields for language dependent / additional analyzers/stemmers
+			if ontology.stemming:
+				for stemmer in ontology.stemming.split(','):
+					configfile_php.write( "\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format( facet + 'all_labels_stemming_' + stemmer + '_ss_tag_ss', str(ontology) + ' (Fuzzy match by Porter stemmer ' + stemmer + ')' ) )
+
+			if ontology.stemming_hunspell:
+				for stemmer in ontology.stemming_hunspell.split(','):
+					configfile_php.write( "\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format( facet + 'all_labels_stemming_hunspell_' + stemmer + '_ss_tag_ss', str(ontology) + ' (Fuzzy match by Hunspell stemmer ' + stemmer + ')' ) )
 
 			configfile_python.write( "config['facets']['{}'] = ". format(facet) )
 			configfile_python.write( "{" )
 			configfile_python.write( "'label': '{}', 'uri': '{}', 'facet_limit': '{}', 'snippets_limit': '{}'," . format( ontology.title, ontology.uri, 0, 0) )
-
-			if facet in automatch_facets:
-				configfile_python.write( " 'dictionary': '{}'".format('dictionary_matcher_' + facet) )
 
 			configfile_python.write("}\n")
 
@@ -624,7 +631,7 @@ def	write_named_entities_config():
 		shutil.move(tmp_wordlist_configfilename, wordlist_configfilename)
 	
 	# Create config for UI
-	write_facet_config(automatch_facets=facets)
+	write_facet_config()
 	
 	# Create config for ETL / entity extraction
 	setup.views.generate_etl_configfile()
