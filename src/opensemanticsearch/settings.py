@@ -52,6 +52,8 @@ INSTALLED_APPS = (
     'querytagger',
     'morphology',
     'hypothesis',
+    'search_entity',
+    'solr_ranking_analysis',
     'visual_graph_explorer',
     'entity_rest_api',
 )
@@ -91,12 +93,25 @@ WSGI_APPLICATION = 'opensemanticsearch.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+if os.path.isfile('/etc/opensemanticsearch-django-webapps/my.cnf'):
+	
+	DATABASES = {
+		'default': {
+					'ENGINE': 'django.db.backends.mysql',
+					'OPTIONS': {
+							'read_default_file': '/etc/opensemanticsearch-django-webapps/my.cnf',
+					},
+				}
+	}
+
+else:
+
+	DATABASES = {
+	    'default': {
+	        'ENGINE': 'django.db.backends.sqlite3',
+	        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+	    }
+	}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
