@@ -91,9 +91,12 @@ def index(request):
 	configfiledir = '/etc/opensemanticsearch/apps/morphology/'
 	configfilename = configfiledir + 'default.json'
 
-	configfilenames = os.listdir(configfiledir)
-
 	if 'config' in request.GET:
+
+		configfilenames = []
+		if os.path.isdir(configfiledir):
+			configfilenames = os.listdir(configfiledir)
+
 		if request.GET['config'] in configfilenames:
 			configfilename = configfiledir + request.GET['config']
 		elif request.GET['config'] + '.json' in configfilenames:
@@ -235,13 +238,15 @@ def index(request):
 
 			# do searches
 			results, error_messages = search_querylist(solr_url, solr_core, querylist=querylist, verbose=verbose, filterquery=filterquery, fields=fields, known_variants=list.copy(), exact_fields=exact_fields)
-				
+			
 			aggregation = []
 			for line in querylist:
-				for field in fields:
-					for result in results[line][field]:
-						if result not in aggregation:
-							aggregation.append(result)
+				if line in results:
+					for field in fields:
+						if field in results[line]:
+							for result in results[line][field]:
+								if result not in aggregation:
+									aggregation.append(result)
 						
 			# variant not yet in known variants
 			aggregation_new = {}
@@ -261,12 +266,11 @@ def index(request):
 					if filterquery:
 						filterquery_knownvariants.append(filterquery)
 	
-					for exact_field in exact_fields:
-						for known_variant in list:
-		
-							# if not empty line
-							known_variant = known_variant.strip()
-							if known_variant:
+					for known_variant in list:
+						# if not empty line
+						known_variant = known_variant.strip()
+						if known_variant:
+							for exact_field in exact_fields:
 								filterquery_knownvariants.append( '-' + exact_field + ':("' + known_variant + '")' )
 
 					# count documents found addional by new variant
@@ -434,7 +438,7 @@ def search_querylist(solr_url, solr_core, querylist, verbose=False, filterquery=
 		rowcount = rowcount + 1
 		
 		try:
-				
+			
 			results[line] = get_matches(solr_url, solr_core, line, filterquery = filterquery, fields = fields, known_variants = known_variants, exact_fields=exact_fields)
 
 		except BaseException as e:
