@@ -32,6 +32,7 @@
   <dd><a href="#panel-ocr">OCR</a></dd>
   <dd><a href="#panel-ner">Named Entity Recognition (NER)</a></dd>
   <dd><a href="#panel-segmentation">Segmentation (pages)</a></dd>
+  <dd><a href="#panel-thumbnails">Preview (thumbnails)</a></dd>
   <dd><a href="#panel-neo4j">Graph DB (Neo4j)</a></dd>
 </dl>
 
@@ -311,6 +312,35 @@
 </div>
 
 </section>
+
+
+
+  <section class="content" id="panel-thumbnails">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>Preview (Thumbnails)</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+<h3>PDF preview</h3>
+
+<p>By additional segmentation / splitting of PDF files to single page PDF files for preview you can spare download bandwith for downloading of full PDF by only downloading/previewing the previewed pages, which can be useful outside your intranet providing search in very big/massive PDF documents over internet.</p>
+
+        {{ form.segmentation_pages_preview.errors }}
+        <label for="id_segmentation_pages_preview">Generate additional splitted / single page PDFs for preview:</label>
+        {{ form.segmentation_pages_preview }}
+
+<p>Warning: Needs additional disc space (more than the size of all indexed PDF files) in separate thumbnail directory!</p>
+
+</div>
+
+</section>
+
 
 
   <section class="content" id="panel-neo4j">

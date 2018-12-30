@@ -26,6 +26,7 @@ class Setup(models.Model):
 	ner_stanford = models.BooleanField(default=False)
 
 	segmentation_pages = models.BooleanField(default=False)
+	segmentation_pages_preview = models.BooleanField(default=False)
 
 	graph_neo4j = models.BooleanField(default=False)
 	graph_neo4j_host = models.CharField(max_length=1000, blank=True)
