@@ -22,5 +22,7 @@ urlpatterns = [
 	url(r'^ontologies/', include('ontologies.urls', namespace="ontologies")),
 	url(r'^hypothesis/', include('hypothesis.urls', namespace="hypothesis")),
 	url(r'^graph/', include('visual_graph_explorer.urls', namespace="graph")),
+	url(r'^search_entity/', include('search_entity.urls', namespace="search_entity")),
+	url(r'^solr_ranking_analysis/', include('solr_ranking_analysis.urls', namespace="solr_ranking_analysis")),
 	url(r'^morphology/', include('morphology.urls', namespace="morphology")),
 ]
