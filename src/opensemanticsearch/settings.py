@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     'solr_ranking_analysis',
     'visual_graph_explorer',
     'entity_rest_api',
+    'import_export',
 )
 
 MIDDLEWARE_CLASSES = (

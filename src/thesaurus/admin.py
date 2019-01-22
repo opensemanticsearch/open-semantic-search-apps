@@ -9,6 +9,9 @@ from thesaurus.models import Facet
 import thesaurus.views
 import ontologies.views
 
+from import_export import resources
+
+from import_export.admin import ImportExportModelAdmin
 
 class AlternateInline(admin.TabularInline):
     model = Alternate
@@ -38,8 +41,14 @@ class ConceptAdmin(admin.ModelAdmin):
 		# tag all docs containing concept or one of its aliases
 		thesaurus.views.tag_concept_and_message_stats(request=request, concept=obj)
 
+class FacetResource(resources.ModelResource):
+	class Meta:
+		model = Facet
 
-class FacetAdmin(admin.ModelAdmin):
+
+class FacetAdmin(ImportExportModelAdmin):
+
+	resource_class = FacetResource
 
 	list_display = ('facet', 'label',)
 
@@ -51,6 +60,8 @@ class FacetAdmin(admin.ModelAdmin):
 
 		# generate facet config for Solr-PHP-UI
 		ontologies.views.write_facet_config()
+
+
 
 
 class GroupAdmin(admin.ModelAdmin):
