@@ -10,8 +10,9 @@ import thesaurus.views
 import ontologies.views
 
 from import_export import resources
-
 from import_export.admin import ImportExportModelAdmin
+from django.dispatch import receiver
+from import_export.signals import post_import
 
 class AlternateInline(admin.TabularInline):
     model = Alternate
@@ -62,6 +63,11 @@ class FacetAdmin(ImportExportModelAdmin):
 		ontologies.views.write_facet_config()
 
 
+@receiver(post_import, dispatch_uid='post_import')
+def _post_import(model, **kwargs):
+    # model is the actual model instance which after import
+	# generate facet config for Solr-PHP-UI
+	ontologies.views.write_facet_config()
 
 
 class GroupAdmin(admin.ModelAdmin):
