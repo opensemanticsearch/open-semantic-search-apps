@@ -15,6 +15,7 @@ class Facet(models.Model):
 	label = models.CharField(max_length=255)
 	facet = models.CharField(max_length=255)
 	enabled = models.NullBooleanField(default=True, null=True, blank=True)
+	closed = models.NullBooleanField(default=False, null=True, blank=True)
 	facet_limit = models.IntegerField(default=20, null=True, blank=True)
 	snippets_enabled = models.NullBooleanField(default=True, null=True, blank=True)
 	snippets_limit = models.IntegerField(default=10, null=True, blank=True)
