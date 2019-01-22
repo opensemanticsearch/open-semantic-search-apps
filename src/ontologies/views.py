@@ -392,7 +392,7 @@ def write_facet_config():
 
 	facets_done=[]
 
-	configfile_php.write("\n$cfg['facets']['path'] = array ('label'=>'Path(s)', 'facet_limit'=>10, 'snippets_limit'=>10, 'graph_limit'=>0, 'snippets_enabled'=>false, 'graph_enabled'=>false, 'tree'=> true);\n")
+	configfile_php.write("\n$cfg['facets']['path'] = array ('label'=>'Path(s)', 'facet_limit'=>10, 'snippets_limit'=>10, 'graph_limit'=>0, 'snippets_enabled'=>false, 'graph_enabled'=>false, 'tree'=>true, 'closed'=>false);\n")
 
 
 	# add facets of named entities
@@ -401,15 +401,20 @@ def write_facet_config():
 		
 		configfile_php.write("\n$cfg['facets']['{}'] = array ('label'=>'{}', 'facet_limit'=>'{}', 'snippets_limit'=>'{}', 'graph_limit'=>'{}', 'tree'=>false" . format( facet.facet, facet.label, facet.facet_limit, facet.snippets_limit, facet.graph_limit))
 
-		if facet.snippets_enabled:
-			configfile_php.write(",'snippets_enabled'=>true")
+		if facet.closed:
+			configfile_php.write(", 'closed'=>true")
 		else:
-			configfile_php.write(",'snippets_enabled'=>false")
+			configfile_php.write(", 'closed'=>false")
+
+		if facet.snippets_enabled:
+			configfile_php.write(", 'snippets_enabled'=>true")
+		else:
+			configfile_php.write(", 'snippets_enabled'=>false")
 
 		if facet.graph_enabled:
-			configfile_php.write(",'graph_enabled'=>true")
+			configfile_php.write(", 'graph_enabled'=>true")
 		else:
-			configfile_php.write(",'graph_enabled'=>false")
+			configfile_php.write(", 'graph_enabled'=>false")
 
 		configfile_php.write(");\n")
 
