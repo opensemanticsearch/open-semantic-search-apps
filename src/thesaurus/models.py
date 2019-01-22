@@ -143,6 +143,9 @@ class Alternate(models.Model):
                                       choices=query_type_chooices,
                                       default='PHRASE')
 
+	def __str__(self):
+		return self.altLabel
+
 #
 # SKOS:hiddenLabel
 #
