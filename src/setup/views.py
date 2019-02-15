@@ -21,6 +21,7 @@ LANGUAGE_CHOICES = (
 	('de', 'Deutsch (German)'),
 	('it', 'Italian'),
 	('pt', 'Portuguese'),
+	('fr', 'French (Switzerland)')
 )
 
 
