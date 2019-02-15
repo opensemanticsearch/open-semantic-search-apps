@@ -53,7 +53,7 @@ INSTALLED_APPS = (
     'morphology',
     'hypothesis',
     'search_entity',
-    'solr_ranking_analysis',
+    'solr_relevance_ranking_analysis',
     'visual_graph_explorer',
     'entity_rest_api',
     'import_export',
