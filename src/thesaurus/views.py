@@ -80,7 +80,7 @@ def update_concept(request, pk):
 		related_formset = RelatedFormSet(request.POST, request.FILES, instance=concept, prefix="related")
 
 
-		if concept_form.is_valid() and alternates_formset.is_valid() and tags_formset.is_valid() and broader_formset.is_valid() and narrower_formset.is_valid() and related_formset.is_valid():
+		if concept_form.is_valid() and alternates_formset.is_valid() and misspellings_formset.is_valid() and tags_formset.is_valid() and broader_formset.is_valid() and narrower_formset.is_valid() and related_formset.is_valid():
 			concept_form.save()
 			alternates_formset.save()
 			misspellings_formset.save()
