@@ -31,7 +31,7 @@
   <dd class="active"><a href="#panel-language">Document language(s)</a></dd>
   <dd><a href="#panel-ocr">OCR</a></dd>
   <dd><a href="#panel-ner">Named Entity Recognition (NER)</a></dd>
-  <dd><a href="#panel-segmentation">Segmentation (pages)</a></dd>
+  <dd><a href="#panel-segmentation">Segmentation (pages & sentences)</a></dd>
   <dd><a href="#panel-thumbnails">Preview (thumbnails)</a></dd>
   <dd><a href="#panel-neo4j">Graph DB (Neo4j)</a></dd>
 </dl>
@@ -308,7 +308,30 @@
         {{ form.segmentation_pages }}
 
 <p>Warning: Will double indexing time and index size!</p>
+</div>
+</div>
 
+
+<div class="row">
+	<div class="small-12 columns text-center">
+
+<h2>Segmentation to sentences</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+<p>By segmentation of document text to single sentences you can find and analyze entities more granular by search and filter entities that occur together in same sentence(s).</p>
+
+        {{ form.segmentation_sentences.errors }}
+        <label for="id_segmentation_sentences">Sentence segmentation:</label>
+        {{ form.segmentation_sentences }}
+
+<p>Warning: Will double indexing time and index size!</p>
+
+
+</div>
 </div>
 
 </section>

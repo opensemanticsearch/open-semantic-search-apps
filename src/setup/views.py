@@ -349,6 +349,13 @@ def	generate_etl_configfile(filename="/etc/opensemanticsearch/etl-webadmin"):
 		configfile.write( "if 'enhance_pdf_page_preview' in config['plugins']:" + "\n" )
 		configfile.write( "\tconfig['plugins'].remove('enhance_pdf_page_preview')" + "\n" )
 
+	if setup.segmentation_sentences:
+		configfile.write( "if not 'enhance_sentence_segmentation' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].append('enhance_sentence_segmentation')" + "\n" )
+	else:
+		configfile.write( "if 'enhance_sentence_segmentation' in config['plugins']:" + "\n" )
+		configfile.write( "\tconfig['plugins'].remove('enhance_sentence_segmentation')" + "\n" )
+
 	if setup.graph_neo4j:
 		configfile.write( "if not 'export_neo4j' in config['plugins']:" + "\n" )
 		configfile.write( "\tconfig['plugins'].append('export_neo4j')" + "\n" )
