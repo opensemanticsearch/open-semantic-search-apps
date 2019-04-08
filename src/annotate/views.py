@@ -7,7 +7,7 @@ from django.forms import ModelForm
 from django.views import generic
 import django.forms as forms
 
-from opensemanticetl.etl_enrich import ETL_Enrich
+from opensemanticetl.etl import ETL
 
 import urllib
 from rdflib import Graph, Literal, BNode, Namespace, RDF, URIRef
@@ -19,10 +19,21 @@ from thesaurus.models import Facet
 # apply annotations to search index
 def export_to_index(uri):
 
-	etl = ETL_Enrich()
-	etl.config['plugins'] = ['enhance_rdf_annotations_by_http_request']
+	etl = ETL()
+
+	# plugin enhance_rdf_annotations_by_http_request reads the tags and annotations
+	# plugin enhance_multilingual copies them to default search fields
+	etl.read_configfile ('/etc/opensemanticsearch/enhancer-rdf')
+	etl.config['plugins'] = ['enhance_rdf_annotations_by_http_request','enhance_multilingual']
 
 	parameters = etl.config.copy()
+	
+	# since we only enrich and not ETL the document/analysis pipeline again, text(s) has to be added to default search fields, not overwrite existing text
+	parameters['add'] = True
+	
+	# but the (maybe changed) comments should overwrite existing comments
+	parameters['fields_set'] = ['comment_txt']
+	
 	parameters['id'] = uri
 	
 	etl.process (parameters=parameters, data={})
