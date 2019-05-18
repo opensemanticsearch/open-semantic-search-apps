@@ -245,7 +245,7 @@
 <h3>Priority</h3>
 
         {{ form.ocr_later.errors }}
-        <label for="id_ocr_later">Do OCR later:</label>
+        <label for="id_ocr_later">Run configured OCR tasks later:</label>
         {{ form.ocr_later }}
 
 <p>Since OCR slows down indexing by needing most time for often only few additional infos, OCR can be done later by reindexing with enabled OCR after all documents were yet indexed without OCR first to get an usable index many times faster. So you can search & will find most documents much earlier while OCR analysis runs later in background.</p>
