@@ -14,6 +14,7 @@ class Setup(models.Model):
 	languages_force_hunspell = models.CharField(max_length=300, default="", blank=True)
 	
 	ocr = models.BooleanField(default=True)
+	ocr_later = models.BooleanField(default=True)
 
 	ocr_languages = models.CharField(max_length=300, default="eng", blank=True)
 

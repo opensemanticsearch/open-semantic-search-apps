@@ -302,21 +302,52 @@ def	generate_etl_configfile(filename="/etc/opensemanticsearch/etl-webadmin"):
 
 	configfile.write( "config['ocr_lang'] = \'" + "+".join(setup.ocr_languages.split(',')) + "\'\n" )
 
+	if setup.ocr_later:
+		# initialize (yet empty) config options for running plugins later, which will be set/appended there in further steps
+		configfile.write( "if not 'additional_plugins_later' in config:\n" )
+		configfile.write( "\tconfig['additional_plugins_later'] = []" + "\n" )
+		configfile.write( "if not 'additional_plugins_later_config' in config:\n" )
+		configfile.write( "\tconfig['additional_plugins_later_config'] = {}" + "\n" )
+		
+
 	if setup.ocr:
-		configfile.write( "config['ocr'] = True\n" )
+
+		if setup.ocr_later:
+			configfile.write( "config['ocr'] = False\n" )
+			configfile.write( "config['additional_plugins_later_config']['ocr'] = True\n" )
+		else:
+			configfile.write( "config['ocr'] = True\n" )
+			
 	else:
 		configfile.write( "config['ocr'] = False\n" )
 		
 	if setup.ocr_pdf:
-		configfile.write( "if not 'enhance_pdf_ocr' in config['plugins']:" + "\n" )
-		configfile.write( "\tconfig['plugins'].append('enhance_pdf_ocr')" + "\n" )
+
+		if setup.ocr_later:
+			configfile.write( "if 'enhance_pdf_ocr' in config['plugins']:" + "\n" )
+			configfile.write( "\tconfig['plugins'].remove('enhance_pdf_ocr')" + "\n" )
+			configfile.write( "if not 'enhance_pdf_ocr' in config['additional_plugins_later']:" + "\n" )
+			configfile.write( "\tconfig['additional_plugins_later'].append('enhance_pdf_ocr')" + "\n" )
+			
+		else:
+			configfile.write( "if not 'enhance_pdf_ocr' in config['plugins']:" + "\n" )
+			configfile.write( "\tconfig['plugins'].append('enhance_pdf_ocr')" + "\n" )
+
 	else:
 		configfile.write( "if 'enhance_pdf_ocr' in config['plugins']:" + "\n" )
 		configfile.write( "\tconfig['plugins'].remove('enhance_pdf_ocr')" + "\n" )
 	
 	if setup.ocr_descew:
-		configfile.write( "if not 'enhance_ocr_descew' in config['plugins']:" + "\n" )
-		configfile.write( "\tconfig['plugins'].append('enhance_ocr_descew')" + "\n" )
+
+		if setup.ocr_later:
+			configfile.write( "if 'enhance_ocr_descew' in config['plugins']:" + "\n" )
+			configfile.write( "\tconfig['plugins'].remove('enhance_ocr_descew')" + "\n" )
+			configfile.write( "if not 'enhance_ocr_descew' in config['additional_plugins_later']:" + "\n" )
+			configfile.write( "\tconfig['additional_plugins_later'].append('enhance_ocr_descew')" + "\n" )
+		else:
+			configfile.write( "if not 'enhance_ocr_descew' in config['plugins']:" + "\n" )
+			configfile.write( "\tconfig['plugins'].append('enhance_ocr_descew')" + "\n" )
+
 	else:
 		configfile.write( "if 'enhance_ocr_descew' in config['plugins']:" + "\n" )
 		configfile.write( "\tconfig['plugins'].remove('enhance_ocr_descew')" + "\n" )

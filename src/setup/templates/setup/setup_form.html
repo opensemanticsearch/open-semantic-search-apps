@@ -242,6 +242,15 @@
 <p>Warning: This will take long time / multiple the time for OCR but in some cases of bad quality scans more can be recognized.</p>
 
 
+<h3>Priority</h3>
+
+        {{ form.ocr_later.errors }}
+        <label for="id_ocr_later">Do OCR later:</label>
+        {{ form.ocr_later }}
+
+<p>Since OCR slows down indexing by needing most time for often only few additional infos, OCR can be done later by reindexing with enabled OCR after all documents were yet indexed without OCR first to get an usable index many times faster. So you can search & will find most documents much earlier while OCR analysis runs later in background.</p>
+
+
 <h3>OCR dictionaries</h3>
 
 <p>Set up the used language specific OCR dictionaries in the tab <i>Document language(s)</i></p>
