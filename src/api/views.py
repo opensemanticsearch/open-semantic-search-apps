@@ -6,7 +6,6 @@ import json
 
 from opensemanticetl.tasks import delete
 from opensemanticetl.tasks import enrich
-from opensemanticetl.tasks import index_file
 from opensemanticetl.tasks import index_filedirectory
 from opensemanticetl.tasks import index_web
 from opensemanticetl.tasks import index_rss
@@ -62,20 +61,7 @@ def queue_index_file(request):
 	else:
 		wait = 0
 
-	result = index_file.delay(filename=uri, wait = wait )
-	
-	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
-
-
-#
-# add filedirectory indexing task to queue
-#
-
-def queue_index_filedirectory(request):
-
-	uri = request.GET["uri"]
-
-	result = index_filedirectory.delay(filename=uri)
+	result = index_filedirectory.delay(filename=uri, wait = wait )
 	
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
 
