@@ -38,6 +38,7 @@ LANGUAGES_CHOICES = (
 	('nl', 'Dutch (Netherlands)'),
 	('pt', 'Portuguese'),
 	('ro', 'Romanian'),
+	('ru', 'Russian'),
 )
 
 LANGUAGES_CHOICES_HUNSPELL = (
@@ -302,7 +303,7 @@ def	generate_etl_configfile(filename="/etc/opensemanticsearch/etl-webadmin"):
 
 	configfile.write( "config['ocr_lang'] = \'" + "+".join(setup.ocr_languages.split(',')) + "\'\n" )
 
-	if setup.ocr_later:
+	if setup.ocr_later and (setup.ocr or setup.ocr_pdf):
 		# initialize (yet empty) config options for running plugins later, which will be set/appended there in further steps
 		configfile.write( "if not 'additional_plugins_later' in config:\n" )
 		configfile.write( "\tconfig['additional_plugins_later'] = []" + "\n" )
