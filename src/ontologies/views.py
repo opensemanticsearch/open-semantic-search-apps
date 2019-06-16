@@ -37,6 +37,7 @@ LANGUAGES_CHOICES = (
 	('en', 'English'),
 	('de', 'Deutsch (German)'),
 	('hu', 'Hungarian'),
+	('ru', 'Russian'),
 )
 
 LANGUAGES_CHOICES_HUNSPELL = (
