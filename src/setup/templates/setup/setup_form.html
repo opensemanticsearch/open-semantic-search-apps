@@ -34,6 +34,7 @@
   <dd><a href="#panel-segmentation">Segmentation (pages & sentences)</a></dd>
   <dd><a href="#panel-thumbnails">Preview (thumbnails)</a></dd>
   <dd><a href="#panel-neo4j">Graph DB (Neo4j)</a></dd>
+  <dd><a href="#panel-servers">Servers (URLs)</a></dd>
 </dl>
 
 	</div>
@@ -421,6 +422,27 @@
         {{ form.graph_neo4j_browser.errors }}
         <label for="id_graph_neo4j_browser">Neo4j browser URL:</label>
         {{ form.graph_neo4j_browser }}
+
+</div>
+
+</section>
+
+
+  <section class="content" id="panel-servers">
+
+
+<div class="row">
+	<div class="small-12 columns text-center">
+<h2>Servers (URLs)</h2>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+
+        {{ form.url_tasks.errors }}
+        <label for="id_url_tasks">URL of Flower task monitoring UI:</label>
+        {{ form.url_tasks }}
 
 </div>
 

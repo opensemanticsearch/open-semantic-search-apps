@@ -36,3 +36,5 @@ class Setup(models.Model):
 	graph_neo4j_user = models.CharField(max_length=1000, blank=True)
 	graph_neo4j_password = models.CharField(max_length=1000, blank=True)
 	graph_neo4j_browser = models.CharField(max_length=1000, blank=True)
+
+	url_tasks = models.CharField(max_length=1000, blank=True, default="http://localhost:5555/tasks")

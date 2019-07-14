@@ -5,6 +5,8 @@ from opensemanticetl.etl_web import Connector_Web
 
 from django import forms
 
+from setup.models import Setup
+
 
 class ListForm(forms.Form):
 	list = forms.CharField(widget=forms.Textarea)
@@ -13,6 +15,9 @@ class ListForm(forms.Form):
 def index(request):
 
 	verbose = False
+	
+	setup = Setup.objects.get(pk=1)
+
 
 	if request.method == 'POST': # If the form has been submitted...
 		form = ListForm(request.POST) # A form bound to the POST data
@@ -50,9 +55,9 @@ def index(request):
 				})
 
 		else:
-			return render(request, 'datasources.html', {'form': form,})
+			return render(request, 'datasources.html', {'form': form, 'setup': setup})
 
 	else:
 		form = ListForm() # An unbound form
 
-		return render(request, 'datasources.html', {'form': form,}) 
+		return render(request, 'datasources.html', {'form': form, 'setup': setup })
