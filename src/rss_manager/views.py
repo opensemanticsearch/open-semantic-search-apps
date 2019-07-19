@@ -95,7 +95,7 @@ def import_feed(request, pk):
 	
 	# add to queue
 	last_imported = datetime.datetime.now()
-	index_rss.delay(uri=feed.uri)
+	index_rss.apply_async( kwargs={ 'uri': feed.uri }, queue='tasks', priority=5 )
 
 	# save new timestamp
 	feed.last_imported = last_imported
@@ -156,7 +156,7 @@ def import_feeds(request):
 
 			# add to queue
 			last_imported = datetime.datetime.now()
-			index_rss.delay(uri=feed.uri)
+			index_rss.apply_async( kwargs={ 'uri': feed.uri }, queue='tasks', priority=5 )
 
 			# save new timestamp
 			feed.last_imported = last_imported

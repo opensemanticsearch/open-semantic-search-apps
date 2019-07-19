@@ -93,14 +93,15 @@ def etl(pk):
 	# add to queue
 	if crawler.sitemap:
 		# get sitemap and add urls to queue
-		index_sitemap.delay(uri=crawler.sitemap)
+		index_sitemap.apply_async( kwargs={ 'uri': crawler.sitemap }, queue='tasks', priority=5 )
+		
 	else:
 		if crawler.crawler_type=="DOMAIN" or crawler.crawler_type=="PATH":
 			# add website to queue
-			index_web_crawl.delay(uri=crawler.uri, crawler_type=crawler.crawler_type)
+			index_web_crawl.apply_async( kwargs={ 'uri': crawler.uri, 'crawler_type': crawler.crawler_type }, queue='tasks', priority=5 )
 		else:
 			# add web page to queue
-			index_web.delay(uri=crawler.uri)
+			index_web.apply_async( kwargs={ 'uri': crawler.uri }, queue='tasks', priority=5 )
 
 	# save new timestamp
 	crawler.last_imported = last_imported

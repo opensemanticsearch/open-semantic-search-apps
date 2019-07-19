@@ -94,7 +94,7 @@ def crawl(request, pk):
 	
 	# add to queue
 	last_imported = datetime.datetime.now()
-	index_filedirectory.delay(filename=file.uri)
+	index_filedirectory.apply_async( kwargs={ 'filename': file.uri }, queue='tasks', priority=5 )
 
 	# save new timestamp
 	file.last_imported = last_imported
@@ -155,7 +155,8 @@ def recrawl(request):
 
 			# add to queue
 			last_imported = datetime.datetime.now()
-			index_filedirectory.delay(filename=file.uri)
+			index_filedirectory.apply_async( kwargs={ 'filename': file.uri }, queue='tasks', priority=5 )
+
 
 			# save new timestamp
 			file.last_imported = last_imported

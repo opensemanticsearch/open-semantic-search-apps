@@ -23,7 +23,7 @@ def queue_delete(request):
 	else:
 		wait = 0
 
-	result = delete.delay(uri=uri)
+	result = delete.apply_async( kwargs={ 'uri': uri }, queue='tasks', priority=6 )
 	
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
 
@@ -38,12 +38,7 @@ def queue_enrich(request):
 
 	plugins = request.GET['plugins']
 
-	if 'wait' in request.GET:
-		wait = int(request.GET['wait'])
-	else:
-		wait = 0
-
-	result = enrich.delay(plugins = plugins, uri=uri, wait = wait )
+	result = enrich.apply_async( kwargs={ 'plugins': plugins, 'uri': uri }, queue='tasks', priority=5 )
 	
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
 
@@ -56,13 +51,8 @@ def queue_index_file(request):
 
 	uri = request.GET["uri"]
 
-	if 'wait' in request.GET:
-		wait = int(request.GET['wait'])
-	else:
-		wait = 0
+	result = index_filedirectory.apply_async( kwargs={ 'filename': uri }, queue='tasks', priority=5 )
 
-	result = index_filedirectory.delay(filename=uri, wait = wait )
-	
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
 
 
@@ -73,12 +63,7 @@ def queue_index_file(request):
 def queue_index_web(request):
 	uri = request.GET["uri"]
 
-	if 'wait' in request.GET:
-		wait = int(request.GET['wait'])
-	else:
-		wait = 0
-
-	result = index_web.delay(uri=uri, wait=wait)
+	result = index_web.apply_async( kwargs={ 'uri': uri }, queue='tasks', priority=5 )
 	
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
 
@@ -90,11 +75,6 @@ def queue_index_web(request):
 def queue_index_rss(request):
 	uri = request.GET["uri"]
 
-	if 'wait' in request.GET:
-		wait = int(request.GET['wait'])
-	else:
-		wait = 0
-
-	result = index_rss.delay(uri=uri, wait=wait)
+	result = index_rss.apply_async( kwargs={ 'uri': uri }, queue='tasks', priority=5 )
 	
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
