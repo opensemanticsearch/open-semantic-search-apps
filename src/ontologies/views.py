@@ -434,7 +434,8 @@ def write_facet_config():
 		
 			facets_done.append(facet)
 			
-			configfile_php.write( "\n$cfg['facets']['{}'] = array ('label'=>'{}');\n".format( facet, str(ontology) + ' (exact match)' ) )
+			configfile_php.write( "\n$cfg['facets']['{}'] = array ('label'=>'{}', 'snippets_enabled'=>true);\n".format( facet, str(ontology) + ' (Exact match|List)' ) )
+			configfile_php.write( "\n$cfg['facets']['{}_taxonomy'] = array ('label'=>'{}', 'tree'=>true, 'snippets_enabled'=>false, 'graph_enabled'=>false);\n".format( facet, str(ontology) + ' (Exact match|Taxonomy)' ) )
 
 			
 			# additional all labels fields for language dependent / additional analyzers/stemmers

@@ -8,12 +8,12 @@
 
 <br>
 	
-<ul class="breadcrumbs"><li><a href="{% url 'ontologies:index' %}">Ontologies (Lists, Dictionaries, Vocabularies or Thesauri)</a></li>
+<ul class="breadcrumbs"><li><a href="{% url 'ontologies:index' %}">Ontologies (Lists, Dictionaries, Vocabularies, Taxonomies or Thesauri)</a></li>
 
  <li class="current"><a href="#">All lists & ontologies</a></li> 
   </ul>
 
-<h1>Ontologies (Lists of names or concepts, Vocabularies, Dictionaries, Thesauri)</h1>
+<h1>Ontologies (Lists of names or concepts, Vocabularies, Dictionaries, Taxonomies, Thesauri)</h1>
 <p>Lists or dictionaries or thesauri with named entities like persons, organizations, locations, names, tags, categories, important words or concepts to use for interactive navigation, filters, overviews, analytics or classification</p>
 
 <a class="button" href="{% url 'ontologies:create' %}">Add new list of names or named entities, dictionary, thesaurus or ontology</a>
@@ -24,7 +24,7 @@
 
 <div class="row">
 	<div class="small-12 columns">
-<h2>All Ontologies (Lists, Vocabularies, Dictionaries or Thesauri)</h2>
+<h2>All Ontologies (Lists, Vocabularies, Dictionaries, Taxonomies or Thesauri)</h2>
 
 {% if ontologies_list %}
     <ul>
