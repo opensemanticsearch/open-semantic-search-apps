@@ -2,7 +2,6 @@
 
 VERSION=`date +%y.%m.%d`
 PACKAGE=open-semantic-search-apps_${VERSION}.deb
-DEBIAN_VERSION=stable
 BUILDDIR=/tmp/build-open-semantic-search-apps$$.deb
 
 #
@@ -11,16 +10,11 @@ BUILDDIR=/tmp/build-open-semantic-search-apps$$.deb
 
 echo "Building ${PACKAGE} in temp directory ${BUILDDIR}"
 
-# since this script is in build/deb, the basedir with sources, configs and files is two directories up
-BASEDIR=`dirname "$0"`
-BASEDIR="${BASEDIR}/../../"
-
 mkdir ${BUILDDIR}
+cp -a DEBIAN ${BUILDDIR}/
+cp -a etc ${BUILDDIR}/
 mkdir -p ${BUILDDIR}/var/lib/opensemanticsearch/
-
-cp -a ${BASEDIR}/build/deb/${DEBIAN_VERSION}/* ${BUILDDIR}/
-cp -a ${BASEDIR}/src/* ${BUILDDIR}/var/lib/opensemanticsearch/
-
+cp -a src/* ${BUILDDIR}/var/lib/opensemanticsearch/
 
 # Build deb
 dpkg -b ${BUILDDIR} ${PACKAGE}
