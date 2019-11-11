@@ -3,10 +3,10 @@
 #
 
 # RSS Feeds import
-*/1 * * * *     opensemanticetl curl --silent http://localhost/search-apps/rss_manager/import
+*/1 * * * *     opensemanticetl curl --silent http://localhost/search-apps/rss_manager/import > /dev/null
 
 # Webcrawler
-*/1 * * * *     opensemanticetl curl --silent http://localhost/search-apps/crawler/recrawl
+*/1 * * * *     opensemanticetl curl --silent http://localhost/search-apps/crawler/recrawl > /dev/null
 
 # File crawler
-*/1 * * * *     opensemanticetl curl --silent http://localhost/search-apps/files/recrawl
+*/1 * * * *     opensemanticetl curl --silent http://localhost/search-apps/files/recrawl > /dev/null
