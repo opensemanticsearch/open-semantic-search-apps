@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static from staticfiles %}
+
+{% block content %}
+
+
+<h1>Ambigous entities (same label in multiple entities)</h1>
+
+<ul>
+{% for facetvalue in facetvalues %}
+
+    {% for label, count in facetvalue.items %}
+
+    <li>Label "<strong>{{ label }}</strong>" in <a href="index?label={{label}}">{{ count }} entities</a></li>
+    {% endfor %}
+
+{% endfor %}
+
+</ul>
+
+</div>
+
+{% endblock content %}

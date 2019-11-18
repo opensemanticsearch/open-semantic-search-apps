@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static from staticfiles %}
+
+{% block content %}
+
+{% if query %}
+<h1>{{query}}</h1>
+
+<h2>Connected labels / alternates / aliases / synonyms</h2>
+
+<p>All connected labels (sorted by count of found documents by search in document content):</p>
+
+<ul>
+{% for label, count in counts %}
+    <li>Label <strong>{{label}}</strong> in {{count}} documents</li>
+{% endfor %}
+</ul>
+
+
+<h2>Entities with label {{query}}</h2>
+
+<p>Source(s) of the connection(s):</p>
+
+{% else %}
+
+<h1>{{entity_id}}</h1>
+{% endif %}
+
+{% for entity in entities %}
+
+
+    <h2><a href="{{ entity.id }}">{{ entity.preferred_label_s }}</a></h2>
+    <p>ID: {{ entity.id }}</p>
+    
+{% if matchtexts %}
+
+<h3>Matches in document {{doc}}</h3>
+
+<p>Matches of this thesaurus entry in the document {{doc_id}} (if not the same label like one of the labels from the thesaurus entity labels you can see below, it was matched by stemming):</p>
+
+<ul>
+	{% for matchtext in matchtexts %}
+	<li>{{matchtext}}</li>
+	{% endfor %}
+
+</ul>
+
+<h3>Labels of thesaurus entry / entity</h3>
+{% endif %}
+    
+    <p>All labels of this entity (Preferred label, alternate labels and hidden labels):
+    <ul>
+    {% for labelvalues in entity.labels %}
+	<li>
+	{% for label, count in labelvalues.items %}
+		"{{label}}" in content of {{count}} documents
+	{% endfor %}
+
+	</li>
+    {% endfor %}
+    </ul>
+    </p>
+{% endfor %}
+
+
+
+</div>
+
+{% endblock content %}
