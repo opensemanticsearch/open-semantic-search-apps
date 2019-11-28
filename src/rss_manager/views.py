@@ -12,8 +12,6 @@ from django.utils import timezone
 import datetime
 from datetime import timedelta
 
-from opensemanticetl.tasks import index_rss
-
 from rss_manager.models import RSS_Feed
 
 
@@ -95,6 +93,8 @@ def import_feed(request, pk):
 	
 	# add to queue
 	last_imported = datetime.datetime.now()
+
+	from opensemanticetl.tasks import index_rss
 	index_rss.apply_async( kwargs={ 'uri': feed.uri }, queue='tasks', priority=5 )
 
 	# save new timestamp
@@ -156,6 +156,8 @@ def import_feeds(request):
 
 			# add to queue
 			last_imported = datetime.datetime.now()
+
+			from opensemanticetl.tasks import index_rss
 			index_rss.apply_async( kwargs={ 'uri': feed.uri }, queue='tasks', priority=5 )
 
 			# save new timestamp

@@ -12,7 +12,6 @@ from django.utils import timezone
 import datetime
 from datetime import timedelta
 
-from opensemanticetl.tasks import index_filedirectory
 
 from files.models import Files
 
@@ -94,6 +93,9 @@ def crawl(request, pk):
 	
 	# add to queue
 	last_imported = datetime.datetime.now()
+
+	from opensemanticetl.tasks import index_filedirectory
+
 	index_filedirectory.apply_async( kwargs={ 'filename': file.uri }, queue='tasks', priority=5 )
 
 	# save new timestamp
@@ -155,6 +157,9 @@ def recrawl(request):
 
 			# add to queue
 			last_imported = datetime.datetime.now()
+
+			from opensemanticetl.tasks import index_filedirectory
+
 			index_filedirectory.apply_async( kwargs={ 'filename': file.uri }, queue='tasks', priority=5 )
 
 

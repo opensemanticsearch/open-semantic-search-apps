@@ -11,10 +11,6 @@ from django.utils import timezone
 import datetime
 from datetime import timedelta
 
-from opensemanticetl.tasks import index_web
-from opensemanticetl.tasks import index_web_crawl
-from opensemanticetl.tasks import index_sitemap
-
 from crawler.models import Crawler
 
 
@@ -93,14 +89,17 @@ def etl(pk):
 	# add to queue
 	if crawler.sitemap:
 		# get sitemap and add urls to queue
+		from opensemanticetl.tasks import index_sitemap
 		index_sitemap.apply_async( kwargs={ 'uri': crawler.sitemap }, queue='tasks', priority=5 )
 		
 	else:
 		if crawler.crawler_type=="DOMAIN" or crawler.crawler_type=="PATH":
 			# add website to queue
+			from opensemanticetl.tasks import index_web_crawl
 			index_web_crawl.apply_async( kwargs={ 'uri': crawler.uri, 'crawler_type': crawler.crawler_type }, queue='tasks', priority=5 )
 		else:
 			# add web page to queue
+			from opensemanticetl.tasks import index_web
 			index_web.apply_async( kwargs={ 'uri': crawler.uri }, queue='tasks', priority=5 )
 
 	# save new timestamp

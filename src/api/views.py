@@ -4,12 +4,6 @@ from django.http import HttpResponse
 
 import json
 
-from opensemanticetl.tasks import delete
-from opensemanticetl.tasks import enrich
-from opensemanticetl.tasks import index_filedirectory
-from opensemanticetl.tasks import index_web
-from opensemanticetl.tasks import index_rss
-
 
 #
 # add delete task to queue
@@ -22,6 +16,8 @@ def queue_delete(request):
 		wait = int(request.GET['wait'])
 	else:
 		wait = 0
+
+	from opensemanticetl.tasks import delete
 
 	result = delete.apply_async( kwargs={ 'uri': uri }, queue='tasks', priority=6 )
 	
@@ -38,6 +34,8 @@ def queue_enrich(request):
 
 	plugins = request.GET['plugins']
 
+	from opensemanticetl.tasks import enrich
+
 	result = enrich.apply_async( kwargs={ 'plugins': plugins, 'uri': uri }, queue='tasks', priority=5 )
 	
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
@@ -51,6 +49,8 @@ def queue_index_file(request):
 
 	uri = request.GET["uri"]
 
+	from opensemanticetl.tasks import index_filedirectory
+
 	result = index_filedirectory.apply_async( kwargs={ 'filename': uri }, queue='tasks', priority=5 )
 
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
@@ -61,7 +61,10 @@ def queue_index_file(request):
 #
 
 def queue_index_web(request):
+
 	uri = request.GET["uri"]
+
+	from opensemanticetl.tasks import index_web
 
 	result = index_web.apply_async( kwargs={ 'uri': uri }, queue='tasks', priority=5 )
 	
@@ -73,7 +76,10 @@ def queue_index_web(request):
 #
 
 def queue_index_rss(request):
+
 	uri = request.GET["uri"]
+
+	from opensemanticetl.tasks import index_rss
 
 	result = index_rss.apply_async( kwargs={ 'uri': uri }, queue='tasks', priority=5 )
 	
