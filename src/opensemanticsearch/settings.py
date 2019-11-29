@@ -53,7 +53,6 @@ INSTALLED_APPS = (
     'morphology',
     'hypothesis',
     'search_entity',
-    'solr_relevance_ranking_analysis',
     'visual_graph_explorer',
     'entity_rest_api',
     'import_export',
@@ -110,7 +109,7 @@ else:
 	DATABASES = {
 	    'default': {
 	        'ENGINE': 'django.db.backends.sqlite3',
-	        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+	        'NAME': '/var/opensemanticsearch/db/db.sqlite3',
 	    }
 	}
 
@@ -135,4 +134,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = '/var/lib/opensemanticsearch/static/'
 
-MEDIA_ROOT = '/var/opensemanticsearch/'
+MEDIA_ROOT = '/var/opensemanticsearch/media/'

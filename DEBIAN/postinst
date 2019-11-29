@@ -7,21 +7,33 @@ pip3 install django-import-export
 # export static files to directory for webserver
 python3 /var/lib/opensemanticsearch/manage.py collectstatic --noinput
 
+# create directory for DB and file uploads
+mkdir /var/opensemanticsearch
+mkdir /var/opensemanticsearch/db
+mkdir /var/opensemanticsearch/media
+
+# allow Django running in apache2 context to read and write uploaded files
+chown -R www-data:www-data /var/opensemanticsearch
+
+# if upgrading from old directory structure, move DB to new destination
+if [ -f /var/lib/opensemanticsearch/db.sqlite3 ]; then
+  mv /var/lib/opensemanticsearch/db.sqlite3 /var/opensemanticsearch/db/db.sqlite3
+fi
+if [ -d /var/opensemanticsearch/ontologies ]; then
+  mv /var/opensemanticsearch/ontologies /var/opensemanticsearch/media/
+fi
+if [ -d /var/opensemanticsearch/thumbnails ]; then
+  mv /var/opensemanticsearch/thumbnails /var/opensemanticsearch/media/
+fi
+
 # create or upgrade DB
 python3 /var/lib/opensemanticsearch/manage.py migrate
 
-# create directory for file uploads
-mkdir /var/opensemanticsearch
-chown www-data:www-data /var/opensemanticsearch
-
 # allow Django running in apache2 context to read and write to DB
-chgrp www-data /var/lib/opensemanticsearch
-chmod g+w /var/lib/opensemanticsearch
-chmod -R g+r /var/lib/opensemanticsearch
-chown www-data:www-data /var/lib/opensemanticsearch/db.sqlite3
+chown www-data:www-data
 
 # but others should not be able to read DB entries
-chmod o-r /var/lib/opensemanticsearch/db.sqlite3
+chmod o-r /var/opensemanticsearch/db/db.sqlite3
 
 # allow Django running in apache2 context to write facets config
 chgrp www-data /etc/opensemanticsearch/facets
