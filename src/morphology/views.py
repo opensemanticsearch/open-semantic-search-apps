@@ -108,11 +108,14 @@ def index(request):
 	preset_similar = True
 	preset_suffix = True
 	preset_prefix = True
-	
-	solr_url ='http://localhost:8983/solr/'
+
+	solr_url = 'http://localhost:8983/solr/'
+	if os.getenv('OPEN_SEMANTIC_ETL_SOLR'):
+		solr_url = os.getenv('OPEN_SEMANTIC_ETL_SOLR')
+
 	solr_core = 'opensemanticsearch'
 
-	solr_entities = "http://localhost:8983/solr/"
+	solr_entities = solr_url
 	solr_core_entities = "opensemanticsearch-entities"
 
 	exact_fields = ['_text_']
