@@ -26,6 +26,7 @@ from solr_ontology_tagger import OntologyTagger
 from entity_import.entity_import_list import Entity_Importer_List
 
 import os.path
+import os
 import tempfile
 import shutil
 
@@ -540,6 +541,11 @@ def get_contenttype_and_encoding(filename):
 
 def	write_named_entities_config():
 
+	# Solr host
+	solr_url = 'http://localhost:8983/solr/'
+	if os.getenv('OPEN_SEMANTIC_ETL_SOLR'):
+		solr_url = os.getenv('OPEN_SEMANTIC_ETL_SOLR')
+
 	wordlist_configfilename = "/etc/opensemanticsearch/ocr/dictionary.txt"
 	
 	tmp_wordlist_configfilename = tempfile.gettempdir() + os.path.sep +  next(tempfile._get_candidate_names()) + '_ocr_dictionary.txt'
@@ -576,13 +582,13 @@ def	write_named_entities_config():
 
 			# load graph from RDF file
 			ontology_tagger.parse(filename)
-			
+
 			# add the labels to entities index for normalization and entity linking
-			ontology_tagger.solr_entities = 'http://localhost:8983/solr/'
+			ontology_tagger.solr_entities = solr_url
 			ontology_tagger.solr_core_entities = 'opensemanticsearch-entities'
 			
 			# append synonyms to Solr managed synonyms resource "skos"
-			ontology_tagger.solr = 'http://localhost:8983/solr/'
+			ontology_tagger.solr = solr_url
 			ontology_tagger.solr_core = 'opensemanticsearch'
 			ontology_tagger.synonyms_resourceid = 'skos'
 
@@ -645,4 +651,5 @@ def	write_named_entities_config():
 	
 	# Reload/restart Solr core with new synonyms config
 	# Todo: Use the Solr URI from config
-	urlopen('http://localhost:8983/solr/admin/cores?action=RELOAD&core=opensemanticsearch')
+	urlopen(solr_url + 'admin/cores?action=RELOAD&core=opensemanticsearch')
+

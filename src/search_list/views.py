@@ -1,15 +1,12 @@
 from django.shortcuts import render
 
-
 from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponse 
 from django.shortcuts import render
 
-
 from django import forms
 
-#import pysolr
 import urllib
 import json
 import os
@@ -159,16 +156,11 @@ def search(query, filterquery=None, operator='AND'):
 
 	count = 0
 
-# not yet with pysolr until it repairs encoding problem with unicode that cannot be encoded into utf-8
-#	solr = pysolr.Solr(solr)
-	
-#	results = solr.search(query, **{
-#		'fl': 'score',
-#		'defType': 'edismax'
-#	} )
+	solr_host = 'http://localhost:8983/solr/'
+	if os.getenv('OPEN_SEMANTIC_ETL_SOLR'):
+		solr_host = os.getenv('OPEN_SEMANTIC_ETL_SOLR')
 
-	# todo: read Solr URI from config
-	uri = 'http://localhost:8983/solr/opensemanticsearch/select?q.op=' + operator + '&wt=json&deftype=edismax&fl=id,score&hl=true&hl.fl=*'
+	uri = solr_host + 'opensemanticsearch/select?q.op=' + operator + '&wt=json&deftype=edismax&fl=id,score&hl=true&hl.fl=*'
 	uri += '&q=' + urllib.parse.quote( query )
 
 	if filterquery:

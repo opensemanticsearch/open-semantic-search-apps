@@ -4,12 +4,16 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 import json
+import os
 import requests
 
 from collections import Counter
 
 
 solr = "http://localhost:8983/solr/"
+if os.getenv('OPEN_SEMANTIC_ETL_SOLR'):
+	solr = os.getenv('OPEN_SEMANTIC_ETL_SOLR')
+
 solr_core = "opensemanticsearch-entities"
 
 
