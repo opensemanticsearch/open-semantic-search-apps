@@ -7,6 +7,8 @@ from django.forms import ModelForm
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils import timezone
+from django.shortcuts import redirect
+
 
 import datetime
 from datetime import timedelta
@@ -106,6 +108,17 @@ def etl(pk):
 	crawler.last_imported = last_imported
 	crawler.save()
 
+#
+# Delete entry
+#
+
+def delete(request, pk):
+
+	crawler = Crawler.objects.get(pk=pk)
+	
+	crawler.delete()
+
+	return redirect('crawler:index')
 
 
 #
