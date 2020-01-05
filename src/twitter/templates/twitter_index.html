@@ -1,0 +1,106 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+{% if task_id %}
+<div class="row">
+  <div class="small-12 columns">
+<h2>Tweet import status</h2>
+    <div data-alert class="alert-box secondary radius">
+      Started import tweets in <a target="_blank" href="{{setup.url_tasks}}/task/{{task_id}}">task {{task_id}}</a>
+    </div>
+
+  </div>
+</div>
+{% endif %}
+
+
+<form action="" method="post">{% csrf_token %}
+
+<div class="row">
+	<div class="small-12 columns">
+
+<h1>Index tweets from Twitter</h1>
+
+
+        </div>
+</div>
+
+
+<div class="row">
+
+	<div class="small-12 columns">
+
+<p>Set a username or search phrase (Warning: If you set both fields at same time, only tweets with the search phrase or hashtag from only this single user will be retrieved)</p>
+
+        </div>
+
+	<div class="small-6 columns">
+
+<h3>Tweets from certain user</h3>
+<p>Set the Twitter username to index Tweets from a single user.</p>
+    <label for="id_username">Import tweets from username:</label>
+    {{ form.username }}
+    {{ form.username.errors }}
+<p>Example: <i>OpenSemSearch</i> to retrieve tweets posted by the Twitter profile @OpenSemSearch (https://twitter.com/OpenSemSearch)</p>
+        </div>
+	<div class="small-6 columns">
+
+
+<h3>Tweets by search</h3>
+<p>Set a keyword, phrase or a hashtag to index tweets with this content from many users.</p>
+
+    <label for="id_search">Search for (phrase, keyword, hashtag or username):</label>
+    {{ form.search }}
+    {{ form.search.errors }}
+<p>
+
+Examples:<ul>
+<li>datajournalism</li>
+<li>#datajournalism</li>
+<li>#ddj</li>
+<li>@opensemsearch (finds not only for Tweets from this user, but tweets with mentions of the username, too)</li> 
+</ul></p>
+<p>If you use a hash # as prefix instead of the pure keyword, only tweets where the keyword is contained explicit as a hashtag will be found.
+</p>
+
+</div>
+
+</div>
+
+
+<div class="row">
+
+	<div class="small-6 columns">
+
+<h4>Limit</h4>
+
+    <label for="id_limit">Maximum count of tweets by this import:</label>
+    {{ form.limit }}
+    {{ form.limit.errors }}
+    <p><i>Warning: If set to no limit by setting 0 or empty, this can cause very much load, if you search for keyword(s) or hashtag(s) instead of tweets from a certain user!</i></p>
+
+        </div>
+	<div class="small-6 columns">
+
+<h4>Linked Webpages</h4>
+    <label for="id_index_linked_webpages">Index webpages which are linked in tweets:</label>
+    {{ form.index_linked_webpages }}
+    {{ form.index_linked_webpages.errors }}
+    <p><i>Warning: This will need much more resources and cause much more traffic</i></p>
+
+        </div>
+
+
+</div>
+
+<div class="row">
+    <div class="small-12 columns">
+      <input class="button" type="submit" value="Start import" />
+    </div>
+</div>
+
+
+</form>
+
+{% endblock content %}

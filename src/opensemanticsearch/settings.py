@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     'querytagger',
     'morphology',
     'hypothesis',
+    'twitter',
     'search_entity',
     'visual_graph_explorer',
     'entity_rest_api',
