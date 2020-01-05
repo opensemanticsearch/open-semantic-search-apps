@@ -7,6 +7,7 @@ from django.forms import ModelForm
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils import timezone
+from django.shortcuts import redirect
 
 
 import datetime
@@ -80,6 +81,18 @@ def update_file(request, pk):
 
 	return render(request, 'files/files_form.html', 
 			{'form': form, 'file': file } )
+
+#
+# Delete entry
+#
+
+def delete(request, pk):
+
+	file = Files.objects.get(pk=pk)
+	
+	file.delete()
+
+	return redirect('files:index')
 
 
 #

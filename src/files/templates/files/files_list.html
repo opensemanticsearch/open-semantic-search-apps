@@ -38,6 +38,7 @@
             <a class="button small" href="{% url 'files:crawl' file.id %}">Index now</a>
             <a class="button small" href="{% url 'files:detail' file.id %}">Details</a>
             <a class="button small" href="{% url 'files:update' file.id %}">Edit settings</a>
+            <a class="button small" href="{% url 'files:delete' file.id %}" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</a>
 
         </li>
     
