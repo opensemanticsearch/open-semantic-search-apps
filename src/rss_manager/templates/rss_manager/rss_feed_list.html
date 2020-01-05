@@ -39,7 +39,7 @@
             <a class="button small" href="{% url 'rss_manager:import_feed' rss_feed.id %}">Check for news</a>
             <a class="button small" href="{% url 'rss_manager:detail' rss_feed.id %}">Details</a>
             <a class="button small" href="{% url 'rss_manager:update' rss_feed.id %}">Edit settings</a>
-
+            <a class="button small" href="{% url 'rss_manager:delete' rss_feed.id %}" onclick="return confirm('Are you sure you want to delete this?')">Delete</a>
         </li>
     
     {% endfor %}

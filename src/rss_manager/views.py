@@ -7,7 +7,7 @@ from django.forms import ModelForm
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils import timezone
-
+from django.shortcuts import redirect
 
 import datetime
 from datetime import timedelta
@@ -103,6 +103,18 @@ def import_feed(request, pk):
 
 	
 	return render(request, 'rss_manager/rss_feed_import.html', {'id': pk,})
+
+#
+# Delete feed
+#
+
+def delete(request, pk):
+
+	feed = RSS_Feed.objects.get(pk=pk)
+	
+	feed.delete()
+
+	return redirect('rss_manager:index')
 
 
 #
