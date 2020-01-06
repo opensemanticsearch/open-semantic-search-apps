@@ -25,6 +25,9 @@ fi
 if [ -d /var/opensemanticsearch/thumbnails ]; then
   mv /var/opensemanticsearch/thumbnails /var/opensemanticsearch/media/
 fi
+if [ -d /var/opensemanticsearch/csv ]; then
+  mv /var/opensemanticsearch/csv /var/opensemanticsearch/media/
+fi
 
 # create or upgrade DB
 python3 /var/lib/opensemanticsearch/manage.py migrate
