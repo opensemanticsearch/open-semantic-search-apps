@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from csv_manager.models import CSV_Manager
 from django.http import HttpResponse 

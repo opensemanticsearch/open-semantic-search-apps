@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse 
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
@@ -172,4 +172,3 @@ def rdf(request):
 	status = HttpResponse(g.serialize( format='xml' ) )
 	status["Content-Type"] = "application/rdf+xml" 
 	return status
-	

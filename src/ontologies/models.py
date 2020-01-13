@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 import os.path
 
@@ -15,7 +15,7 @@ class Ontologies(models.Model):
 
 	file = models.FileField(upload_to='ontologies', blank = True)
 
-	facet = models.ForeignKey(Facet, blank=True, null=True)
+	facet = models.ForeignKey(Facet, on_delete=models.CASCADE, blank=True, null=True)
 
 	sparql_endpoint = models.CharField(max_length=16000, blank = True)
 

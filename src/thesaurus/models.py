@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 # Types of queries
 query_type_chooices = (
@@ -39,11 +39,11 @@ class Facet(models.Model):
 
 class Group(models.Model):
 	
-	parent = models.ForeignKey('Group', blank=True, null=True)
+	parent = models.ForeignKey('Group', on_delete=models.CASCADE, blank=True, null=True)
 	
 	prefLabel = models.CharField(max_length=1000, blank=True)
 	
-	facet = models.ForeignKey(Facet, blank=True, null=True)
+	facet = models.ForeignKey(Facet, on_delete=models.CASCADE, blank=True, null=True)
 	
 	def __str__(self):
 		return self.title
@@ -54,8 +54,8 @@ class Group(models.Model):
 
 
 class GroupTag(models.Model):
-	group = models.ForeignKey(Group)
-	facet = models.ForeignKey(Facet, null=True)
+	group = models.ForeignKey(Group, on_delete=models.CASCADE)
+	facet = models.ForeignKey(Facet, on_delete=models.CASCADE, null=True)
 	prefLabel = models.CharField(max_length=1000, blank=True)
 	
 	def __str__(self):
@@ -80,7 +80,7 @@ class Concept(models.Model):
                                       choices=query_type_chooices,
                                       default='PHRASE')
 	
-	facet = models.ForeignKey(Facet, blank=True, null=True)
+	facet = models.ForeignKey(Facet, on_delete=models.CASCADE, blank=True, null=True)
 	
 	groups = models.ManyToManyField(Group, blank=True, null=True)
 	
@@ -134,7 +134,7 @@ class Concept(models.Model):
 
 class Alternate(models.Model): 
 
-	concept = models.ForeignKey(Concept)
+	concept = models.ForeignKey(Concept, on_delete=models.CASCADE)
 
 	altLabel = models.CharField(max_length=1000, blank=True)
 	lang = models.CharField(max_length=3, blank=True)
@@ -156,7 +156,7 @@ class Alternate(models.Model):
 
 class Hidden(models.Model): 
 
-	concept = models.ForeignKey(Concept)
+	concept = models.ForeignKey(Concept, on_delete=models.CASCADE)
 
 	hiddenLabel = models.CharField(max_length=1000, blank=True)
 	lang = models.CharField(max_length=3, blank=True)
@@ -169,7 +169,7 @@ class Hidden(models.Model):
 
 class Exclude(models.Model): 
 
-	concept = models.ForeignKey(Concept)
+	concept = models.ForeignKey(Concept, on_delete=models.CASCADE)
 
 	label = models.CharField(max_length=1000, blank=True)
 	lang = models.CharField(max_length=3, blank=True)
@@ -193,26 +193,26 @@ class Exclude(models.Model):
 
 
 class ConceptTag(models.Model):
-	concept = models.ForeignKey(Concept)
+	concept = models.ForeignKey(Concept, on_delete=models.CASCADE)
 
 	label = models.CharField(max_length=1000, blank=True)
 	
-	facet = models.ForeignKey(Facet, blank=True, null=True)
+	facet = models.ForeignKey(Facet, on_delete=models.CASCADE, blank=True, null=True)
 	
 	def __str__(self):
 		return self.label
 		
 
 class Broader(models.Model):
-	concept = models.ForeignKey(Concept)
-	broader = models.ForeignKey(Concept, related_name="concept_broader", blank=True, null=True)
+	concept = models.ForeignKey(Concept, on_delete=models.CASCADE)
+	broader = models.ForeignKey(Concept, on_delete=models.CASCADE, related_name="concept_broader", blank=True, null=True)
 
 
 class Narrower(models.Model):
-	concept = models.ForeignKey(Concept)
-	narrower = models.ForeignKey(Concept, related_name="concept_narrower", blank=True, null=True)
+	concept = models.ForeignKey(Concept, on_delete=models.CASCADE)
+	narrower = models.ForeignKey(Concept, on_delete=models.CASCADE, related_name="concept_narrower", blank=True, null=True)
 
 
 class Related(models.Model):
-	concept = models.ForeignKey(Concept)
-	related = models.ForeignKey(Concept, related_name="concept_related", blank=True, null=True)
+	concept = models.ForeignKey(Concept, on_delete=models.CASCADE)
+	related = models.ForeignKey(Concept, on_delete=models.CASCADE, related_name="concept_related", blank=True, null=True)

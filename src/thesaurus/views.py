@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.core.urlresolvers import reverse 
+from django.urls import reverse
 from django.template import RequestContext
 from django.views import generic
 from django import forms
@@ -10,7 +10,6 @@ from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.shortcuts import redirect
-import django.core.urlresolvers
 import os.path
 from urllib.request import urlopen
 import solr_ontology_tagger

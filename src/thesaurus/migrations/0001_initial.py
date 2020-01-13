@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('label', models.CharField(blank=True, max_length=1000)),
-                ('concept', models.ForeignKey(to='thesaurus.Concept')),
+                ('concept', models.ForeignKey(to='thesaurus.Concept', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
                 ('lang', models.CharField(blank=True, max_length=3)),
                 ('query', models.CharField(blank=True, max_length=1000)),
                 ('query_type', models.CharField(max_length=6, choices=[('PHRASE', 'Phrase (exact match of the complete search query)'), ('AND', 'AND (All words of query in document)'), ('OR', 'OR (Some words of the query in document)'), ('RAW', 'Raw query (Apache lucene standard)')], default='PHRASE')),
-                ('concept', models.ForeignKey(to='thesaurus.Concept')),
+                ('concept', models.ForeignKey(to='thesaurus.Concept', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -75,8 +75,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('prefLabel', models.CharField(blank=True, max_length=1000)),
-                ('facet', models.ForeignKey(null=True, blank=True, to='thesaurus.Facet')),
-                ('parent', models.ForeignKey(null=True, blank=True, to='thesaurus.Group')),
+                ('facet', models.ForeignKey(null=True, blank=True, to='thesaurus.Facet', on_delete=models.CASCADE)),
+                ('parent', models.ForeignKey(null=True, blank=True, to='thesaurus.Group', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -84,8 +84,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
                 ('prefLabel', models.CharField(blank=True, max_length=1000)),
-                ('facet', models.ForeignKey(to='thesaurus.Facet', null=True)),
-                ('group', models.ForeignKey(to='thesaurus.Group')),
+                ('facet', models.ForeignKey(to='thesaurus.Facet', null=True, on_delete=models.CASCADE)),
+                ('group', models.ForeignKey(to='thesaurus.Group', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -96,34 +96,34 @@ class Migration(migrations.Migration):
                 ('lang', models.CharField(blank=True, max_length=3)),
                 ('query', models.CharField(blank=True, max_length=1000)),
                 ('query_type', models.CharField(max_length=6, choices=[('PHRASE', 'Phrase (exact match of the complete search query)'), ('AND', 'AND (All words of query in document)'), ('OR', 'OR (Some words of the query in document)'), ('RAW', 'Raw query (Apache lucene standard)')], default='PHRASE')),
-                ('concept', models.ForeignKey(to='thesaurus.Concept')),
+                ('concept', models.ForeignKey(to='thesaurus.Concept', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
             name='Narrower',
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
-                ('concept', models.ForeignKey(to='thesaurus.Concept')),
-                ('narrower', models.ForeignKey(null=True, blank=True, related_name='concept_narrower', to='thesaurus.Concept')),
+                ('concept', models.ForeignKey(to='thesaurus.Concept', on_delete=models.CASCADE)),
+                ('narrower', models.ForeignKey(null=True, blank=True, related_name='concept_narrower', to='thesaurus.Concept', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
             name='Related',
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
-                ('concept', models.ForeignKey(to='thesaurus.Concept')),
-                ('related', models.ForeignKey(null=True, blank=True, related_name='concept_related', to='thesaurus.Concept')),
+                ('concept', models.ForeignKey(to='thesaurus.Concept', on_delete=models.CASCADE)),
+                ('related', models.ForeignKey(null=True, blank=True, related_name='concept_related', to='thesaurus.Concept', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
             model_name='concepttag',
             name='facet',
-            field=models.ForeignKey(null=True, blank=True, to='thesaurus.Facet'),
+            field=models.ForeignKey(null=True, blank=True, to='thesaurus.Facet', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='concept',
             name='facet',
-            field=models.ForeignKey(null=True, blank=True, to='thesaurus.Facet'),
+            field=models.ForeignKey(null=True, blank=True, to='thesaurus.Facet', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='concept',
@@ -133,16 +133,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='broader',
             name='broader',
-            field=models.ForeignKey(null=True, blank=True, related_name='concept_broader', to='thesaurus.Concept'),
+            field=models.ForeignKey(null=True, blank=True, related_name='concept_broader', to='thesaurus.Concept', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='broader',
             name='concept',
-            field=models.ForeignKey(to='thesaurus.Concept'),
+            field=models.ForeignKey(to='thesaurus.Concept', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='alternate',
             name='concept',
-            field=models.ForeignKey(to='thesaurus.Concept'),
+            field=models.ForeignKey(to='thesaurus.Concept', on_delete=models.CASCADE),
         ),
     ]
