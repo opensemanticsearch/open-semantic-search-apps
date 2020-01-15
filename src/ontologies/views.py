@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse
 from django.template import RequestContext
 from django.views import generic
@@ -656,5 +656,7 @@ def	write_named_entities_config():
 	
 	# Reload/restart Solr core with new synonyms config
 	# Todo: Use the Solr URI from config
-	urlopen(solr_url + 'admin/cores?action=RELOAD&core=opensemanticsearch')
-
+	try:
+		urlopen(solr_url + 'admin/cores?action=RELOAD&core=opensemanticsearch')
+	except BaseException:
+		pass

@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('exclude_uri', models.CharField(max_length=16000, blank=True)),
                 ('exclude_file', models.FileField(upload_to='uploads', blank=True)),
                 ('exclude_text', models.TextField(blank=True)),
-                ('facet', models.ForeignKey(to='thesaurus.Facet', null=True, blank=True)),
+                ('facet', models.ForeignKey(to='thesaurus.Facet', null=True, blank=True, on_delete=models.CASCADE)),
             ],
         ),
     ]
