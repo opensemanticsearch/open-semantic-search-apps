@@ -398,10 +398,15 @@ def write_facet_config():
 
 
 	# add facets of named entities
-	for facet in Facet.objects.filter(enabled=True).order_by('facet_order'):
+	for facet in Facet.objects.all().order_by('facet_order'):
 		facets_done.append(facet.facet)
 		
 		configfile_php.write("\n$cfg['facets']['{}'] = array ('label'=>'{}', 'facet_limit'=>'{}', 'snippets_limit'=>'{}', 'graph_limit'=>'{}', 'tree'=>false" . format( facet.facet, facet.label, facet.facet_limit, facet.snippets_limit, facet.graph_limit))
+
+		if facet.enabled:
+			configfile_php.write(", 'enabled'=>true")
+		else:
+			configfile_php.write(", 'enabled'=>false")
 
 		if facet.closed:
 			configfile_php.write(", 'closed'=>true")
