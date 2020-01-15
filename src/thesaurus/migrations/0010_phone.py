@@ -11,6 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,style_color,style_color_background,uri,enabled,facet_limit,snippets_enabled,snippets_limit,graph_enabled,facet_order) VALUES ('phone_ss','Phone number(s)','black','cyan','https://schema.org/telephone', 1, 10, 1, 10, 0, 9);"),
-
+	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,style_color,style_color_background,uri,enabled,facet_limit,snippets_enabled,snippets_limit,graph_enabled,facet_order) VALUES ('phone_normalized_ss','Phone numbers','black','cyan','https://schema.org/telephone', 1, 10, 0, 10, 0, 16);"),
+	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,style_color,style_color_background,uri,enabled,facet_limit,snippets_enabled,snippets_limit,graph_enabled,facet_order) VALUES ('phone_ss','Phone numbers','black','cyan','https://schema.org/telephone', 0, 10, 1, 10, 0, 16);"),
     ]
