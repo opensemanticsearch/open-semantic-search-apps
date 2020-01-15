@@ -13,5 +13,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('money_ss','Money','http://schema.org/MonetaryAmount', 1, 10, 1, 10, 10);"),
+	migrations.RunSQL("INSERT INTO thesaurus_facet (facet,label,uri,enabled,facet_limit,snippets_enabled,snippets_limit,facet_order) VALUES ('money_ss','Money','http://schema.org/MonetaryAmount', 1, 10, 1, 10, 17);"),
     ]
