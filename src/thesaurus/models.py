@@ -82,7 +82,7 @@ class Concept(models.Model):
 	
 	facet = models.ForeignKey(Facet, on_delete=models.CASCADE, blank=True, null=True)
 	
-	groups = models.ManyToManyField(Group, blank=True, null=True)
+	groups = models.ManyToManyField(Group, blank=True)
 	
 	delta = models.IntegerField(default=0, null=True, blank=True)
 	last_run = models.DateTimeField(null=True, blank=True)
