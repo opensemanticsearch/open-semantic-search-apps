@@ -8,14 +8,41 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils import timezone
 from django.shortcuts import redirect
-
+from django import forms
 
 import datetime
 from datetime import timedelta
 
 
 from files.models import Files
+from setup.models import Setup
 
+
+# Language of UI
+PRIORITY_CHOICES = (
+	(39, 'A++: Highest top priority (process before all other queues)'),
+	(37, 'A+: Higher priority (processed before queues A, B, C and D)'),
+	(35, 'A: High priority (processed before standard queues B, C and D)'),
+	(22, 'B: Normal (per default priorized queue for text extraction tasks for PDFs and office documents)'),
+	(20, 'C: Lower (queue for text extraction tasks of other file formats)'),
+)
+
+PRIORITY_OCR_CHOICES = (
+	(38, 'A++: Highest top priority (process before all other queues)'),
+	(36, 'A+: Higher priority (processed before queues A, B, C and D)'),
+	(34, 'A: High priority (processed before standard queues B, C and D)'),
+	(21, 'B: Normal (per default priorized queue for text extraction tasks for PDFs and office documents)'),
+	(20, 'C: Lower (queue for text extraction tasks of other file formats)'),
+	(0, 'D: Lowest (queues for OCR tasks, so runned after plain text from all documents yet extracted and searchable)'),
+)
+
+PRIORITY_TO_OCR_PRIORITY = {
+	39: 19,
+	37: 18,
+	35: 17,
+	22: 5,
+	20: 4,
+}
 
 class FilesForm(ModelForm):
 
@@ -34,6 +61,23 @@ class CreateView(generic.CreateView):
 
 class UpdateView(generic.UpdateView):
 	model = Files
+
+
+class PrioritizeForm(forms.Form):
+		
+	filename = forms.CharField(widget=forms.TextInput, required=True)
+
+	priority = forms.IntegerField(
+		required=True,
+		initial=35,
+		widget=forms.RadioSelect(choices=PRIORITY_CHOICES)
+	)
+
+	priority_ocr = forms.IntegerField(
+		required=True,
+		initial=0,
+		widget=forms.RadioSelect(choices=PRIORITY_OCR_CHOICES)
+	)
 
 
 #
@@ -198,3 +242,67 @@ def recrawl(request):
 	status = HttpResponse(response)
 	status["Content-Type"] = "text/plain" 
 	return status
+
+
+def prioritize(request):
+
+	setup = Setup.objects.get(pk=1)
+
+	if request.method == 'POST': # If the form has been submitted...
+		form = PrioritizeForm(request.POST) # A form bound to the POST data
+		if form.is_valid():
+
+			filename = form.cleaned_data['filename']
+			priority = form.cleaned_data['priority']
+
+			priority_ocr = form.cleaned_data['priority_ocr']
+
+			if priority_ocr == 0:
+				priority_ocr = PRIORITY_TO_OCR_PRIORITY[priority]
+
+			from opensemanticetl.enhance_mapping_id import mapping_reverse
+			from opensemanticetl.tasks import index_file
+
+			# read config file to get path mappings
+			config = {'plugins': [], 'regex_lists': []}
+			exec(open('/etc/opensemanticsearch/etl').read(), locals())
+			exec(open('/etc/opensemanticsearch/connector-files').read(), locals())
+			exec(open('/etc/opensemanticsearch/etl-webadmin').read(), locals())
+
+			filename = mapping_reverse(filename, config['mappings'])
+
+			additional_plugins_later = []
+			if 'additional_plugins_later' in config:
+				additional_plugins_later = config['additional_plugins_later']
+
+			additional_plugins_later_config = {}
+			if 'additional_plugins_later_config' in config:
+				additional_plugins_later_config = config['additional_plugins_later_config']
+
+			task_id = index_file.apply_async( kwargs={ 'filename': filename }, queue='tasks', priority=priority )
+
+			task_ocr_id = None
+
+			if len(additional_plugins_later) > 0 or len(additional_plugins_later_config) > 0:
+
+	                        task_ocr_id = index_file.apply_async(kwargs={ 'filename': filename, 'additional_plugins': additional_plugins_later, 'config': additional_plugins_later_config}, queue='tasks', priority=priority_ocr)
+
+			return render(request, 'files/files_prioritize.html', 
+				{	
+					"form": form,
+					'setup': setup,
+					"task_id": task_id,
+					"task_ocr_id": task_ocr_id,
+				})
+
+		else:
+			return render(request, 'files/files_prioritize.html', {'form': form})
+
+	else:
+		filename = ''
+		if 'url' in request.GET:
+			filename = request.GET["url"]
+
+		form = PrioritizeForm(initial={'filename': filename}) # An unbound form
+
+		return render(request, 'files/files_prioritize.html', {'form': form})

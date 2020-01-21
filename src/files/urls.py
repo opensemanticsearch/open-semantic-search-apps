@@ -10,4 +10,5 @@ urlpatterns = [
 	url(r'^recrawl$', views.recrawl, name='recrawl'),
 	url(r'^create$', views.create_file, name='create'),
 	url(r'^(?P<pk>\d+)/update$', views.update_file, name='update'),
+	url(r'^prioritize$', views.prioritize, name='prioritize'),
 ]
