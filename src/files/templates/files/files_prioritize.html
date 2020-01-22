@@ -1,0 +1,82 @@
+{% extends "datasources_base.html" %}
+
+{% block content %}
+
+{% if task_id %}
+<div class="row">
+  <div class="small-12 columns">
+<h2>File import status</h2>
+    <div data-alert class="alert-box secondary radius">
+      <p>Added prioritized file import <a target="_blank" href="{{setup.url_tasks}}/task/{{task_id}}">task {{task_id}}</a> to file import queue.</p>
+
+      {% if task_ocr_id %}
+      <p>Added prioritized file import with <a target="_blank" href="{{setup.url_tasks}}/task/{{task_ocr_id}}">OCR task {{task_ocr_id}}</a> to OCR queue.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% else %}
+
+
+<form action="" method="post">{% csrf_token %}
+
+<div class="row">
+	<div class="small-12 columns">
+
+<h1>Prioritize file import task</h1>
+
+
+
+    <label for="id_filename">Filename:</label>
+    {{ form.filename }}
+    {{ form.filename.errors }}
+
+   </div>
+</div>
+
+<div class="row">
+
+    <div class="small-12 medium-6 columns">
+
+    <h3>Priority (Text extraction &amp; analysis)</h3>
+
+    <label for="id_priority">Set priority:</label>
+    {{ form.priority }}
+    {{ form.priority.errors }}
+
+
+      <input class="button" type="submit" value="Prioritize file import" />
+
+
+   </div>
+
+
+    <div class="small-12 medium-6 columns">
+
+    <h3>Priority of OCR tasks</h3>
+
+
+    <label for="id_priority">Set priority:</label>
+    {{ form.priority_ocr }}
+    {{ form.priority_ocr.errors }}
+
+    <small>
+    <p>If you don't change the OCR priority default option "Lowest", the relativeley expensive/slow OCR tasks for the file will be processed with equivalent priority setting like the plain text extraction task, but <strong>after plain texts of all other files queues were extracted</strong> (relatively fast) and searchable yet.</p>
+    <p>If you set another OCR priority here, the expensive/slow OCR tasks for this file will be processed before the relatively fast extraction of text of all not yet processed files in lower prioritized queues.</p>
+    </small>
+
+   </div>
+
+</div>
+
+
+
+
+
+</form>
+
+{% endif %}
+
+
+{% endblock content %}
