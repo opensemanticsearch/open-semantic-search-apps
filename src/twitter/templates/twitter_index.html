@@ -43,7 +43,17 @@
     {{ form.username }}
     {{ form.username.errors }}
 <p>Example: <i>OpenSemSearch</i> to retrieve tweets posted by the Twitter profile @OpenSemSearch (https://twitter.com/OpenSemSearch)</p>
+
+
+<h4>Index retweets</h4>
+    <label for="id_index_retweets">Index retweets by this user account written by other users:</label>
+    {{ form.index_retweets }}
+    {{ form.index_retweets.errors }}
+    <p><i>By this Twint option --profile-full the scraper will use a slow, but effective method to gather Tweets from a user's profile (Gathers ~3200 Tweets, Including Retweets)</i></p>
+
+
         </div>
+
 	<div class="small-6 columns">
 
 
