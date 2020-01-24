@@ -11,6 +11,8 @@ class ListForm(forms.Form):
 
 	username = forms.CharField(widget=forms.TextInput, required=False)
 
+	index_retweets = forms.BooleanField(required=False, initial=False)
+
 	index_linked_webpages = forms.BooleanField(required=False, initial=False)
 
 	limit = forms.IntegerField(required=False, initial=4000)
@@ -28,11 +30,13 @@ def index(request):
 			username = form.cleaned_data['username']
 			limit = form.cleaned_data['limit']
 
+			index_retweets = form.cleaned_data['index_retweets']
+
 			index_linked_webpages = form.cleaned_data['index_linked_webpages']
 
 			from opensemanticetl.tasks import index_twitter_scraper
 
-			task_id = index_twitter_scraper.apply_async( kwargs={ 'username': username, 'search': search, 'limit': limit, 'Index_Linked_Webpages': index_linked_webpages }, queue='tasks', priority=6 )
+			task_id = index_twitter_scraper.apply_async( kwargs={ 'username': username, 'search': search, 'limit': limit, 'Profile_full': index_retweets, 'Index_Linked_Webpages': index_linked_webpages }, queue='tasks', priority=6 )
 
 			return render(request, 'twitter_index.html', 
 				{	
