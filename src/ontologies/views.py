@@ -658,3 +658,6 @@ def	write_named_entities_config():
 	# Todo: Use the Solr URI from config
 	urlopen(solr_url + 'admin/cores?action=RELOAD&core=opensemanticsearch')
 
+	# Commit and optimize entities index
+	urlopen(solr_url + 'opensemanticsearch-entities/update?commit=true&optimize=true')
+
