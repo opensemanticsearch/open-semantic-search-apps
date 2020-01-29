@@ -654,9 +654,12 @@ def	write_named_entities_config():
 	# Create config for ETL / entity extraction
 	setup.views.generate_etl_configfile()
 	
-	# Reload/restart Solr core with new synonyms config
 	# Todo: Use the Solr URI from config
 	try:
+		# Reload/restart Solr core with new synonyms config
 		urlopen(solr_url + 'admin/cores?action=RELOAD&core=opensemanticsearch')
+		# Optimize entities index
+		urlopen(solr_url + 'opensemanticsearch-entities/update?optimize=true')
+
 	except BaseException:
 		pass
