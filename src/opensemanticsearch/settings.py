@@ -9,12 +9,12 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import sys
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Add to python path so includes of ETL modules will work in Django environment
-import sys
 sys.path.append("/usr/lib/python3/dist-packages")
 sys.path.append("/usr/lib/python3/dist-packages/opensemanticetl")
 
@@ -64,7 +64,6 @@ MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -95,24 +94,24 @@ WSGI_APPLICATION = 'opensemanticsearch.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 if os.path.isfile('/etc/opensemanticsearch-django-webapps/my.cnf'):
-	
-	DATABASES = {
-		'default': {
-					'ENGINE': 'django.db.backends.mysql',
-					'OPTIONS': {
-							'read_default_file': '/etc/opensemanticsearch-django-webapps/my.cnf',
-					},
-				}
-	}
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'OPTIONS': {
+                'read_default_file': '/etc/opensemanticsearch-django-webapps/my.cnf',
+            },
+        }
+    }
 
 else:
 
-	DATABASES = {
-	    'default': {
-	        'ENGINE': 'django.db.backends.sqlite3',
-	        'NAME': '/var/opensemanticsearch/db/db.sqlite3',
-	    }
-	}
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': '/var/opensemanticsearch/db/db.sqlite3',
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
