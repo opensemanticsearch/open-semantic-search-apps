@@ -13,6 +13,7 @@ echo "Building ${PACKAGE} in temp directory ${BUILDDIR}"
 mkdir ${BUILDDIR}
 cp -a DEBIAN ${BUILDDIR}/
 cp -a etc ${BUILDDIR}/
+cp -a var ${BUILDDIR}/
 mkdir -p ${BUILDDIR}/var/lib/opensemanticsearch/
 cp -a src/* ${BUILDDIR}/var/lib/opensemanticsearch/
 
