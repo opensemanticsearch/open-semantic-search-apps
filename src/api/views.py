@@ -19,7 +19,7 @@ def queue_delete(request):
 
 	from opensemanticetl.tasks import delete
 
-	result = delete.apply_async( kwargs={ 'uri': uri }, queue='tasks', priority=6 )
+	result = delete.apply_async( kwargs={ 'uri': uri }, queue='open_semantic_etl_tasks', priority=6 )
 	
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
 
@@ -36,7 +36,7 @@ def queue_enrich(request):
 
 	from opensemanticetl.tasks import enrich
 
-	result = enrich.apply_async( kwargs={ 'plugins': plugins, 'uri': uri }, queue='tasks', priority=5 )
+	result = enrich.apply_async( kwargs={ 'plugins': plugins, 'uri': uri }, queue='open_semantic_etl_tasks', priority=5 )
 	
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
 
@@ -51,7 +51,7 @@ def queue_index_file(request):
 
 	from opensemanticetl.tasks import index_filedirectory
 
-	result = index_filedirectory.apply_async( kwargs={ 'filename': uri }, queue='tasks', priority=5 )
+	result = index_filedirectory.apply_async( kwargs={ 'filename': uri }, queue='open_semantic_etl_tasks', priority=5 )
 
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
 
@@ -66,7 +66,7 @@ def queue_index_web(request):
 
 	from opensemanticetl.tasks import index_web
 
-	result = index_web.apply_async( kwargs={ 'uri': uri }, queue='tasks', priority=5 )
+	result = index_web.apply_async( kwargs={ 'uri': uri }, queue='open_semantic_etl_tasks', priority=5 )
 	
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")
 
@@ -81,6 +81,6 @@ def queue_index_rss(request):
 
 	from opensemanticetl.tasks import index_rss
 
-	result = index_rss.apply_async( kwargs={ 'uri': uri }, queue='tasks', priority=5 )
+	result = index_rss.apply_async( kwargs={ 'uri': uri }, queue='open_semantic_etl_tasks', priority=5 )
 	
 	return HttpResponse(json.dumps( {'queue': result.id} ), content_type="application/json")

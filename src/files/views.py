@@ -153,7 +153,7 @@ def crawl(request, pk):
 
 	from opensemanticetl.tasks import index_filedirectory
 
-	index_filedirectory.apply_async( kwargs={ 'filename': file.uri }, queue='tasks', priority=5 )
+	index_filedirectory.apply_async( kwargs={ 'filename': file.uri }, queue='open_semantic_etl_tasks', priority=5 )
 
 	# save new timestamp
 	file.last_imported = last_imported
@@ -217,7 +217,7 @@ def recrawl(request):
 
 			from opensemanticetl.tasks import index_filedirectory
 
-			index_filedirectory.apply_async( kwargs={ 'filename': file.uri }, queue='tasks', priority=5 )
+			index_filedirectory.apply_async( kwargs={ 'filename': file.uri }, queue='open_semantic_etl_tasks', priority=5 )
 
 
 			# save new timestamp
@@ -279,13 +279,13 @@ def prioritize(request):
 			if 'additional_plugins_later_config' in config:
 				additional_plugins_later_config = config['additional_plugins_later_config']
 
-			task_id = index_file.apply_async( kwargs={ 'filename': filename }, queue='tasks', priority=priority )
+			task_id = index_file.apply_async( kwargs={ 'filename': filename }, queue='open_semantic_etl_tasks', priority=priority )
 
 			task_ocr_id = None
 
 			if len(additional_plugins_later) > 0 or len(additional_plugins_later_config) > 0:
 
-	                        task_ocr_id = index_file.apply_async(kwargs={ 'filename': filename, 'additional_plugins': additional_plugins_later, 'config': additional_plugins_later_config}, queue='tasks', priority=priority_ocr)
+	                        task_ocr_id = index_file.apply_async(kwargs={ 'filename': filename, 'additional_plugins': additional_plugins_later, 'config': additional_plugins_later_config}, queue='open_semantic_etl_tasks', priority=priority_ocr)
 
 			return render(request, 'files/files_prioritize.html', 
 				{	

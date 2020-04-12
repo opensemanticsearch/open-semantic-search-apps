@@ -36,7 +36,7 @@ def index(request):
 
 			from opensemanticetl.tasks import index_twitter_scraper
 
-			task_id = index_twitter_scraper.apply_async( kwargs={ 'username': username, 'search': search, 'limit': limit, 'Profile_full': index_retweets, 'Index_Linked_Webpages': index_linked_webpages }, queue='tasks', priority=6 )
+			task_id = index_twitter_scraper.apply_async( kwargs={ 'username': username, 'search': search, 'limit': limit, 'Profile_full': index_retweets, 'Index_Linked_Webpages': index_linked_webpages }, queue='open_semantic_etl_tasks', priority=6 )
 
 			return render(request, 'twitter_index.html', 
 				{	

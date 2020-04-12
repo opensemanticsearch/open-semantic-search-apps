@@ -95,7 +95,7 @@ def import_feed(request, pk):
 	last_imported = datetime.datetime.now()
 
 	from opensemanticetl.tasks import index_rss
-	index_rss.apply_async( kwargs={ 'uri': feed.uri }, queue='tasks', priority=5 )
+	index_rss.apply_async( kwargs={ 'uri': feed.uri }, queue='open_semantic_etl_tasks', priority=5 )
 
 	# save new timestamp
 	feed.last_imported = last_imported
@@ -170,7 +170,7 @@ def import_feeds(request):
 			last_imported = datetime.datetime.now()
 
 			from opensemanticetl.tasks import index_rss
-			index_rss.apply_async( kwargs={ 'uri': feed.uri }, queue='tasks', priority=5 )
+			index_rss.apply_async( kwargs={ 'uri': feed.uri }, queue='open_semantic_etl_tasks', priority=5 )
 
 			# save new timestamp
 			feed.last_imported = last_imported
