@@ -39,10 +39,12 @@ Title or ID:
 
 <h3>Actions</h3>
 
-<a class="button" href="{% url 'rss_manager:update' rss_feed.id %}">Edit settings</a>
 
 <a class="button" href="{% url 'rss_manager:import_feed' rss_feed.id %}">Import news</a></li>
 
+<a class="button" href="{% url 'rss_manager:update' rss_feed.id %}">Edit settings</a>
+
+<a class="button" href="{% url 'rss_manager:delete' rss_feed.id %}" onclick="return confirm('Are you sure you want to delete this?')">Delete</a>
 
 
 	</div>

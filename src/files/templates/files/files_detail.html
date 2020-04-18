@@ -43,6 +43,7 @@ Title or ID:
 
 <a class="button" href="{% url 'files:update' files.id %}">Edit settings</a>
 
+<a class="button" href="{% url 'files:delete' files.id %}" onclick="return confirm('Are you sure you want to delete this entry?')">Delete entry</a>
 
 	</div>
 </div>

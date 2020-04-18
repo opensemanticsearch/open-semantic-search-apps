@@ -49,6 +49,7 @@ Title or ID:
 
 <a class="button" href="{% url 'crawler:update' crawler.id %}">Edit settings</a>
 
+<a class="button" href="{% url 'crawler:delete' crawler.id %}" onclick="return confirm('Are you sure you want to delete this entry?')">Delete</a>
 
 	</div>
 </div>
