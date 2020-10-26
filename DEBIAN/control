@@ -3,7 +3,7 @@ Version: 19.11.29
 Section: misc
 Priority: optional
 Architecture: all
-Depends: curl(>=0), libjs-jquery(>=0), python3-django(>=0), python3-pysolr(>=0), python3-requests(>=0), python3-rdflib(>=0), apache2(>=0), libapache2-mod-wsgi-py3(>=0), python3-django-celery(>=0)
+Depends: curl(>=0), libjs-jquery(>=0), python3-django(>=0), python3-pysolr(>=0), python3-requests(>=0), python3-rdflib(>=0), apache2(>=0), libapache2-mod-wsgi-py3(>=0), python3-celery(>=0)
 Installed-Size: 100
 Maintainer: Markus Mandalka <debian@mandalka.name>
 Homepage: https://opensemanticsearch.org/
