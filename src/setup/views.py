@@ -337,21 +337,6 @@ def	generate_etl_configfile(filename="/etc/opensemanticsearch/etl-webadmin"):
 	else:
 		configfile.write( "if 'enhance_pdf_ocr' in config['plugins']:" + "\n" )
 		configfile.write( "\tconfig['plugins'].remove('enhance_pdf_ocr')" + "\n" )
-	
-	if setup.ocr_descew:
-
-		if setup.ocr_later:
-			configfile.write( "if 'enhance_ocr_descew' in config['plugins']:" + "\n" )
-			configfile.write( "\tconfig['plugins'].remove('enhance_ocr_descew')" + "\n" )
-			configfile.write( "if not 'enhance_ocr_descew' in config['additional_plugins_later']:" + "\n" )
-			configfile.write( "\tconfig['additional_plugins_later'].append('enhance_ocr_descew')" + "\n" )
-		else:
-			configfile.write( "if not 'enhance_ocr_descew' in config['plugins']:" + "\n" )
-			configfile.write( "\tconfig['plugins'].append('enhance_ocr_descew')" + "\n" )
-
-	else:
-		configfile.write( "if 'enhance_ocr_descew' in config['plugins']:" + "\n" )
-		configfile.write( "\tconfig['plugins'].remove('enhance_ocr_descew')" + "\n" )
 
 	if setup.ner_spacy:
 		configfile.write( "if not 'enhance_ner_spacy' in config['plugins']:" + "\n" )
