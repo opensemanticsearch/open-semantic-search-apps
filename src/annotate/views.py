@@ -32,7 +32,16 @@ def export_to_index(uri):
 	parameters['add'] = True
 	
 	# but the (maybe changed) comments should overwrite existing comments
-	parameters['fields_set'] = ['comment_txt']
+	# and some ETL process metadata in etl_* single value fields can not be added,
+	# so overwrite them, too
+	parameters['fields_set'] = [
+		'comment_txt',
+		'etl_time_millis_i',
+		'etl_enhance_rdf_annotations_by_http_request_b',
+		'etl_enhance_rdf_annotations_by_http_request_time_millis_i',
+		'etl_enhance_multilingual_b',
+		'etl_enhance_multilingual_time_millis_i'
+	]
 	
 	parameters['id'] = uri
 	
