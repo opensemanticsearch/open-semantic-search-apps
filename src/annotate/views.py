@@ -22,24 +22,26 @@ def export_to_index(uri):
 
 	etl = ETL()
 
-	# plugin enhance_rdf_annotations_by_http_request reads the tags and annotations
+	# plugin enhance_annotations reads the tags and annotations
 	# plugin enhance_multilingual copies them to default search fields
-	etl.read_configfile ('/etc/opensemanticsearch/enhancer-rdf')
-	etl.config['plugins'] = ['enhance_rdf_annotations_by_http_request','enhance_multilingual']
+	etl.config['plugins'] = ['enhance_annotations','enhance_multilingual']
+
+	# if something went wrong, raise exception to UI
+	etl.config['raise_pluginexception'] = True
 
 	parameters = etl.config.copy()
 
 	# since we only enrich and not ETL the document/analysis pipeline again, text(s) has to be added to default search fields, not overwrite existing text
 	parameters['add'] = True
 
-	# but the (maybe changed) comments should overwrite existing comments
+	# but the (maybe changed) notes should overwrite existing comments
 	# and some ETL process metadata in etl_* single value fields can not be added,
 	# so overwrite them, too
 	parameters['fields_set'] = [
-		'comment_txt',
+		'notes_txt',
 		'etl_time_millis_i',
-		'etl_enhance_rdf_annotations_by_http_request_b',
-		'etl_enhance_rdf_annotations_by_http_request_time_millis_i',
+		'etl_enhance_annotations_b',
+		'etl_enhance_annotations_time_millis_i',
 		'etl_enhance_multilingual_b',
 		'etl_enhance_multilingual_time_millis_i'
 	]
