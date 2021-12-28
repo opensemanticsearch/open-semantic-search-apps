@@ -59,7 +59,7 @@ a2enmod wsgi
 # reload apache configs to enable our additional apache settings
 service apache2 restart
 
-# setup facets/classes in Open Semantic ETL and entities in Open Semantic Search API
+# setup facets/classes in Open Semantic ETL config and entities in Open Semantic Entity Search API
 python3 /var/lib/opensemanticsearch/manage.py entities
 
 # allow Django running in apache2 context to write OCR dictionary
