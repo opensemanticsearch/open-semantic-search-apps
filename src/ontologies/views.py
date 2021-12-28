@@ -128,7 +128,7 @@ def update_ontology(request, pk):
 		
 		if form.is_valid():
 
-			# manual handled MultipleChoiceField is saved comma separeted in a single CharField
+			# manual handled MultipleChoiceField is saved comma separated in a single CharField
 			ontology.stemming = (',').join( form.cleaned_data['stemming'] )
 			ontology.stemming_force = (',').join( form.cleaned_data['stemming_force'] )
 			ontology.stemming_hunspell = (',').join( form.cleaned_data['stemming_hunspell'] )
@@ -142,7 +142,7 @@ def update_ontology(request, pk):
 		
 			pass
 	else:
-		# The forms MultipleChoiceField is saved comma separeted in singe CharField,
+		# The forms MultipleChoiceField is saved comma separated in singe CharField,
 		# so manual handling and turn over by form parameter initial
 		stemming = ontology.stemming.split(",")
 		stemming_force = ontology.stemming_force.split(",")
@@ -216,7 +216,7 @@ def get_ontology_file(ontology):
 		filename = ontology.uri[len('file://'):]
 
 	else:
-		# Download url to an tempfile
+		# Download URL to a tempfile
 		is_tempfile = True
 		filename, headers = urlretrieve(ontology.uri)
 
@@ -332,14 +332,14 @@ def tag_by_list(filename, field, encoding='utf-8', queryfields='_text_'):
 		
 			solr = opensemanticetl.export_solr.export_solr()
 			
-			# tag the field/facet of all ducuments matching this query by value of entry
+			# tag the field/facet of all documents matching this query by value of entry
 			count = solr.update_by_query( searchquery, field=field, value=value, queryparameters={'qf': queryfields} )
 
 	file.close()
 
 
 #
-# Append entries/lines from an list/dictionary to list of separated words
+# Append entries/lines from a list/dictionary to list of separated words
 #
 
 def dictionary2wordlist(sourcefilename, encoding='utf-8', wordlist_configfilename=None):
@@ -376,7 +376,7 @@ def dictionary2wordlist(sourcefilename, encoding='utf-8', wordlist_configfilenam
 # Write facets config for search UI
 #
 
-# Collect all used facets so they can be displayed for search UI config
+# Collect all used facets, so they can be displayed for search UI config
 
 def write_facet_config():
 	# Todo: graph with labels or JSON instead of PHP config
@@ -519,7 +519,7 @@ def get_facetname(ontology):
 
 
 #
-# Analyze contenttype (plaintextlist or ontology?) and encoding
+# Analyze content type (plaintext list or ontology?) and encoding
 #
 
 def get_contenttype_and_encoding(filename):
@@ -628,7 +628,7 @@ def	write_named_entities_config():
 		else:
 			print ( "Unknown format {}".format(contenttype) )
 		
-		# remember each new facet for which there a list has been created so we can later write all this facets to schema.xml config part
+		# remember each new facet for which there a list has been created, so we can later write all this facets to schema.xml config part
 		if not facet in facets:
 			facets.append(facet)
 		
