@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='setup',
             name='url_tasks',
-            field=models.CharField(blank=True, default='http://localhost:5555', max_length=1000),
+            field=models.CharField(blank=True, default='/flower', max_length=1000),
         ),
     ]
