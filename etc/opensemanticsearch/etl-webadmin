@@ -1,1 +1,4 @@
-# Warning: Do not edit here, will be overwritten by web admin user interface
+# Warning: Do not edit here, will be overwritten
+# by saving config changes in web admin user interface
+# or by (initial) setup by CLI command
+# python3 /var/lib/opensemanticsearch/manage.py configs
