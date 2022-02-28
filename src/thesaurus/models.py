@@ -46,7 +46,7 @@ class Group(models.Model):
 	facet = models.ForeignKey(Facet, on_delete=models.CASCADE, blank=True, null=True)
 	
 	def __str__(self):
-		return self.title
+		return self.prefLabel
 	
 	def tags(self):
 		return GroupTag.objects.filter(group=self)
