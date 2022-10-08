@@ -56,7 +56,6 @@ INSTALLED_APPS = (
     'search_entity',
     'visual_graph_explorer',
     'entity_rest_api',
-    'import_export',
 )
 
 MIDDLEWARE = (
