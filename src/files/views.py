@@ -23,7 +23,7 @@ PRIORITY_CHOICES = (
 	(39, 'A++: Highest top priority (process before all other queues)'),
 	(37, 'A+: Higher priority (processed before queues A, B, C and D)'),
 	(35, 'A: High priority (processed before standard queues B, C and D)'),
-	(22, 'B: Normal (per default priorized queue for text extraction tasks for PDFs and office documents)'),
+	(22, 'B: Normal (per default prioritized queue for text extraction tasks for PDFs and office documents)'),
 	(20, 'C: Lower (queue for text extraction tasks of other file formats)'),
 )
 
@@ -31,9 +31,9 @@ PRIORITY_OCR_CHOICES = (
 	(38, 'A++: Highest top priority (process before all other queues)'),
 	(36, 'A+: Higher priority (processed before queues A, B, C and D)'),
 	(34, 'A: High priority (processed before standard queues B, C and D)'),
-	(21, 'B: Normal (per default priorized queue for text extraction tasks for PDFs and office documents)'),
+	(21, 'B: Normal (per default prioritized queue for text extraction tasks for PDFs and office documents)'),
 	(20, 'C: Lower (queue for text extraction tasks of other file formats)'),
-	(0, 'D: Lowest (queues for OCR tasks, so runned after plain text from all documents yet extracted and searchable)'),
+	(0, 'D: Lowest (queues for OCR tasks, so will run after plain text from all documents yet extracted and searchable)'),
 )
 
 PRIORITY_TO_OCR_PRIORITY = {
@@ -284,8 +284,7 @@ def prioritize(request):
 			task_ocr_id = None
 
 			if len(additional_plugins_later) > 0 or len(additional_plugins_later_config) > 0:
-
-	                        task_ocr_id = index_file.apply_async(kwargs={ 'filename': filename, 'additional_plugins': additional_plugins_later, 'config': additional_plugins_later_config}, queue='open_semantic_etl_tasks', priority=priority_ocr)
+				task_ocr_id = index_file.apply_async(kwargs={ 'filename': filename, 'additional_plugins': additional_plugins_later, 'config': additional_plugins_later_config}, queue='open_semantic_etl_tasks', priority=priority_ocr)
 
 			return render(request, 'files/files_prioritize.html', 
 				{	
