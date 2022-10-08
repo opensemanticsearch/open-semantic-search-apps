@@ -1,9 +1,6 @@
 #!/bin/sh
 # postinst script for webapps
 
-# install django-import-export
-pip3 install django-import-export
-
 # export static files to directory for webserver
 python3 /var/lib/opensemanticsearch/manage.py collectstatic --noinput
 
