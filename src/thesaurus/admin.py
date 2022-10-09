@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib import messages
 from thesaurus.models import Concept
 from thesaurus.models import ConceptTag
 from thesaurus.models import Alternate
@@ -8,11 +7,6 @@ from thesaurus.models import GroupTag
 from thesaurus.models import Facet
 import thesaurus.views
 import ontologies.views
-
-from import_export import resources
-from import_export.admin import ImportExportModelAdmin
-from django.dispatch import receiver
-from import_export.signals import post_import
 
 
 class AlternateInline(admin.TabularInline):
@@ -42,13 +36,7 @@ class ConceptAdmin(admin.ModelAdmin):
         thesaurus.views.tag_concept_and_message_stats(request=request, concept=obj)
 
 
-class FacetResource(resources.ModelResource):
-    class Meta:
-        model = Facet
-
-
-class FacetAdmin(ImportExportModelAdmin):
-    resource_class = FacetResource
+class FacetAdmin(admin.ModelAdmin):
 
     list_display = ('facet', 'label',)
 
@@ -57,15 +45,8 @@ class FacetAdmin(ImportExportModelAdmin):
     def save_model(self, request, obj, form, change):
         super(FacetAdmin, self).save_model(request, obj, form, change)
 
-        # generate facet config for Solr-PHP-UI
+        # generate facet configs
         ontologies.views.write_facet_config()
-
-
-@receiver(post_import, dispatch_uid='post_import')
-def _post_import(model, **kwargs):
-    # model is the actual model instance which after import
-    # generate facet config for Solr-PHP-UI
-    ontologies.views.write_facet_config()
 
 
 class GroupAdmin(admin.ModelAdmin):
